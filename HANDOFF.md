@@ -22,17 +22,24 @@
 | Поле | Значение |
 |---|---|
 | Аккаунт | paharaduga-beep |
-| Сессия | https://app.devin.ai/sessions/bbf1cec713be43a7b227177d3207df11 |
+| Сессия | https://app.devin.ai/sessions/e84aad0cb623469da4d71a42da4d46ce |
 | Модель | Agent |
 | Дата | 2026-05-10 (UTC) |
-| Закрытая задача | T-003 |
-| Следующая задача | **T-004** (см. TASKS.md) |
+| Закрытая задача | T-004 |
+| Следующая задача | **T-005** (см. TASKS.md) |
 | Состояние master | ожидает merge PR |
 | Pages | включён, master/root |
 
 ---
 
 ## Лог смен (новые записи СВЕРХУ)
+
+### 2026-05-10 · paharaduga-beep · T-004
+
+- Закрыто: T-004 — активный агент игрока в hero-блоке dashboard.html
+- Читает `localStorage('awara_active_agent')`, default `svet_ra`
+- Lookup из `data/agents.json` (имя) + `data/agent_matrix_map.json` (культурное соответствие в активной матрице)
+- CSS: `.hero-agent` блок с золотой рамкой, Cinzel + Cormorant Garamond
 
 ### 2026-05-10 · paharaduga-beep · T-003
 

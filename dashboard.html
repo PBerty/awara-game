@@ -113,6 +113,28 @@ body{
   margin-top:12px;font-size:9px;
   color:var(--text-mute);letter-spacing:0.2em;
 }
+.hero-agent{
+  margin-top:14px;
+  padding:10px 18px;
+  border-radius:10px;
+  background:rgba(201,168,76,0.06);
+  border:1px solid rgba(201,168,76,0.18);
+  display:inline-block;
+}
+.hero-agent-name{
+  font-family:Cinzel,serif;
+  font-size:13px;
+  color:var(--gold-light);
+  letter-spacing:0.18em;
+  margin-bottom:4px;
+}
+.hero-agent-cultural{
+  font-family:'Cormorant Garamond',serif;
+  font-size:12px;
+  font-style:italic;
+  color:var(--text-soft);
+  letter-spacing:0.08em;
+}
 
 /* ── SECTIONS ── */
 .section{
@@ -382,6 +404,10 @@ body{
       <span class="icon" id="stage-icon">🌱</span>
       <span class="name" id="stage-name">ИНИЦИАТ</span>
     </div>
+    <div class="hero-agent" id="hero-agent" style="display:none">
+      <div class="hero-agent-name" id="agent-name"></div>
+      <div class="hero-agent-cultural" id="agent-cultural"></div>
+    </div>
     <div class="bar"><div class="bar-fill" id="rank-bar" style="width:0%"></div></div>
     <div class="hero-raw" id="hero-progress">— до следующего ранга</div>
   </section>
@@ -458,6 +484,11 @@ body{
   function loadActiveMatrix(){
     var slug = localStorage.getItem('awara_active_matrix') || 'vedic';
     return slug;
+  }
+
+  // Активный агент игрока (default: svet_ra)
+  function loadActiveAgent(){
+    return localStorage.getItem('awara_active_agent') || 'svet_ra';
   }
 
   // ── 2. Канон рангов Державы РА (синхронизирован с js/core.js) ──
@@ -672,11 +703,44 @@ body{
     });
   }
 
-  // ── 8. Старт ──
+  // ── 8. Агент в hero-блоке ──
+  function renderAgent(){
+    var agentSlug = loadActiveAgent();
+    var matrixSlug = loadActiveMatrix();
+
+    Promise.all([
+      fetch('data/agents.json').then(function(r){ return r.json(); }),
+      fetch('data/agent_matrix_map.json').then(function(r){ return r.json(); })
+    ]).then(function(results){
+      var agents = results[0];
+      var map = results[1];
+
+      var agent = agents.find(function(a){ return a.slug === agentSlug; });
+      if(!agent) return;
+
+      var mapping = map.find(function(m){
+        return m.agent_slug === agentSlug && m.matrix_slug === matrixSlug;
+      });
+
+      var container = document.getElementById('hero-agent');
+      document.getElementById('agent-name').textContent = agent.name;
+
+      if(mapping){
+        document.getElementById('agent-cultural').textContent =
+          mapping.cultural_name + ' · ' + mapping.matrix_name;
+      }
+      container.style.display = '';
+    }).catch(function(e){
+      console.warn('Ошибка отрисовки агента:', e);
+    });
+  }
+
+  // ── 9. Старт ──
   function init(){
     var state = loadState();
     renderHero(state);
     renderStats(state);
+    renderAgent();
     renderSpheres(state);
     renderLeaderboard(state);
     renderEvolution(state);

@@ -35,7 +35,7 @@
   Файлы: `matrices.html`, опционально `data/matrices.json` (только чтение)
   Est: 10 мин
 
-- [ ] **T-004 · в dashboard.html: показать текущего агента игрока в hero-блоке**
+- [x] **T-004 · в dashboard.html: показать текущего агента игрока в hero-блоке**
   DoD: если в `state.activeSystem.agent_slug` (или эквиваленте) сохранено — рядом с балансом Светкоина дополнительно отрисовать имя агента + его культурное соответствие в активной матрице (lookup из `data/agent_matrix_map.json`).
   Файлы: `dashboard.html`
   Est: 9 мин
