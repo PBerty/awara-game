@@ -25,14 +25,21 @@
 | Сессия | https://app.devin.ai/sessions/e84aad0cb623469da4d71a42da4d46ce |
 | Модель | Agent |
 | Дата | 2026-05-10 (UTC) |
-| Закрытая задача | T-017 |
-| Следующая задача | **Phase 1 backlog** (см. TASKS.md) |
+| Закрытая задача | T-018 |
+| Следующая задача | **T-019** (см. TASKS.md) |
 | Состояние master | ожидает merge PR |
 | Pages | включён, master/root |
 
 ---
 
 ## Лог смен (новые записи СВЕРХУ)
+
+### 2026-05-10 · PBerty · T-018
+
+- Закрыто: T-018 — js/dailyKey.js
+- getDailyKey(date?) → {date, agent, matrix, element, question}
+- FNV-1a hash(date+playerId), playerId в localStorage
+- Phase 1 секция добавлена в TASKS.md
 
 ### 2026-05-10 · PBerty · T-017
 

@@ -115,6 +115,18 @@
   Файлы: `docs/screen-status.md`
   Est: 8 мин
 
+### Phase 1 — Daily Loop
+
+- [x] **T-018 · js/dailyKey.js — генератор Ключа Дня**
+  DoD: ES-модуль `js/dailyKey.js`. `getDailyKey(date?)` возвращает `{date, agent, matrix, element, question}`. Детерминированный hash(date+playerId) через FNV-1a. Подтягивает agents.json и matrices.json. playerId хранится в localStorage.
+  Файлы: `js/dailyKey.js`
+  Est: 10 мин
+
+- [ ] **T-019 · карточка дня в лобби (index.html)**
+  DoD: Большая плитка "Ключ Дня" на index.html. Показывает: агент дня (имя + иконка), матрица дня, стихия, вопрос дня. Данные из `getDailyKey()`. Обновляется каждый день.
+  Файлы: `index.html`
+  Est: 15 мин
+
 ---
 
 ## Done (закрытые)
