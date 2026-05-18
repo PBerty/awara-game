@@ -21,7 +21,7 @@
 | Матрицы культур | **33** | `data/matrices.json` |
 | Локи (плотности) | **14** | будет в `data/locas.json` |
 | Чакры-меры | **9** | будет в `data/chakras.json` |
-| Карты колоды (MVP) | 21 × 3 матрицы = **63** | будет в `data/cards.json` |
+| Карты колоды (полная) | **1578** (693 core + 885 доп.) | `exports/all_high_quality_card_prompts.json` |
 | Соответствия агент×матрица | 21 × 33 = **693** | `data/agent_matrix_map.json` |
 
 **Запрещено:**

@@ -280,10 +280,10 @@
       <span class="cards-back-arrow">&#9664;</span>
       <span class="cards-title">Колода Карт</span>
     </a>
-    <div class="cards-counter" id="cards-counter">Открыто: <b>0</b> / 63</div>
+    <div class="cards-counter" id="cards-counter">Открыто: <b>0</b> / 1578</div>
   </div>
 
-  <div class="cards-subtitle">63 карты Благоденствия (21 агент x 3 матрицы)</div>
+  <div class="cards-subtitle">1578 карт Благоденствия (693 core + 885 дополнительных)</div>
 
   <!-- Фильтр -->
   <div class="filter-section" id="filter-section">
@@ -320,15 +320,14 @@
       console.log('[Canon] Загружено матриц:', matrices.length);
       console.log('[Canon] Загружено связей agent_matrix_map:', agentMatrixMap.length);
 
-      // Берём первые 3 матрицы для колоды
-      matrixSubset = matrices.slice(0, 3);
-      console.log('[Canon] Матрицы для колоды:', matrixSubset.map(m => m.name).join(', '));
+      // Используем все 33 матрицы для полной колоды
+      matrixSubset = matrices;
+      console.log('[Canon] Матрицы для колоды: все ' + matrices.length);
 
-      // Генерируем 63 карты
+      // Генерируем 693 core-карты (21 агентов x 33 матрицы)
       allCards = [];
       for (const agent of agents) {
         for (const matrix of matrixSubset) {
-          // Ищем cultural_name в agent_matrix_map
           const mapEntry = agentMatrixMap.find(
             e => e.agent_id === agent.id && e.matrix_id === matrix.id
           );
@@ -337,12 +336,14 @@
             id: agent.id + '_' + matrix.id,
             agent: agent,
             matrix: matrix,
+            cardType: 'core_agent_matrix',
             culturalName: mapEntry ? mapEntry.cultural_name : null
           });
         }
       }
 
-      console.assert(allCards.length === 63, '[Canon] Карт должно быть 63, а не ' + allCards.length);
+      console.log('[Canon] Core-карт (21x33): ' + allCards.length);
+      console.assert(allCards.length === 693, '[Canon] Core-карт должно быть 693, а не ' + allCards.length);
       console.log('[Canon] Карт сгенерировано: ' + allCards.length);
 
       // Создаём кнопки фильтра
