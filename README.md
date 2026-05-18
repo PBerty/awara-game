@@ -25,7 +25,7 @@ https://victorianpieraverdi-dev.github.io/awara-game/ (auto-deploy с `master` �
 | `dashboard.html` | Дашборд (свет, ранги Державы РА) |
 | `universe.html` | Вселенная (21 агент на орбитах, Canvas 2D) |
 | `matrix.html` | 33 Матрицы Восприятия |
-| `cards.html` | Колода (63 карты = 21 агент x 3 матрицы) |
+| `cards.html` | Колода MVP (63 карты = 21 агент × 3 базовые матрицы) |
 | `oracle.html` | Оракул |
 | `passport.html` | Паспорт Души |
 
@@ -41,8 +41,8 @@ https://victorianpieraverdi-dev.github.io/awara-game/ (auto-deploy с `master` �
 | Матрицы | 33 |
 | Локи | 14 |
 | Чакры | 9 |
-| Карты | 63 |
-| Соответствия | 693 |
+| Карты | 1578 полная колода (693 core + 885 доп.); 63 MVP |
+| Соответствия | 21 × 33 = 693 |
 
 ## Технологии
 
