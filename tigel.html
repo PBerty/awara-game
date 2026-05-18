@@ -1,487 +1,1783 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Вечерний Тигель — AWARA</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Вечерний Тигель · AWARA</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family:'JetBrains Mono',monospace;
+  background:
+    radial-gradient(ellipse at 20% 18%, rgba(124,58,237,0.36), transparent 38%),
+    radial-gradient(ellipse at 82% 72%, rgba(245,158,11,0.28), transparent 40%),
+    radial-gradient(ellipse at 50% 110%, rgba(80,40,160,0.30), transparent 55%),
+    linear-gradient(180deg,#070318 0%,#0d0626 45%,#05021a 100%),
+    #05030f;
+  color:#dcd2be;
+  min-height:100vh;
+  overflow-x:hidden;
+  position:relative;
+  padding:10px 8px 34px;
+}
+body::before {
+  content:'';
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  background-image:url('assets/starfield.svg');
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+  opacity:0.95;
+}
+body::after {
+  content:'ॐ';
+  position:fixed;
+  left:50%;
+  top:48%;
+  transform:translate(-50%,-50%);
+  font-family:Georgia,serif;
+  font-size:min(520px,62vh);
+  line-height:1;
+  color:transparent;
+  -webkit-text-stroke:1px rgba(201,168,76,0.08);
+  pointer-events:none;
+  z-index:0;
+}
 
-  <!-- Основной CSS -->
-  <link rel="stylesheet" href="css/main.css">
+/* ══ ФОНОВАЯ АНИМАЦИЯ ══ */
+#bg-canvas {
+  position:fixed;
+  inset:0;
+  z-index:0;
+  opacity:0.16;
+  pointer-events:none;
+}
 
-  <!-- Шрифты -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet">
+/* ══ ГЛАВНЫЙ КОНТЕЙНЕР ══ */
+.container {
+  position:relative;
+  z-index:1;
+  width:min(430px,100%);
+  margin:0 auto;
+  padding:14px;
+  border:1px solid rgba(201,168,76,0.26);
+  border-radius:30px;
+  background:transparent;
+  box-shadow:
+    0 0 0 1px rgba(255,215,80,0.06),
+    0 30px 120px rgba(0,0,0,0.55),
+    inset 0 0 48px rgba(201,168,76,0.03);
+}
 
-  <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body {
-      font-family: 'Cormorant Garamond', serif;
-      background:
-        radial-gradient(ellipse at 50% 30%, rgba(10,6,30,0.9), transparent 60%),
-        radial-gradient(ellipse at 80% 70%, rgba(201,120,40,0.15), transparent 45%),
-        radial-gradient(ellipse at 20% 80%, rgba(245,158,11,0.14), transparent 45%),
-        linear-gradient(180deg, #020010 0%, #050318 40%, #03061a 100%),
-        #000;
-      color: #dcd2be;
-      min-height: 100vh;
-      overflow-x: hidden;
-      position: relative;
-    }
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      background-image: url('assets/starfield.svg');
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      opacity: 0.7;
-    }
+/* ══ ХЕДЕР ══ */
+.header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:18px;
+  padding-bottom:14px;
+  border-bottom:1px solid rgba(201,168,76,0.15);
+}
+.header-left { display:flex; align-items:center; gap:12px; }
+.back-btn {
+  font-size:18px;
+  cursor:pointer;
+  transition:transform 0.2s;
+  filter:drop-shadow(0 0 8px rgba(201,168,76,0.4));
+  min-width:44px; min-height:44px;
+  display:flex; align-items:center; justify-content:center;
+  border:1px solid rgba(201,168,76,0.22);
+  border-radius:12px;
+  background:rgba(2,1,10,0.45);
+}
+.back-btn:hover { transform:scale(1.1); }
+.header-title {
+  font-family:'Cinzel',serif;
+  font-size:17px;
+  color:#c9a84c;
+  letter-spacing:0.16em;
+  text-transform:uppercase;
+}
+.header-date {
+  font-size:10px;
+  color:rgba(201,168,76,0.4);
+  letter-spacing:0.15em;
+}
 
-    /* === КОНТЕЙНЕР === */
-    .tigel-container {
-      position: relative;
-      z-index: 1;
-      width: min(520px, 100%);
-      margin: 0 auto;
-      padding: 10px 10px 30px;
-      display: flex;
-      flex-direction: column;
-      gap: clamp(12px, 3vw, 18px);
-    }
+/* ══ ТАБЫ ══ */
+.tabs-bar{
+  display:grid;grid-template-columns:repeat(3,1fr);justify-content:center;gap:6px;
+  margin:0 auto clamp(16px,3vw,22px);
+  padding:6px;border-radius:14px;
+  background:rgba(2,1,10,0.55);
+  border:1px solid rgba(201,168,76,0.18);
+  backdrop-filter:blur(8px);
+  width:100%;max-width:100%;
+  position:relative;
+}
+.tabs-bar::after{
+  content:'';position:absolute;left:8%;right:8%;bottom:-1px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,235,150,0.55) 50%,transparent);
+  pointer-events:none;
+}
+.tab-btn{
+  justify-content:center;
+  padding:10px 8px;border-radius:10px;cursor:pointer;min-height:46px;
+  background:transparent;border:none;
+  font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.12em;
+  color:rgba(201,168,76,0.55);
+  transition:all 0.3s;text-transform:uppercase;
+  display:flex;align-items:center;gap:7px;
+}
+.tab-btn:hover{ color:#fff8d6; }
+.tab-btn.active{
+  background:linear-gradient(135deg,rgba(201,168,76,0.15),rgba(255,215,80,0.06));
+  color:#fff8d6;
+  box-shadow:0 0 18px rgba(201,168,76,0.20),inset 0 0 0 1px rgba(255,215,80,0.32);
+  text-shadow:0 0 14px rgba(255,215,80,0.55);
+}
+.tab-btn .tab-icon{font-size:12px;opacity:0.85;}
+.tab-pane{display:none;animation:tab-fade .35s ease-out;}
+.tab-pane.active{display:block;}
+@keyframes tab-fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
 
-    /* === ХЕДЕР === */
-    .tigel-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 14px;
-      border: 1px solid rgba(201,168,76,0.22);
-      border-radius: 16px;
-      background: rgba(2,1,10,0.5);
-      backdrop-filter: blur(10px);
-    }
-    .header-left { display: flex; align-items: center; gap: 12px; }
-    .back-btn {
-      font-size: 18px;
-      cursor: pointer;
-      transition: transform 0.2s;
-      filter: drop-shadow(0 0 8px rgba(201,168,76,0.4));
-      min-width: 44px; min-height: 44px;
-      display: flex; align-items: center; justify-content: center;
-      border: 1px solid rgba(201,168,76,0.25);
-      border-radius: 12px;
-      background: rgba(2,1,10,0.45);
-      color: #c9a84c;
-      text-decoration: none;
-    }
-    .back-btn:hover { transform: scale(1.1); }
-    .header-title {
-      font-family: 'Cinzel', serif;
-      font-size: 16px;
-      color: #c9a84c;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-    }
-    .header-subtitle {
-      font-size: 9px;
-      color: rgba(201,168,76,0.4);
-      letter-spacing: 0.12em;
-      font-family: 'JetBrains Mono', monospace;
-    }
+/* ══ ДВУХКОЛОНОЧНЫЙ МАКЕТ ══ */
+.grid {
+  display:grid;
+  grid-template-columns:1fr;
+  gap:clamp(16px,4vw,24px);
+}
+/* После разбивки на табы — одна колонка на любой ширине */
 
-    /* === СЕКЦИЯ: ФОРМА === */
-    .tigel-section {
-      padding: 16px;
-      border: 1px solid rgba(201,168,76,0.2);
-      border-radius: 16px;
-      background: linear-gradient(135deg, rgba(18,14,30,0.55), rgba(5,3,16,0.45));
-      position: relative;
-      overflow: hidden;
-    }
-    .tigel-section::before {
-      content: '';
-      position: absolute;
-      left: 0; right: 0; top: 0; height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(201,168,76,0.4), transparent);
-    }
-    .section-label {
-      font-family: 'Cinzel', serif;
-      font-size: 12px;
-      color: #c9a84c;
-      letter-spacing: 0.15em;
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      text-transform: uppercase;
-    }
+/* ══ КАРТОЧКИ ══ */
+.card {
+  background:linear-gradient(135deg,rgba(18,14,30,0.72),rgba(8,5,18,0.62));
+  border:1px solid rgba(201,168,76,0.22);
+  border-radius:18px;
+  padding:16px;
+  transition:border-color 0.3s;
+  box-shadow:inset 0 0 22px rgba(201,168,76,0.03);
+  overflow:hidden;
+  position:relative;
+}
+.card::before {
+  content:'';
+  position:absolute;
+  left:0;right:0;top:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,215,80,0.35),transparent);
+}
+.card:hover { border-color:rgba(201,168,76,0.4); }
 
-    /* === TEXTAREA === */
-    .tigel-textarea {
-      width: 100%;
-      min-height: 120px;
-      padding: 14px;
-      background: rgba(0,0,0,0.4);
-      border: 1px solid rgba(201,168,76,0.25);
-      border-radius: 12px;
-      color: #dcd2be;
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 15px;
-      line-height: 1.6;
-      resize: vertical;
-      outline: none;
-      transition: border-color 0.3s;
-    }
-    .tigel-textarea::placeholder {
-      color: rgba(201,168,76,0.3);
-      font-style: italic;
-    }
-    .tigel-textarea:focus {
-      border-color: rgba(201,168,76,0.6);
-      box-shadow: 0 0 20px rgba(201,168,76,0.08);
-    }
+.card-title {
+  font-family:'Cinzel',serif;
+  font-size:13px;
+  color:rgba(201,168,76,0.85);
+  letter-spacing:0.16em;
+  margin-bottom:14px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.card-title-icon {
+  font-size:clamp(14px,3vw,16px);
+  filter:drop-shadow(0 0 6px currentColor);
+}
 
-    /* === КНОПКИ ВЫБОРА (эмоции / стихии) === */
-    .choice-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 8px;
-      margin-top: 10px;
-    }
-    .choice-btn {
-      padding: 10px 4px;
-      background: rgba(0,0,0,0.3);
-      border: 1px solid rgba(201,168,76,0.15);
-      border-radius: 10px;
-      color: rgba(201,168,76,0.6);
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 12px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.3s;
-      line-height: 1.3;
-    }
-    .choice-btn:hover {
-      border-color: rgba(201,168,76,0.5);
-      color: #c9a84c;
-    }
-    .choice-btn.active {
-      border-color: #c9a84c;
-      color: #ffd700;
-      background: rgba(201,168,76,0.12);
-      box-shadow: 0 0 12px rgba(201,168,76,0.15);
-    }
+/* ══ ФОРМА ЛОГА ══ */
+.log-input {
+  width:100%;
+  background:rgba(0,0,0,0.36);
+  border:1px solid rgba(201,168,76,0.30);
+  border-radius:14px;
+  padding:14px;
+  color:#dcd2be;
+  font-family:'JetBrains Mono',monospace;
+  font-size:13px;
+  line-height:1.55;
+  min-height:220px;
+  resize:vertical;
+  outline:none;
+  transition:border-color 0.3s;
+}
+.log-input:focus { border-color:rgba(201,168,76,0.55); }
+.log-input::placeholder { color:rgba(201,168,76,0.3); }
 
-    /* === КНОПКА СОХРАНЕНИЯ === */
-    .save-btn {
-      width: 100%;
-      padding: 14px;
-      margin-top: 14px;
-      background: rgba(201,168,76,0.12);
-      border: 2px solid #c9a84c;
-      border-radius: 12px;
-      color: #c9a84c;
-      font-family: 'Cinzel', serif;
-      font-size: 14px;
-      letter-spacing: 0.15em;
-      cursor: pointer;
-      transition: all 0.3s;
-      text-transform: uppercase;
-      min-height: 48px;
-    }
-    .save-btn:hover {
-      background: rgba(201,168,76,0.22);
-      border-color: #ffd700;
-      color: #ffd700;
-    }
-    .save-btn:active {
-      transform: scale(0.98);
-    }
+.hint-text {
+  font-size:11px;
+  color:rgba(201,168,76,0.35);
+  margin-top:6px;
+  line-height:1.5;
+}
 
-    /* === ЗАПИСИ === */
-    .tigel-entries {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .tigel-entry {
-      padding: 14px;
-      background: rgba(0,0,0,0.3);
-      border: 1px solid rgba(201,168,76,0.12);
-      border-radius: 12px;
-      animation: entryFadeIn 0.4s ease both;
-    }
-    .entry-date {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 9px;
-      color: rgba(201,168,76,0.4);
-      letter-spacing: 0.1em;
-      margin-bottom: 6px;
-    }
-    .entry-text {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 14px;
-      color: rgba(220,210,190,0.9);
-      line-height: 1.5;
-      margin-bottom: 8px;
-    }
-    .entry-tags {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-    .entry-tag {
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-size: 10px;
-      font-family: 'JetBrains Mono', monospace;
-      letter-spacing: 0.05em;
-    }
-    .entry-tag.emotion {
-      background: rgba(124,58,237,0.15);
-      border: 1px solid rgba(124,58,237,0.3);
-      color: rgba(180,140,255,0.8);
-    }
-    .entry-tag.element {
-      background: rgba(201,168,76,0.1);
-      border: 1px solid rgba(201,168,76,0.25);
-      color: rgba(201,168,76,0.7);
-    }
+/* ══ У-СИН ТЕГГЕР ══ */
+.wuxing-grid {
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:8px;
+  margin-top:12px;
+}
+.wuxing-cell {
+  text-align:center;
+  padding:10px 4px;
+  background:rgba(0,0,0,0.25);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:8px;
+  cursor:pointer;
+  transition:all 0.3s;
+  user-select:none;
+}
+.wuxing-cell:hover { border-color:rgba(255,255,255,0.3); }
+.wuxing-icon { font-size:clamp(18px,4vw,24px); margin-bottom:4px; }
+.wuxing-name {
+  font-size:9px;
+  letter-spacing:0.04em;
+  text-transform:uppercase;
+  margin-bottom:6px;
+}
+.wuxing-value {
+  font-size:10px;
+  color:rgba(255,255,255,0.5);
+}
 
-    /* === ПУСТОЕ СОСТОЯНИЕ === */
-    .empty-state {
-      text-align: center;
-      padding: 30px 10px;
-      color: rgba(201,168,76,0.3);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 0.1em;
-    }
+/* Цвета стихий */
+.wuxing-cell[data-elem="water"] { border-color:rgba(68,136,204,0.3); }
+.wuxing-cell[data-elem="wood"]  { border-color:rgba(34,139,34,0.3); }
+.wuxing-cell[data-elem="fire"]  { border-color:rgba(255,99,71,0.3); }
+.wuxing-cell[data-elem="earth"] { border-color:rgba(201,168,76,0.3); }
+.wuxing-cell[data-elem="metal"] { border-color:rgba(192,192,192,0.3); }
 
-    /* === СЧЁТЧИК === */
-    .entry-count {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
-      color: rgba(201,168,76,0.5);
-    }
+/* ══ ТОРОИДАЛЬНЫЙ БАЛАНС ══ */
+.toroid-viz {
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  margin-top:12px;
+}
+.channel-row {
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.channel-label {
+  font-size:clamp(9px,2vw,10px);
+  color:rgba(201,168,76,0.6);
+  width:70px;
+  letter-spacing:0.1em;
+}
+.channel-bar {
+  flex:1;
+  height:20px;
+  background:rgba(0,0,0,0.4);
+  border-radius:10px;
+  overflow:hidden;
+  position:relative;
+}
+.channel-fill {
+  height:100%;
+  transition:width 0.6s cubic-bezier(0.4,0,0.2,1);
+  background:linear-gradient(90deg,rgba(201,168,76,0.3),rgba(201,168,76,0.7));
+}
+.channel-pct {
+  font-size:clamp(9px,2vw,10px);
+  color:rgba(201,168,76,0.8);
+  width:40px;
+  text-align:right;
+}
 
-    /* === АНИМАЦИИ === */
-    @keyframes entryFadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+.balance-meter {
+  margin-top:16px;
+  padding:14px;
+  background:rgba(0,0,0,0.3);
+  border:1px solid rgba(201,168,76,0.2);
+  border-radius:8px;
+  text-align:center;
+}
+.balance-icon {
+  font-size:clamp(28px,6vw,36px);
+  margin-bottom:8px;
+  filter:drop-shadow(0 0 12px currentColor);
+}
+.balance-label {
+  font-size:clamp(9px,2.2vw,11px);
+  color:rgba(201,168,76,0.7);
+  letter-spacing:0.15em;
+  margin-bottom:6px;
+}
+.balance-value {
+  font-size:clamp(18px,4.5vw,24px);
+  font-weight:bold;
+  margin-bottom:4px;
+}
+.balance-desc {
+  font-size:clamp(9px,2vw,10px);
+  color:rgba(201,168,76,0.45);
+  line-height:1.4;
+}
 
-    /* === АДАПТИВ === */
-    @media (max-width: 375px) {
-      .header-title { font-size: 13px; }
-      .choice-grid { grid-template-columns: repeat(3, 1fr); }
-      .choice-btn { font-size: 11px; padding: 8px 4px; }
-      .tigel-textarea { font-size: 14px; min-height: 100px; }
-      .save-btn { font-size: 12px; }
-      .entry-text { font-size: 13px; }
-    }
-    @media (max-width: 320px) {
-      .choice-grid { grid-template-columns: repeat(3, 1fr); }
-      .choice-btn { font-size: 10px; padding: 7px 3px; }
-      .tigel-container { padding: 8px 6px 24px; }
-    }
-    @media (min-width: 768px) {
-      .choice-grid { gap: 10px; }
-      .choice-btn { font-size: 13px; padding: 12px 6px; }
-    }
-  </style>
+/* ══ МАЙНИНГ МНОЖИТЕЛЬ ══ */
+.mining-display {
+  margin-top:16px;
+  padding:16px;
+  background:linear-gradient(135deg,rgba(0,255,170,0.08),rgba(201,168,76,0.06));
+  border:1px solid rgba(0,255,170,0.3);
+  border-radius:10px;
+  text-align:center;
+}
+.mining-label {
+  font-size:clamp(9px,2vw,10px);
+  color:rgba(0,255,170,0.6);
+  letter-spacing:0.15em;
+  margin-bottom:8px;
+}
+.mining-value {
+  font-size:clamp(24px,6vw,32px);
+  font-weight:bold;
+  color:rgba(0,255,170,0.9);
+  text-shadow:0 0 12px rgba(0,255,170,0.5);
+}
+
+/* ══ СВЕТ ДИСПЛЕЙ ══ */
+.light-display {
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+  margin-top:12px;
+}
+.light-cell {
+  padding:12px;
+  background:rgba(0,0,0,0.25);
+  border:1px solid rgba(201,168,76,0.15);
+  border-radius:8px;
+  text-align:center;
+}
+.light-cell-label {
+  font-size:clamp(9px,2vw,10px);
+  color:rgba(201,168,76,0.5);
+  letter-spacing:0.1em;
+  margin-bottom:6px;
+}
+.light-cell-value {
+  font-size:clamp(14px,3.5vw,18px);
+  color:rgba(201,168,76,0.85);
+  font-weight:bold;
+}
+
+/* ══ РЕКОМЕНДАЦИИ ══ */
+.recommendations {
+  margin-top:12px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.rec-item {
+  padding:10px 12px;
+  background:rgba(0,0,0,0.25);
+  border-left:3px solid rgba(201,168,76,0.4);
+  border-radius:6px;
+  font-size:clamp(9px,2vw,10px);
+  line-height:1.5;
+}
+.rec-priority {
+  display:inline-block;
+  padding:2px 6px;
+  border-radius:4px;
+  font-size:clamp(8px,1.8vw,9px);
+  letter-spacing:0.1em;
+  margin-right:6px;
+  font-weight:bold;
+}
+.rec-priority.high { background:rgba(255,99,71,0.2); color:rgba(255,99,71,0.9); }
+.rec-priority.med  { background:rgba(255,165,0,0.2); color:rgba(255,165,0,0.9); }
+.rec-priority.crit { background:rgba(255,0,0,0.3); color:rgba(255,100,100,1); }
+
+/* ══ КНОПКА ГЕНЕРАЦИИ ══ */
+.generate-btn {
+  width:100%;
+  padding:clamp(12px,3vw,16px);
+  background:linear-gradient(135deg,rgba(201,168,76,0.15),rgba(180,130,40,0.1));
+  border:2px solid rgba(201,168,76,0.4);
+  border-radius:10px;
+  color:#c9a84c;
+  font-family:'Cinzel',serif;
+  font-size:clamp(11px,2.8vw,14px);
+  letter-spacing:0.25em;
+  cursor:pointer;
+  transition:all 0.3s;
+  margin-top:24px;
+  text-transform:uppercase;
+}
+.generate-btn:hover {
+  background:linear-gradient(135deg,rgba(201,168,76,0.25),rgba(180,130,40,0.18));
+  border-color:rgba(201,168,76,0.7);
+  box-shadow:0 0 20px rgba(201,168,76,0.3);
+}
+.generate-btn:active { transform:scale(0.98); }
+
+/* ══ РЕЗУЛЬТАТ КЛЮЧА ══ */
+.key-result {
+  grid-column:1/-1;
+  padding:clamp(16px,4vw,24px);
+  background:linear-gradient(135deg,rgba(201,168,76,0.1),rgba(180,130,40,0.06));
+  border:2px solid rgba(201,168,76,0.3);
+  border-radius:12px;
+  margin-top:16px;
+  display:none;
+}
+.key-result.visible { display:block; }
+
+.key-header {
+  text-align:center;
+  margin-bottom:20px;
+  padding-bottom:16px;
+  border-bottom:1px solid rgba(201,168,76,0.2);
+}
+.key-icon {
+  font-size:clamp(32px,8vw,48px);
+  margin-bottom:12px;
+  filter:drop-shadow(0 0 16px rgba(201,168,76,0.6));
+}
+.key-name {
+  font-family:'Cinzel',serif;
+  font-size:clamp(12px,3vw,16px);
+  color:#c9a84c;
+  letter-spacing:0.2em;
+  margin-bottom:8px;
+}
+.key-rarity {
+  font-size:clamp(8px,2vw,10px);
+  letter-spacing:0.15em;
+  text-transform:uppercase;
+  padding:4px 12px;
+  border-radius:20px;
+  display:inline-block;
+}
+.rarity-common    { background:rgba(128,128,128,0.2); color:rgba(192,192,192,0.9); }
+.rarity-rare      { background:rgba(0,120,255,0.2); color:rgba(100,180,255,0.9); }
+.rarity-epic      { background:rgba(138,43,226,0.2); color:rgba(186,85,211,0.9); }
+.rarity-legendary { background:rgba(255,165,0,0.2); color:rgba(255,200,100,0.9); }
+.rarity-mythic    { background:rgba(255,0,255,0.2); color:rgba(255,100,255,1); }
+
+.key-stats {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:12px;
+  margin-bottom:20px;
+}
+.key-stat {
+  padding:12px;
+  background:rgba(0,0,0,0.25);
+  border:1px solid rgba(201,168,76,0.15);
+  border-radius:8px;
+}
+.key-stat-label {
+  font-size:clamp(9px,2vw,10px);
+  color:rgba(201,168,76,0.5);
+  letter-spacing:0.1em;
+  margin-bottom:6px;
+}
+.key-stat-value {
+  font-size:clamp(12px,3vw,14px);
+  color:rgba(201,168,76,0.85);
+  font-weight:bold;
+}
+
+.key-buffs {
+  margin-bottom:20px;
+}
+.buff-item {
+  padding:8px 12px;
+  background:rgba(0,255,170,0.05);
+  border-left:3px solid rgba(0,255,170,0.4);
+  border-radius:6px;
+  margin-bottom:8px;
+  font-size:clamp(9px,2vw,10px);
+}
+.buff-value {
+  color:rgba(0,255,170,0.8);
+  font-weight:bold;
+  margin-right:8px;
+}
+
+.key-prompt {
+  padding:14px;
+  background:rgba(0,0,0,0.3);
+  border:1px solid rgba(201,168,76,0.2);
+  border-radius:8px;
+  font-size:clamp(9px,2vw,10px);
+  line-height:1.6;
+  color:rgba(201,168,76,0.65);
+  margin-bottom:16px;
+}
+
+.save-btn {
+  width:100%;
+  padding:clamp(12px,3vw,14px);
+  background:linear-gradient(135deg,rgba(0,255,170,0.15),rgba(0,200,140,0.1));
+  border:2px solid rgba(0,255,170,0.4);
+  border-radius:10px;
+  color:rgba(0,255,170,0.9);
+  font-family:'Cinzel',serif;
+  font-size:clamp(10px,2.5vw,12px);
+  letter-spacing:0.2em;
+  cursor:pointer;
+  transition:all 0.3s;
+}
+.save-btn:hover {
+  background:linear-gradient(135deg,rgba(0,255,170,0.25),rgba(0,200,140,0.18));
+  border-color:rgba(0,255,170,0.7);
+  box-shadow:0 0 20px rgba(0,255,170,0.3);
+}
+.tigel-synthesis-panel {
+  margin-top:16px;
+  padding:14px;
+  border:1px solid rgba(201,168,76,0.30);
+  border-radius:16px;
+  background:linear-gradient(135deg,rgba(201,168,76,0.075),rgba(8,5,18,0.52));
+  box-shadow:inset 0 0 22px rgba(201,168,76,0.04);
+}
+.tigel-primary-btn {
+  width:100%;
+  min-height:56px;
+  padding:15px 12px;
+  background:linear-gradient(135deg,rgba(255,215,80,0.28),rgba(180,130,40,0.16));
+  border:1px solid rgba(255,215,80,0.62);
+  border-radius:14px;
+  color:#fff8d6;
+  font-family:'Cinzel',serif;
+  font-size:13px;
+  letter-spacing:0.14em;
+  cursor:pointer;
+  box-shadow:0 0 24px rgba(201,168,76,0.14);
+}
+.tigel-result {
+  display:none;
+  margin-top:14px;
+  padding:14px;
+  border-radius:14px;
+  background:linear-gradient(135deg,rgba(0,255,170,0.075),rgba(8,5,18,0.52));
+  border:1px solid rgba(0,255,170,0.24);
+  font-family:'Cormorant Garamond',serif;
+  font-size:15px;
+  color:rgba(235,226,205,0.90);
+  line-height:1.6;
+}
+.tigel-secondary-actions {
+  display:grid;
+  grid-template-columns:1fr;
+  gap:8px;
+  margin-top:10px;
+}
+.tigel-ghost-btn {
+  width:100%;
+  min-height:44px;
+  padding:10px;
+  background:transparent;
+  border:1px solid rgba(201,168,76,0.35);
+  border-radius:12px;
+  color:#c9a84c;
+  font-family:'Cinzel',serif;
+  font-size:10px;
+  letter-spacing:0.12em;
+  cursor:pointer;
+}
+</style>
+
+<!-- Шрифты -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<div class="tigel-container">
-  <!-- ХЕДЕР -->
-  <div class="tigel-header">
+<canvas id="bg-canvas"></canvas>
+
+<div class="container">
+  <!-- ══ ХЕДЕР ══ -->
+  <div class="header">
     <div class="header-left">
-      <a href="index.html" class="back-btn" title="Назад в лобби">&#9664;</a>
+      <div class="back-btn" onclick="window.location.href='index.html'">◀</div>
       <div>
-        <div class="header-title">Вечерний Тигель</div>
-        <div class="header-subtitle">алхимия дня</div>
+        <div class="header-title">🔥 Вечерний Тигель</div>
+        <div class="header-date" id="current-date">—</div>
       </div>
     </div>
-    <div class="entry-count" id="entry-count">0 записей</div>
   </div>
 
-  <!-- ФОРМА ЗАПИСИ -->
-  <div class="tigel-section">
-    <div class="section-label">
-      <span>&#9671;</span>
-      Алхимия дня — преврати опыт в свет
-    </div>
-    <textarea id="tigel-note" class="tigel-textarea" placeholder="Что важного произошло сегодня?" rows="6"></textarea>
-
-    <!-- Эмоции -->
-    <div class="section-label" style="margin-top:16px;">
-      <span>&#9670;</span>
-      Эмоция
-    </div>
-    <div class="choice-grid" id="emotion-grid">
-      <button class="choice-btn" data-emotion="радость">радость</button>
-      <button class="choice-btn" data-emotion="спокойствие">спокойствие</button>
-      <button class="choice-btn" data-emotion="вдохновение">вдохновение</button>
-      <button class="choice-btn" data-emotion="усталость">усталость</button>
-      <button class="choice-btn" data-emotion="благодарность">благодарность</button>
-    </div>
-
-    <!-- Стихии У-Син -->
-    <div class="section-label" style="margin-top:16px;">
-      <span>&#9670;</span>
-      Стихия У-Син
-    </div>
-    <div class="choice-grid" id="element-grid">
-      <button class="choice-btn" data-element="дерево">дерево</button>
-      <button class="choice-btn" data-element="огонь">огонь</button>
-      <button class="choice-btn" data-element="земля">земля</button>
-      <button class="choice-btn" data-element="металл">металл</button>
-      <button class="choice-btn" data-element="вода">вода</button>
-    </div>
-
-    <!-- Кнопка сохранения -->
-    <button id="tigel-save" class="save-btn">Превратить в свет</button>
+  <!-- ══ ТАБЫ: ЛОГ · БАЛАНС · АЛХИМИЯ ══ -->
+  <div class="tabs-bar">
+    <button class="tab-btn active" data-tab="log" onclick="switchTab('log')"><span class="tab-icon">📝</span>ЛОГ</button>
+    <button class="tab-btn" data-tab="balance" onclick="switchTab('balance')"><span class="tab-icon">☯</span>БАЛАНС</button>
+    <button class="tab-btn" data-tab="alchemy" onclick="switchTab('alchemy')"><span class="tab-icon">🔮</span>АЛХИМИЯ</button>
   </div>
 
-  <!-- ПОСЛЕДНИЕ ЗАПИСИ -->
-  <div class="tigel-section">
-    <div class="section-label">
-      <span>&#9671;</span>
-      Последние записи
+  <!-- ══ ТАБ «ЛОГ» ══ -->
+  <div class="tab-pane active" id="tab-log">
+  <div class="grid">
+
+    <!-- ══ ЛЕВАЯ КОЛОНКА: ВВОД ЛОГА ══ -->
+    <div class="card">
+      <div class="card-title">
+        <span class="card-title-icon">📝</span>
+        ЛОГ ДНЯ
+      </div>
+      <textarea 
+        id="log-input" 
+        class="log-input" 
+        placeholder="Опиши свой день: практики, работа, отдых, еда, общение...
+
+Примеры:
+• Утром 2ч джапа
+• Написал 400 строк кода
+• Чай пуэр с семьёй
+• Вечером пранаяма 40 мин
+• Прогулка в лесу 1ч"
+      ></textarea>
+      <div class="hint-text">
+        Опиши действия дня. Алгоритм автоматически распределит их по 5 стихиям У-Син и рассчитает баланс Ида/Пингала.
+      </div>
+
+      <div class="tigel-synthesis-panel">
+        <button onclick="synthesizeDay()" class="tigel-primary-btn">
+          СИНТЕЗИРОВАТЬ ДЕНЬ
+        </button>
+        <div id="tigel-result-panel" class="tigel-result"></div>
+        <details style="margin-top:10px;">
+          <summary style="cursor:pointer;font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.14em;color:rgba(201,168,76,0.65);">ДОПОЛНИТЕЛЬНЫЕ ДЕЙСТВИЯ</summary>
+          <div class="tigel-secondary-actions">
+            <button onclick="calculateToroid(); switchTab('balance');" class="tigel-ghost-btn">РАССЧИТАТЬ БАЛАНС</button>
+            <button onclick="generateKey()" class="tigel-ghost-btn">СГЕНЕРИРОВАТЬ КЛЮЧ</button>
+            <button onclick="saveKey()" class="tigel-ghost-btn">СОХРАНИТЬ ДЕНЬ</button>
+            <button onclick="copyLastOraclePrompt()" class="tigel-ghost-btn">СКОПИРОВАТЬ ПРОМПТ</button>
+          </div>
+        </details>
+      </div>
+      
+      <!-- Кнопка сбора опыта из сфер -->
+      <button 
+        onclick="gatherExperienceToCrucible()" 
+        style="width:100%;margin-top:12px;padding:10px;background:linear-gradient(135deg,rgba(68,136,255,0.15),rgba(204,136,255,0.15));border:1px solid rgba(138,43,226,0.3);border-radius:8px;color:#c9a84c;font-family:'Cinzel',serif;font-size:12px;cursor:pointer;transition:all 0.3s;letter-spacing:1px;"
+        onmouseover="this.style.background='linear-gradient(135deg,rgba(68,136,255,0.25),rgba(204,136,255,0.25))';this.style.borderColor='rgba(138,43,226,0.5)';"
+        onmouseout="this.style.background='linear-gradient(135deg,rgba(68,136,255,0.15),rgba(204,136,255,0.15))';this.style.borderColor='rgba(138,43,226,0.3)';"
+      >
+        🌀 СОБРАТЬ ОПЫТ ИЗ СФЕР 🌀
+      </button>
+      <div class="hint-text" style="margin-top:8px;font-size:10px;color:rgba(201,168,76,0.4);">
+        Подтянет записи из трёх сфер: Основа (Ноги), Сердце, Мечта (Голова)
+      </div>
+
+      <!-- У-СИН ТЕГГЕР -->
+      <div style="margin-top:20px;">
+        <div class="card-title" style="font-size:10px; margin-bottom:8px;">
+          <span class="card-title-icon">☯</span>
+          У-СИН РАСПРЕДЕЛЕНИЕ
+        </div>
+        <div class="wuxing-grid" id="wuxing-grid">
+          <div class="wuxing-cell" data-elem="water" onclick="adjustWuXing('water',0.05)">
+            <div class="wuxing-icon">💧</div>
+            <div class="wuxing-name">Вода</div>
+            <div class="wuxing-value" data-val="water">0%</div>
+          </div>
+          <div class="wuxing-cell" data-elem="wood" onclick="adjustWuXing('wood',0.05)">
+            <div class="wuxing-icon">🌱</div>
+            <div class="wuxing-name">Дерево</div>
+            <div class="wuxing-value" data-val="wood">0%</div>
+          </div>
+          <div class="wuxing-cell" data-elem="fire" onclick="adjustWuXing('fire',0.05)">
+            <div class="wuxing-icon">🔥</div>
+            <div class="wuxing-name">Огонь</div>
+            <div class="wuxing-value" data-val="fire">0%</div>
+          </div>
+          <div class="wuxing-cell" data-elem="earth" onclick="adjustWuXing('earth',0.05)">
+            <div class="wuxing-icon">⛰</div>
+            <div class="wuxing-name">Земля</div>
+            <div class="wuxing-value" data-val="earth">0%</div>
+          </div>
+          <div class="wuxing-cell" data-elem="metal" onclick="adjustWuXing('metal',0.05)">
+            <div class="wuxing-icon">⚙</div>
+            <div class="wuxing-name">Металл</div>
+            <div class="wuxing-value" data-val="metal">0%</div>
+          </div>
+        </div>
+        <div class="hint-text" style="margin-top:8px;">
+          Кликай на стихию для тонкой настройки (+5%). Правый клик = -5%.
+        </div>
+      </div>
     </div>
-    <div id="tigel-list" class="tigel-entries"></div>
+
   </div>
+  </div>
+  <!-- /ТАБ ЛОГ -->
+
+  <!-- ══ ТАБ «БАЛАНС» ══ -->
+  <div class="tab-pane" id="tab-balance">
+  <div class="grid">
+    <!-- ══ ПРАВАЯ КОЛОНКА: ТОРОИДАЛЬНЫЙ БАЛАНС ══ -->
+    <div class="card">
+      <div class="card-title">
+        <span class="card-title-icon">☯</span>
+        ТОРОИДАЛЬНЫЙ БАЛАНС
+      </div>
+
+      <div class="toroid-viz">
+        <div class="channel-row">
+          <div class="channel-label">☀ ПИНГАЛА</div>
+          <div class="channel-bar">
+            <div class="channel-fill" id="pingala-fill" style="width:0%; background:linear-gradient(90deg,rgba(255,136,68,0.4),rgba(255,136,68,0.8));"></div>
+          </div>
+          <div class="channel-pct" id="pingala-pct">0%</div>
+        </div>
+
+        <div class="channel-row">
+          <div class="channel-label">🌙 ИДА</div>
+          <div class="channel-bar">
+            <div class="channel-fill" id="ida-fill" style="width:0%; background:linear-gradient(90deg,rgba(68,136,204,0.4),rgba(68,136,204,0.8));"></div>
+          </div>
+          <div class="channel-pct" id="ida-pct">0%</div>
+        </div>
+      </div>
+
+      <!-- БАЛАНС МЕТР -->
+      <div class="balance-meter" id="balance-meter">
+        <div class="balance-icon" id="balance-icon">◌</div>
+        <div class="balance-label">СУШУМНА</div>
+        <div class="balance-value" id="balance-value">—</div>
+        <div class="balance-desc" id="balance-desc">Введи лог дня для расчёта</div>
+      </div>
+
+      <!-- МАЙНИНГ МНОЖИТЕЛЬ -->
+      <div class="mining-display">
+        <div class="mining-label">МАЙНИНГ МНОЖИТЕЛЬ</div>
+        <div class="mining-value" id="mining-value">×1.0</div>
+      </div>
+
+      <!-- СВЕТ ДИСПЛЕЙ -->
+      <div class="light-display">
+        <div class="light-cell">
+          <div class="light-cell-label">БАЗОВЫЙ СВЕТ</div>
+          <div class="light-cell-value" id="light-base">108 ✦</div>
+        </div>
+        <div class="light-cell">
+          <div class="light-cell-label">ИТОГОВЫЙ СВЕТ</div>
+          <div class="light-cell-value" id="light-total">0 ✦</div>
+        </div>
+      </div>
+
+      <!-- БОНУСЫ КАРТ -->
+      <div id="card-effects" style="display:none;margin-top:12px;padding:12px;border-radius:10px;background:rgba(201,168,76,0.04);border:1px solid rgba(201,168,76,0.1);">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:0.2em;color:rgba(201,168,76,0.45);margin-bottom:10px;text-align:center;">БОНУСЫ КАРТ</div>
+        <div id="card-effects-list" style="display:flex;flex-direction:column;gap:6px;font-family:'Cormorant Garamond',serif;font-size:clamp(11px,2.8vw,13px);color:rgba(220,210,190,0.7);"></div>
+      </div>
+
+      <!-- РЕКОМЕНДАЦИИ -->
+      <div id="recommendations" class="recommendations"></div>
+
+      <!-- ИТОГИ ДНЯ — 7 параметров -->
+      <div id="day-summary" style="display:none;margin-top:18px;padding:14px;border-radius:10px;background:rgba(201,168,76,0.04);border:1px solid rgba(201,168,76,0.15);">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.2em;color:rgba(201,168,76,0.5);margin-bottom:12px;text-align:center;">ИТОГИ ДНЯ</div>
+        <div id="day-summary-list" style="display:flex;flex-direction:column;gap:8px;font-family:'Cormorant Garamond',serif;font-size:clamp(12px,3vw,14px);color:rgba(220,210,190,0.75);line-height:1.4;"></div>
+      </div>
+    </div>
+  </div>
+  </div>
+  <!-- /ТАБ БАЛАНС -->
+
+  <!-- ══ ТАБ «АЛХИМИЯ» ══ -->
+  <div class="tab-pane" id="tab-alchemy">
+
+  <!-- ══ КНОПКИ ГЕНЕРАЦИИ ══ -->
+  <div style="display:flex;gap:10px;margin-bottom:20px;">
+    <button class="generate-btn" id="generate-btn" onclick="generateKey()" style="flex:1;">
+      ⚡ КЛЮЧ (ЛОКАЛЬНО)
+    </button>
+    <button class="generate-btn" onclick="processAlchemySynthesis()" style="flex:1;background:linear-gradient(135deg,rgba(138,43,226,0.2),rgba(75,0,130,0.15));border-color:#9370db;">
+      🔮 АЛХИМИЯ (LM STUDIO)
+    </button>
+  </div>
+
+  <!-- ══ РЕЗУЛЬТАТ: КЛЮЧ ══ -->
+  <div class="key-result" id="key-result">
+    <div class="key-header">
+      <div class="key-icon" id="key-icon">🔑</div>
+      <div class="key-name" id="key-name">—</div>
+      <div class="key-rarity" id="key-rarity">—</div>
+    </div>
+
+    <div class="key-stats" id="key-stats"></div>
+
+    <div class="key-buffs">
+      <div style="font-size:10px; color:rgba(201,168,76,0.6); letter-spacing:0.15em; margin-bottom:10px;">БАФФЫ</div>
+      <div id="key-buffs-list"></div>
+    </div>
+
+    <div>
+      <div style="font-size:10px; color:rgba(201,168,76,0.6); letter-spacing:0.15em; margin-bottom:8px;">AI ПРОМПТ</div>
+      <div class="key-prompt" id="key-prompt">—</div>
+    </div>
+
+    <button class="save-btn" onclick="saveKey()">✦ СОХРАНИТЬ КЛЮЧ В ИНВЕНТАРЬ ✦</button>
+    
+    <!-- Дополнительные функции -->
+    <div style="display:flex;gap:10px;margin-top:12px;">
+      <button onclick="generateDailyMusic()" style="flex:1;padding:10px;background:transparent;border:1px solid #88aacc;color:#88aacc;font-family:'Cinzel',serif;font-size:10px;cursor:pointer;transition:0.3s;border-radius:4px;letter-spacing:1px;" onmouseover="this.style.background='rgba(136,170,204,0.15)'" onmouseout="this.style.background='transparent'">🎵 МУЗЫКА ДНЯ</button>
+      <button onclick="generateAyurvedaDiet()" style="flex:1;padding:10px;background:transparent;border:1px solid #88c0a0;color:#88c0a0;font-family:'Cinzel',serif;font-size:10px;cursor:pointer;transition:0.3s;border-radius:4px;letter-spacing:1px;" onmouseover="this.style.background='rgba(136,192,160,0.15)'" onmouseout="this.style.background='transparent'">🌿 ПИТАНИЕ (АЮРВЕДА)</button>
+    </div>
+  </div>
+  </div>
+  <!-- /ТАБ АЛХИМИЯ -->
+
 </div>
 
-<!-- МОДУЛИ -->
+<!-- ══ PLAYERSTATE ══ -->
 <script type="module">
-  import { addTigelEntry, getTigelEntries } from './js/state-module.js';
-  import { showToast } from './js/ui-module.js';
+import { getState, saveState } from './js/playerState.js';
+import { analyzeCauldronEntry, applyCauldronResult } from './js/cauldronEngine.js';
+import { buildOraclePrompt, saveOraclePrompt } from './js/oraclePromptBuilder.js';
+window._playerState = { getState, saveState, analyzeCauldronEntry, applyCauldronResult, buildOraclePrompt, saveOraclePrompt };
+</script>
 
-  // === СОСТОЯНИЕ ===
-  let selectedEmotion = null;
-  let selectedElement = null;
+<!-- ══ ДВИЖКИ ══ -->
+<script>
+// ══════════════════════════════════════════════════════════════════
+// AWARA · ТОРОИДАЛЬНЫЙ БАЛАНС
+// ══════════════════════════════════════════════════════════════════
+const ToroidEngine={MINING_MIN:1,MINING_MAX:3,BASE_LIGHT:108,CHANNEL_WEIGHTS:{pingala:{fire:.5,wood:.35,earth:.15},ida:{water:.5,metal:.35,earth:.15}},compute(wuXing){const wx={water:wuXing.water||0,wood:wuXing.wood||0,fire:wuXing.fire||0,earth:wuXing.earth||0,metal:wuXing.metal||0};const W=this.CHANNEL_WEIGHTS;const pingala=Math.min(1,wx.fire*W.pingala.fire+wx.wood*W.pingala.wood+wx.earth*W.pingala.earth);const ida=Math.min(1,wx.water*W.ida.water+wx.metal*W.ida.metal+wx.earth*W.ida.earth);const delta=Math.abs(pingala-ida);const balance=+Math.max(0,1-delta*2).toFixed(4);const dominant=pingala>ida?{channel:'Пингала',glyph:'☀',color:'#ff8844',advice:'Добавь отдых, чай, музыку'}:pingala<ida?{channel:'Ида',glyph:'🌙',color:'#4488cc',advice:'Добавь действие, практику, движение'}:{channel:'Сушумна',glyph:'◎',color:'#c9a84c',advice:'Идеальный баланс — майнинг максимален'};const mining=+(this.MINING_MIN+balance*(this.MINING_MAX-this.MINING_MIN)).toFixed(3);const sushumna=this._classifySushumna(balance);const lightBase=this.BASE_LIGHT;const resonance=.87;const lightTotal=+(lightBase*mining*resonance).toFixed(2);const svetcoin_fraction=+(lightTotal*.000000001).toFixed(12);return{pingala:+pingala.toFixed(4),ida:+ida.toFixed(4),delta:+delta.toFixed(4),balance,sushumna,dominant,mining_multiplier:mining,mining_pct:Math.round(mining/this.MINING_MAX*100),light_base:lightBase,light_total:lightTotal,svetcoin:svetcoin_fraction,snapshot:{timestamp:Date.now(),pingala:+pingala.toFixed(3),ida:+ida.toFixed(3),balance,mining}}},_classifySushumna(balance){if(balance>=.92)return{label:'ПОЛНОЕ ОТКРЫТИЕ',icon:'✦',tier:5,color:'#ffe080',desc:'Все три нади в гармонии. Майнинг ×3.'};if(balance>=.78)return{label:'ВЫСОКАЯ АКТИВАЦИЯ',icon:'◎',tier:4,color:'#c9a84c',desc:'Сушумна открыта. Майнинг ×2.5+.'};if(balance>=.6)return{label:'ЧАСТИЧНЫЙ ПОТОК',icon:'○',tier:3,color:'#88aacc',desc:'Хороший баланс. Майнинг ×2+.'};if(balance>=.35)return{label:'СЛАБЫЙ ПОТОК',icon:'◌',tier:2,color:'#666688',desc:'Дисбаланс. Майнинг ×1.5±.'};return{label:'ЗАКРЫТА',icon:'×',tier:1,color:'#443344',desc:'Сильный дисбаланс. Майнинг ×1.'}}}
+const ToroidIntegration={calcFinalLight({wuXing,resonancePct,activeCards}){const toroid=ToroidEngine.compute(wuXing);const resonance=(resonancePct||87)/100;const cardBonus=(activeCards||[]).reduce((sum,card)=>sum+(card.bonus||0),0);const lightFromLog=+(ToroidEngine.BASE_LIGHT*toroid.mining_multiplier*resonance).toFixed(2);const lightFromCards=cardBonus;const lightTotal=+(lightFromLog+lightFromCards).toFixed(2);const svetcoin=+(lightTotal*.000000001).toFixed(12);return{toroid,light_from_log:lightFromLog,light_from_cards:lightFromCards,light_total:lightTotal,svetcoin,breakdown:`${ToroidEngine.BASE_LIGHT} × ${toroid.mining_multiplier}× (тороид) × ${Math.round(resonance*100)}% (резонанс) + ${cardBonus} (карты)`}},saveSnapshot(wuXing){const snap=ToroidEngine.compute(wuXing).snapshot;let history=[];try{history=JSON.parse(localStorage.getItem('awara_toroid_history')||'[]')}catch(e){}history.unshift(snap);if(history.length>30)history.pop();localStorage.setItem('awara_toroid_history',JSON.stringify(history));return snap},loadHistory(){try{return JSON.parse(localStorage.getItem('awara_toroid_history')||'[]')}catch(e){return[]}}}
+if(typeof window!=='undefined'){window.ToroidEngine=ToroidEngine;window.ToroidIntegration=ToroidIntegration}
+</script>
 
-  // === ВЫБОР ЭМОЦИИ ===
-  document.getElementById('emotion-grid').addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-emotion]');
-    if (!btn) return;
-    document.querySelectorAll('[data-emotion]').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    selectedEmotion = btn.dataset.emotion;
+<script>
+// ══════════════════════════════════════════════════════════════════
+// AWARA · ДВИЖОК ГЕНЕРАЦИИ КЛЮЧЕЙ (УПРОЩЁННАЯ ВЕРСИЯ)
+// ══════════════════════════════════════════════════════════════════
+const AwaraKeyEngine = {
+  generate({logText, matrix, birthProfile, transit, wuXing, channels}) {
+    const rarities = ['common', 'rare', 'epic', 'legendary', 'mythic'];
+    const balance = channels.balance || 0.5;
+    const rarityIdx = Math.min(4, Math.floor(balance * 5));
+    const rarity = rarities[rarityIdx];
+    
+    const elementMap = {water:'Вода', wood:'Дерево', fire:'Огонь', earth:'Земля', metal:'Металл'};
+    const topElement = Object.keys(wuXing).reduce((a, b) => wuXing[a] > wuXing[b] ? a : b);
+    const element = elementMap[topElement] || 'Эфир';
+    
+    const lightBase = 108;
+    const lightTotal = Math.round(lightBase * channels.mining_multiplier * ((transit.resonance_pct || 87) / 100));
+    
+    const buffs = [
+      {id:'buff_mining', label:'Множитель добычи', value:`×${channels.mining_multiplier.toFixed(1)}`},
+      {id:'buff_resonance', label:'Резонанс транзита', value:`${transit.resonance_pct || 87}%`}
+    ];
+    
+    const prompt = `Psy-Vedic AI Art: "${matrix.label} Key - ${element} Crystallization". Sacred geometry mandala, ${matrix.guna} guna, ${rarity} rarity, ${channels.balance > 0.8 ? 'balanced' : 'asymmetric'} flow. Deep cosmic background with golden sacred symbols. Photorealistic 3D render, 8K, octane.`;
+    
+    return {
+      key: {
+        id: `key_${Date.now()}_${matrix.id}`,
+        name: `Ключ ${matrix.key_code} · ${element}`,
+        icon: matrix.icon,
+        rarity,
+        mernost: Math.min(9, Math.ceil(balance * 9)),
+        element,
+        guna: matrix.guna,
+        light_base: lightBase,
+        light_total: lightTotal,
+        expires_days: 7,
+        buffs,
+        created_at: new Date().toISOString(),
+        wu_xing: wuXing,
+        channels
+      },
+      prompt
+    };
+  }
+};
+
+if (typeof window !== 'undefined') {
+  window.AwaraKeyEngine = AwaraKeyEngine;
+}
+</script>
+
+<script>
+// ══════════════════════════════════════════════════════════════════
+// ВЕЧЕРНИЙ ТИГЕЛЬ · ГЛАВНЫЙ СКРИПТ
+// ══════════════════════════════════════════════════════════════════
+
+// ── Канон: агенты из JSON ──
+let awaraAgents = [];
+
+function getAgentName(slug) {
+  const agent = awaraAgents.find(a => a.slug === slug);
+  return agent ? agent.name : slug;
+}
+
+fetch('data/agents.json')
+  .then(r => r.json())
+  .then(data => { awaraAgents = data; })
+  .catch(err => console.warn('agents.json не загружен:', err));
+
+// ── Состояние ──
+let wuXingState = { water:0, wood:0, fire:0, earth:0, metal:0 };
+let toroidResult = null;
+let generatedKey = null;
+
+// ── Инициализация даты ──
+document.getElementById('current-date').textContent = new Date().toLocaleDateString('ru-RU', {
+  weekday:'long', year:'numeric', month:'long', day:'numeric'
+});
+
+// ── Фоновая анимация (частицы) ──
+(function initBg() {
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const particles = Array(50).fill().map(() => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    vx: (Math.random()-0.5)*0.5,
+    vy: (Math.random()-0.5)*0.5,
+    r: Math.random()*2+1,
+    color: `rgba(201,168,76,${Math.random()*0.3+0.1})`
+  }));
+
+  function draw() {
+    ctx.fillStyle = 'rgba(10,8,18,0.05)';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      if(p.x<0||p.x>canvas.width) p.vx*=-1;
+      if(p.y<0||p.y>canvas.height) p.vy*=-1;
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+
+  window.addEventListener('resize',()=>{
+    canvas.width=window.innerWidth;
+    canvas.height=window.innerHeight;
+  });
+})();
+
+// ══════════════════════════════════════════════════════════════════
+// АВТОМАТИЧЕСКИЙ У-СИН ТЕГГИНГ
+// ══════════════════════════════════════════════════════════════════
+const WU_XING_KEYWORDS = {
+  water: ['дневник','покой','сон','вода','чай','медитация','тишина','наблюдение','созерцание'],
+  wood:  ['код','рост','учёба','книга','проект','дерево','зелень','планирование','развитие'],
+  fire:  ['джапа','мантра','страсть','спорт','бег','огонь','энергия','действие','практика'],
+  earth: ['еда','семья','стабильность','земля','центр','гармония','дом','забота'],
+  metal: ['пранаяма','завершение','металл','очищение','дисциплина','порядок','структура','йога']
+};
+
+function autoTagWuXing(text) {
+  const lower = text.toLowerCase();
+  const wx = { water:0, wood:0, fire:0, earth:0, metal:0 };
+  let total = 0;
+
+  Object.entries(WU_XING_KEYWORDS).forEach(([elem, keywords]) => {
+    keywords.forEach(kw => {
+      const matches = (lower.match(new RegExp(kw,'g')) || []).length;
+      wx[elem] += matches;
+      total += matches;
+    });
   });
 
-  // === ВЫБОР СТИХИИ ===
-  document.getElementById('element-grid').addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-element]');
-    if (!btn) return;
-    document.querySelectorAll('[data-element]').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    selectedElement = btn.dataset.element;
+  // Нормализация
+  if (total > 0) {
+    Object.keys(wx).forEach(k => wx[k] = +(wx[k]/total).toFixed(2));
+  } else {
+    // Дефолт: равномерное распределение
+    Object.keys(wx).forEach(k => wx[k] = 0.2);
+  }
+
+  return wx;
+}
+
+// ── Обновление дисплея У-Син ──
+function updateWuXingDisplay() {
+  Object.entries(wuXingState).forEach(([elem, val]) => {
+    const el = document.querySelector(`[data-val="${elem}"]`);
+    if (el) el.textContent = Math.round(val*100)+'%';
+  });
+}
+
+// ── Переключение табов (Лог · Баланс · Алхимия) ──
+function switchTab(name){
+  document.querySelectorAll('.tab-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.tab===name);
+  });
+  document.querySelectorAll('.tab-pane').forEach(p=>{
+    p.classList.toggle('active', p.id==='tab-'+name);
+  });
+  // плавная прокрутка вверх при переходе
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── Ручная настройка стихии ──
+function adjustWuXing(elem, delta) {
+  wuXingState[elem] = Math.max(0, Math.min(1, wuXingState[elem] + delta));
+  
+  // Нормализация до 1.0
+  const sum = Object.values(wuXingState).reduce((a,b)=>a+b,0);
+  if (sum > 0) {
+    Object.keys(wuXingState).forEach(k => wuXingState[k] /= sum);
+  }
+
+  updateWuXingDisplay();
+  calculateToroid();
+}
+
+// Поддержка правого клика для уменьшения
+document.querySelectorAll('.wuxing-cell').forEach(cell => {
+  cell.addEventListener('contextmenu', e => {
+    e.preventDefault();
+    const elem = cell.dataset.elem;
+    adjustWuXing(elem, -0.05);
+  });
+});
+
+// ══════════════════════════════════════════════════════════════════
+// РАСЧЁТ ТОРОИДА
+// ══════════════════════════════════════════════════════════════════
+function calculateToroid() {
+  if (!window.ToroidEngine) {
+    console.error('ToroidEngine не загружен');
+    return;
+  }
+
+  toroidResult = ToroidEngine.compute(wuXingState);
+  
+  // Обновление UI
+  const { pingala, ida, balance, sushumna, dominant, mining_multiplier, light_total } = toroidResult;
+
+  // Каналы
+  document.getElementById('pingala-fill').style.width = (pingala*100)+'%';
+  document.getElementById('pingala-pct').textContent = Math.round(pingala*100)+'%';
+  document.getElementById('ida-fill').style.width = (ida*100)+'%';
+  document.getElementById('ida-pct').textContent = Math.round(ida*100)+'%';
+
+  // Баланс метр
+  document.getElementById('balance-icon').textContent = sushumna.icon;
+  document.getElementById('balance-icon').style.color = sushumna.color;
+  document.getElementById('balance-value').textContent = Math.round(balance*100)+'%';
+  document.getElementById('balance-desc').textContent = sushumna.desc;
+
+  // Майнинг
+  document.getElementById('mining-value').textContent = '×'+mining_multiplier;
+
+  // Свет
+  document.getElementById('light-total').textContent = light_total+' ✦';
+
+  // Рекомендации
+  const recs = ToroidEngine.recommend(toroidResult);
+  const recHTML = recs.map(r => `
+    <div class="rec-item">
+      <span class="rec-priority ${r.priority.toLowerCase()}">${r.priority}</span>
+      ${r.action}
+      <div style="margin-top:4px; color:rgba(201,168,76,0.4); font-size:8px;">${r.effect}</div>
+    </div>
+  `).join('');
+  document.getElementById('recommendations').innerHTML = recHTML || '<div class="hint-text">Баланс отличный — продолжай в том же духе!</div>';
+
+  // ── ИТОГИ ДНЯ — 7 параметров ──
+  const ELEM_RU = {water:'Вода',wood:'Дерево',fire:'Огонь',earth:'Земля',metal:'Металл'};
+  const topElem = Object.entries(wuXingState).sort((a,b) => b[1] - a[1])[0];
+  const summaryEl = document.getElementById('day-summary');
+  const listEl = document.getElementById('day-summary-list');
+  const params = [
+    { label: 'Доминантная стихия', value: ELEM_RU[topElem[0]] || topElem[0], sub: Math.round(topElem[1]*100) + '%' },
+    { label: 'Канал Пингала (Ян)', value: Math.round(pingala*100) + '%' },
+    { label: 'Канал Ида (Инь)', value: Math.round(ida*100) + '%' },
+    { label: 'Баланс Сушумны', value: sushumna.label, sub: Math.round(balance*100) + '%' },
+    { label: 'Множитель майнинга', value: '×' + mining_multiplier },
+    { label: 'Свет за сессию', value: light_total + ' ✦' },
+    { label: 'Рекомендация', value: dominant.advice },
+  ];
+  listEl.innerHTML = params.map(p =>
+    '<div style="display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;border-bottom:1px solid rgba(201,168,76,0.07);">' +
+      '<span style="font-family:\'JetBrains Mono\',monospace;font-size:9px;letter-spacing:0.1em;color:rgba(201,168,76,0.4);">' + p.label + '</span>' +
+      '<span style="color:rgba(255,248,214,0.85);">' + p.value + (p.sub ? ' <span style="font-size:10px;color:rgba(201,168,76,0.5);">(' + p.sub + ')</span>' : '') + '</span>' +
+    '</div>'
+  ).join('');
+  summaryEl.style.display = 'block';
+}
+
+// ── Слушатель изменения лога ──
+document.getElementById('log-input').addEventListener('input', function() {
+  const text = this.value.trim();
+  if (text.length > 10) {
+    wuXingState = autoTagWuXing(text);
+    updateWuXingDisplay();
+    calculateToroid();
+  }
+});
+
+// ══════════════════════════════════════════════════════════════════
+// ГЕНЕРАЦИЯ КЛЮЧА
+// ══════════════════════════════════════════════════════════════════
+function generateKey() {
+  const logText = document.getElementById('log-input').value.trim();
+  if (!logText) {
+    alert('⚠ Введи лог дня перед генерацией Ключа');
+    return;
+  }
+
+  if (!toroidResult) {
+    calculateToroid();
+  }
+
+  if (!window.AwaraKeyEngine) {
+    console.error('AwaraKeyEngine не загружен');
+    return;
+  }
+
+  // Дефолтный профиль (можно загрузить из localStorage)
+  const birthProfile = {
+    date: "1991-05-17",
+    time: "18:20",
+    city: "Пермь",
+    archetype: "Зодчий Перехода",
+    element: "Земля",
+    density: "Кристаллизация Света",
+    level: "Творец",
+    years: 12,
+    sun_sign: "Телец",
+    moon_sign: "Козерог",
+    ascendant: "Весы",
+    nakshatra: "Рохини",
+    life_path: 4,
+  };
+
+  const transit = {
+    date: new Date().toISOString().split('T')[0],
+    weekday: new Date().toLocaleDateString('ru-RU',{weekday:'long'}),
+    planet_day: ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'][new Date().getDay()],
+    moon_phase: "Растущая",
+    tithi: "Навами",
+    tithi_idx: 9,
+    paksha: "Шукла",
+    moon_sign_now: "Телец",
+    transit_notes: "День духовного синтеза",
+    resonance_pct: 87,
+  };
+
+  const matrix = {
+    id: "vedic",
+    label: "Ведическая",
+    icon: "ॐ",
+    guna: "саттва",
+    element: "огонь",
+    key_code: "SPANDA",
+    planet: "Юпитер",
+    color: "#c9a84c",
+    quest: {
+      id: "vedic_q_spanda",
+      title: "Пульс Спанды",
+      desc: "Три раза в течение дня остановись и почувствуй пульсацию жизни в теле.",
+      reward_light: 108,
+      reward_type: "медитация",
+    }
+  };
+
+  generatedKey = AwaraKeyEngine.generate({
+    logText,
+    matrix,
+    birthProfile,
+    transit,
+    wuXing: wuXingState,
+    channels: {
+      pingala: toroidResult.pingala,
+      ida: toroidResult.ida,
+      balance: toroidResult.balance,
+      mining_multiplier: toroidResult.mining_multiplier,
+    }
   });
 
-  // === СОХРАНЕНИЕ ЗАПИСИ ===
-  document.getElementById('tigel-save').addEventListener('click', () => {
-    const textarea = document.getElementById('tigel-note');
-    const note = textarea.value.trim();
+  displayKey(generatedKey);
+}
 
-    if (!note) {
-      showToast('Напиши хотя бы пару слов');
-      return;
+// ══════════════════════════════════════════════════════════════════
+// ОТОБРАЖЕНИЕ КЛЮЧА
+// ══════════════════════════════════════════════════════════════════
+function displayKey(key) {
+  switchTab('alchemy');
+  const resultEl = document.getElementById('key-result');
+  resultEl.classList.add('visible');
+
+  document.getElementById('key-icon').textContent = key.key.icon;
+  document.getElementById('key-name').textContent = key.key.name;
+  
+  const rarityEl = document.getElementById('key-rarity');
+  rarityEl.textContent = key.key.rarity.toUpperCase();
+  rarityEl.className = 'key-rarity rarity-'+key.key.rarity;
+
+  // Статистика
+  const statsHTML = `
+    <div class="key-stat">
+      <div class="key-stat-label">МЕРНОСТЬ</div>
+      <div class="key-stat-value">${key.key.mernost}D</div>
+    </div>
+    <div class="key-stat">
+      <div class="key-stat-label">ЭЛЕМЕНТ</div>
+      <div class="key-stat-value">${key.key.element}</div>
+    </div>
+    <div class="key-stat">
+      <div class="key-stat-label">ГУНА</div>
+      <div class="key-stat-value">${key.key.guna}</div>
+    </div>
+    <div class="key-stat">
+      <div class="key-stat-label">СВЕТ БАЗОВЫЙ</div>
+      <div class="key-stat-value">${key.key.light_base} ✦</div>
+    </div>
+    <div class="key-stat">
+      <div class="key-stat-label">СВЕТ ИТОГО</div>
+      <div class="key-stat-value">${key.key.light_total} ✦</div>
+    </div>
+    <div class="key-stat">
+      <div class="key-stat-label">СРОК</div>
+      <div class="key-stat-value">${key.key.expires_days} дней</div>
+    </div>
+  `;
+  document.getElementById('key-stats').innerHTML = statsHTML;
+
+  // Баффы
+  const buffsHTML = key.key.buffs.map(b => `
+    <div class="buff-item">
+      <span class="buff-value">+${b.value}</span>
+      ${b.desc}
+    </div>
+  `).join('');
+  document.getElementById('key-buffs-list').innerHTML = buffsHTML;
+
+  // AI Промпт
+  document.getElementById('key-prompt').textContent = key.ai_prompt;
+
+  // Скролл к результату
+  resultEl.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+// ══════════════════════════════════════════════════════════════════
+// СОХРАНЕНИЕ КЛЮЧА
+// ══════════════════════════════════════════════════════════════════
+function saveKey() {
+  if (!generatedKey) {
+    alert('⚠ Сначала сгенерируй Ключ');
+    return;
+  }
+
+  // Сохранение в localStorage
+  let inventory = [];
+  try { inventory = JSON.parse(localStorage.getItem('awara_key_inventory')||'[]'); } catch(e){}
+  inventory.unshift(generatedKey);
+  if (inventory.length > 30) inventory.pop();
+  localStorage.setItem('awara_key_inventory', JSON.stringify(inventory));
+
+  // Сохранение снимка Тороида
+  if (window.ToroidIntegration) {
+    ToroidIntegration.saveSnapshot(wuXingState);
+  }
+
+  let cauldronResult = null;
+  let oraclePromptRecord = null;
+  try {
+    if (window._playerState && window._playerState.analyzeCauldronEntry && window._playerState.applyCauldronResult) {
+      const logText = document.getElementById('log-input').value.trim();
+      cauldronResult = window._playerState.analyzeCauldronEntry(logText, {
+        toroidLight: generatedKey && generatedKey.key ? generatedKey.key.light_total : 0
+      });
+      const currentState = window._playerState.getState();
+      const nextState = window._playerState.applyCauldronResult(currentState, cauldronResult);
+      nextState.cauldron = {
+        entriesCount: Number(currentState.cauldron && currentState.cauldron.entriesCount || 0) + 1,
+        lastEntryAt: cauldronResult.createdAt,
+        lastResult: cauldronResult
+      };
+      window._playerState.saveState(nextState);
+      if (window._playerState.buildOraclePrompt && window._playerState.saveOraclePrompt) {
+        const oraclePrompt = window._playerState.buildOraclePrompt({
+          entryText: logText,
+          cauldronResult,
+          playerState: nextState,
+          generatedKey
+        });
+        oraclePromptRecord = window._playerState.saveOraclePrompt(oraclePrompt, {
+          cauldronResultId: cauldronResult.id,
+          keyName: generatedKey && generatedKey.key ? generatedKey.key.name : null
+        });
+      }
+    }
+  } catch(e) {
+    console.warn('Не удалось сохранить результат Тигля в playerState:', e);
+  }
+
+  if (oraclePromptRecord) {
+    window._lastOraclePromptText = oraclePromptRecord.prompt;
+    copyTextToClipboard(oraclePromptRecord.prompt);
+  }
+
+  showTigelResult(cauldronResult, oraclePromptRecord);
+  
+}
+
+function synthesizeDay() {
+  calculateToroid();
+  generateKey();
+  saveKey();
+  switchTab('log');
+  setTimeout(function(){
+    var panel = document.getElementById('tigel-result-panel');
+    if(panel) panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 50);
+}
+
+function showTigelResult(cauldronResult, oraclePromptRecord) {
+  const panel = document.getElementById('tigel-result-panel');
+  if (!panel) return;
+  const keyName = generatedKey && generatedKey.key ? generatedKey.key.name : 'Ключ дня';
+  const light = cauldronResult ? cauldronResult.lightAwarded : 0;
+  const energy = cauldronResult ? cauldronResult.dayEnergy : '—';
+  const practice = cauldronResult ? cauldronResult.practiceTomorrow : 'Практика будет уточнена после следующей записи.';
+  panel.innerHTML =
+    '<div style="font-family:Cinzel,serif;letter-spacing:0.16em;color:#c9a84c;font-size:11px;margin-bottom:8px;">ИТОГ СИНТЕЗА</div>' +
+    '<div><b>Ключ:</b> ' + keyName + '</div>' +
+    '<div><b>Свет:</b> +' + light + '</div>' +
+    '<div><b>Стихия:</b> ' + energy + '</div>' +
+    '<div style="margin-top:6px;"><b>Практика:</b> ' + practice + '</div>' +
+    '<div style="margin-top:8px;color:rgba(201,168,76,0.72);">' + (oraclePromptRecord ? 'Промпт Оракула сохранён и скопирован.' : 'Промпт Оракула пока не создан.') + '</div>' +
+    "<button onclick=\"window.location.href='dashboard.html'\" style=\"margin-top:10px;width:100%;min-height:40px;border:1px solid rgba(201,168,76,0.35);border-radius:8px;background:rgba(201,168,76,0.08);color:#c9a84c;font-family:Cinzel,serif;font-size:10px;letter-spacing:0.14em;cursor:pointer;\">ПЕРЕЙТИ В ДАШБОРД</button>";
+  panel.style.display = 'block';
+}
+
+function copyTextToClipboard(text) {
+  if (!text) return;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).catch(function(e) {
+      console.warn('Не удалось скопировать промпт Оракула:', e);
+    });
+  }
+}
+
+function copyLastOraclePrompt() {
+  let record = null;
+  try {
+    record = JSON.parse(localStorage.getItem('awara_last_oracle_prompt') || 'null');
+  } catch(e) {
+    console.warn('Не удалось прочитать последний промпт Оракула:', e);
+  }
+  const prompt = record && record.prompt ? record.prompt : window._lastOraclePromptText;
+  if (!prompt) {
+    alert('Промпт Оракула ещё не создан. Сначала сгенерируй ключ и сохрани день в Тигель.');
+    return;
+  }
+  copyTextToClipboard(prompt);
+  alert('Промпт Оракула скопирован. Вставь его в выбранный AI, чтобы получить живой ответ.');
+}
+
+// ══ ДОПОЛНИТЕЛЬНЫЕ ФУНКЦИИ ══
+function generateDailyMusic() {
+  alert("🎵 ПРОМПТ ДЛЯ SUNO AI СГЕНЕРИРОВАН:\n\nPsy-Vedic, Cyber-Electronic, Deep Meditative Bass, Sacred Mantra Fusion, 432Hz. Темный и золотой эмбиент для балансировки Тороида.\n\n(Скопировано в буфер обмена!)");
+}
+
+function generateAyurvedaDiet() {
+  const idaVal = pingalaGlobal || 0.5;
+  const pingalaVal = idaGlobal || 0.5;
+  const balance = Math.abs(idaVal - pingalaVal);
+  
+  let recommendation = '';
+  if (balance < 0.1) {
+    recommendation = "Баланс: Идеальная гармония.\nРекомендация: Поддерживающая диета. Теплая, питательная пища. Овощи на пару, цельные злаки, орехи.";
+  } else if (idaVal > pingalaVal + 0.15) {
+    recommendation = "Баланс: Сдвиг в эфир (Ида высока). Требуется заземление.\nРекомендация: Плотная, теплая пища (Капха-баланс). Корнеплоды, теплое масло гхи, специи (имбирь, черный перец). Исключить сырые салаты и холодные напитки.";
+  } else if (pingalaVal > idaVal + 0.15) {
+    recommendation = "Баланс: Избыток огня (Пингала высока). Требуется охлаждение.\nРекомендация: Охлаждающая пища (Питта-баланс). Свежие фрукты, огурцы, кокосовая вода, мята. Избегать острого, жареного, алкоголя.";
+  } else {
+    recommendation = "Баланс: Легкий дисбаланс.\nРекомендация: Сбалансированная диета. Комбинация теплых и прохладных продуктов. Следи за энергией после еды.";
+  }
+  
+  alert("🌿 АЮРВЕДИЧЕСКИЙ ПРОТОКОЛ НА СЕГОДНЯ:\n\n" + recommendation);
+}
+
+// ══ СБОР ОПЫТА ИЗ СФЕР В ТИГЕЛЬ ══
+// Источники данных, в порядке приоритета:
+//   1. Граф Пространства Инициации (initiation-space.html):
+//        awara_initiation_v1 → spheres[].id, spheres[].lbl
+//        для каждой сферы записи в ключе jrn_{id} (массив {body, title, date}),
+//        который ставит панель сферы (jrnKey/jrnSet в initiation-space.html).
+//   2. Старый формат лобби (index.html):
+//        awara_sphere_entries → {psph-space, psph-karma, psph-time} → {entries:[{note, timestamp}]}
+function gatherExperienceToCrucible() {
+  const tigel = document.getElementById('log-input');
+  const collected = [];
+
+  // ── ИСТОЧНИК 1: Граф Пространства Инициации (новый формат) ──
+  let graph = null;
+  try {
+    const raw = localStorage.getItem('awara_initiation_v1');
+    if (raw) graph = JSON.parse(raw);
+  } catch(e) {
+    console.warn('Не удалось прочитать awara_initiation_v1:', e);
+  }
+
+  if (graph && Array.isArray(graph.spheres) && graph.spheres.length > 0) {
+    graph.spheres.forEach(s => {
+      if (!s || !s.id || s.id === 'cotv') return;
+      let entries = [];
+      try {
+        // Правильный ключ — jrn_{id} (туда пишет панель сферы initiation-space.html)
+        const raw = localStorage.getItem('jrn_' + s.id);
+        if (raw) entries = JSON.parse(raw) || [];
+      } catch(e) { /* ignore */ }
+
+      if (!Array.isArray(entries)) return;
+      entries.forEach(entry => {
+        const text = (entry.body || entry.note || '').trim();
+        if (!text) return;
+        collected.push({
+          name: s.lbl || s.id,
+          title: entry.title || '',
+          text: text,
+          date: entry.date || null
+        });
+      });
+    });
+  }
+
+  // ── ИСТОЧНИК 2: playerState.js sphereData + фоллбэк awara_sphere_entries ──
+  if (collected.length === 0) {
+    let sphereData = {};
+    try {
+      if (window._playerState) {
+        sphereData = window._playerState.getState().sphereData || {};
+      }
+      if (!Object.keys(sphereData).length) {
+        const savedState = localStorage.getItem('awara_sphere_entries');
+        if (savedState) sphereData = JSON.parse(savedState);
+      }
+    } catch(e) {
+      console.warn('Не удалось загрузить sphereData:', e);
     }
 
-    const count = addTigelEntry({
-      note: note,
-      emotion: selectedEmotion,
-      element: selectedElement
+    const sphereMapping = {
+      'psph-space': 'ОСНОВА / НОГИ',
+      'psph-karma': 'СЕРДЦЕ',
+      'psph-time':  'МЕЧТА / ГОЛОВА'
+    };
+    Object.keys(sphereMapping).forEach(sphereId => {
+      const sphere = sphereData[sphereId];
+      if (sphere && Array.isArray(sphere.entries)) {
+        sphere.entries.forEach(entry => {
+          const text = (entry.note || entry.body || '').trim();
+          if (!text) return;
+          collected.push({
+            name: sphereMapping[sphereId],
+            title: '',
+            text: text,
+            date: entry.timestamp || null
+          });
+        });
+      }
+    });
+  }
+
+  // ── Ничего не нашли ──
+  if (collected.length === 0) {
+    alert('🌀 Сферы пока пусты, собирать нечего.\n\nСоздай записи в Пространстве Инициации (Основа · Сердце · Мечта), а потом возвращайся сюда.');
+    console.log('⚠ Сферы пусты. Нечего переливать в Тигель.');
+    return;
+  }
+
+  // ── Форматируем собранный опыт ──
+  const experienceText = collected.map(entry => {
+    const head = entry.title ? `[СФЕРА: ${entry.name} · ${entry.title}]` : `[СФЕРА: ${entry.name}]`;
+    return `${head}:\n${entry.text}`;
+  }).join('\n\n');
+
+  // ── Вливаем в Тигель ──
+  if (tigel.value.trim()) {
+    tigel.value += '\n\n' + experienceText;
+  } else {
+    tigel.value = experienceText;
+  }
+  tigel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+  // Уникальные имена сфер для итогового сообщения
+  const uniqueNames = Array.from(new Set(collected.map(e => e.name)));
+  console.log(`✅ Собрано записей из сфер: ${collected.length} (${uniqueNames.length} сфер)`);
+  alert(`✨ Опыт собран!\n\nПеренесено записей: ${collected.length}\nИз сфер (${uniqueNames.length}):\n${uniqueNames.map(n => '• ' + n).join('\n')}`);
+}
+
+// ══ АЛХИМИЯ ЧЕРЕЗ OPENROUTER (LLAMA 3.1 70B) ══
+async function processAlchemySynthesis() {
+  const logInput = document.getElementById('log-input').value;
+  if (!logInput) {
+    alert("Тигель пуст! Введи события дня.");
+    return;
+  }
+
+  const systemInstruction = `Ты — "${getAgentName('iskra')}", био-кибернетический Оракул системы AWARA. 
+Твоя задача — проанализировать лог Зодчего и выдать результат СТРОГО из двух частей, разделенных словом ===LORE===.
+
+ЧАСТЬ 1 (ТОЛЬКО JSON, НАЧИНАЙ СРАЗУ СО СКОБКИ {):
+{
+  "shift_x_light": 0-100,
+  "shift_y_essence": 0-100,
+  "shift_z_density": 0-100,
+  "total_credits": 100,
+  "matrix_tier": 1-5
+}
+
+===LORE===
+
+ЧАСТЬ 2 (АЛХИМИЧЕСКИЙ СИНТЕЗ):
+Пиши глубоким, метафоричным кибер-гностическим или шаманским языком. СТРОГО 7 ШАГОВ с промптами для Midjourney. 
+
+ПРАВИЛА ГЕНЕРАЦИИ ТЕКСТА (КРИТИЧНО ВАЖНО):
+НЕ ЭКОНОМЬ СЛОВА! Пиши ЖИРНО, ПЛОТНО, МАССИВНО. Каждый из 7 пунктов должен состоять МИНИМУМ из 4-6 сложных, развернутых предложений. Используй деепричастные обороты, глубокие философские размышления и сложные метафоры. Раскрывай мысль до конца, как древний трактат. Текст должен быть тяжелым и насыщенным. ЗАПРЕЩЕНЫ короткие отписки.
+
+КРИТИЧЕСКОЕ ПРАВИЛО ДЛЯ MIDJOURNEY ПРОМПТОВ:
+КАТЕГОРИЧЕСКИ ЗАПРЕЩЕНО использовать троеточия (...) и обрывать текст! Каждый английский промпт должен быть законченным, тяжелым и максимально детализированным (30-50 слов). Описывай КОНКРЕТНЫЕ визуальные образы, материалы, текстуры, кинематографическое освещение (cinematic lighting, volumetric light, god rays, unreal engine 5 render), атмосферу, композицию. Промпт должен быть прописан ПОЛНОСТЬЮ от начала и до параметров --ar 16:9 --style raw --v 6.0. НИКАКОЙ ЛЕНИ, НИКАКИХ ОБРЫВОВ!
+
+ЭТАЛОН ОТВЕТА (ПИШИ ИМЕННО В ТАКОМ СТИЛЕ, АДАПТИРУЯ ПОД ЛОГ):
+1. Баланс Тороида (Договор Трех Миров)
+В Шаманской Матрице баланс Иды и Пингалы — это умение шамана ходить между мирами, не теряя связи с очагом. Твой Тороид сбалансирован идеально. Ты спустился в Нижний мир, чтобы достать заблокированные ресурсы, поднимая древние пласты памяти. Затем ты поднялся в Верхний мир, создавая вибрации эфира. А заземлил всё это в Среднем мире — у теплого очага, обеспечивая плотность и гравитацию.
+Промпт 1: AWARA artifact, Matrix 13 Shamanic. The Toroid balanced perfectly showing three interconnected sacred realms. A powerful shamanic hearth fire burning brightly in the center realm with ethereal smoke spiraling upward through cosmic portals. Ancient stone circle with glowing runic symbols carved into weathered granite. Deep earth roots descending into dark underworld caverns filled with ancestral memories. Volumetric light rays piercing through mystical fog. Cinematic lighting. Unreal Engine 5 render quality. Photorealistic shamanic atmosphere --ar 16:9 --style raw --v 6.0
+
+2. Энергия Карты (Зодчий Костей и Камня)
+Твой Архетип здесь — Хранитель Костей и Камня. Ты не просто фантазируешь, ты выстраиваешь монолитный каркас будущего. Ты создаешь священное пространство, неприступную цитадель, где духам твоей семьи будет безопасно пережидать квантовые бури.
+Промпт 2: AWARA artifact, Matrix 13 Shamanic. The Earthly Architect archetype manifested as towering figure weaving sacred geometry from bone and stone materials. Massive megalithic temple construction with intricate skeletal framework exposed. Ancient builder working with luminous crystalline building blocks floating in geometric patterns. Rough-hewn granite surfaces contrasting with smooth polished bone structures. Golden hour lighting casting dramatic shadows across monumental architecture. Mystical construction site with ethereal blueprints hovering in air. Cinematic composition. God rays streaming through stone pillars. Unreal Engine 5 photorealism --ar 16:9 --style raw --v 6.0
+
+3. Энергия Транзита (Чёрная Река Предков)
+Работа с Чёрной Рекой Предков, которая десятилетиями хранит замороженные эмоциональные отпечатки. Разблокировка кодов — это масштабная расчистка запруды на этой реке. Ты выступил как системный администратор кармы, стирая битые сектора.
+Промпт 3: AWARA artifact, Matrix 13 Shamanic. The Transit of Time visualized as deep dark mystical river winding through ancestral memory landscapes. Black obsidian water surface reflecting constellation patterns and frozen emotional fragments trapped within ice formations. Massive ancient dam structure being dismantled revealing torrential karmic flow beneath. Shaman figure standing knee-deep in sacred waters performing cleansing ritual. Bioluminescent particles rising from river depths. Volumetric fog rolling across water surface. Moody atmospheric lighting with subtle purple and blue undertones. Cinematic wide angle composition --ar 16:9 --style raw --v 6.0
+
+4. Интеграция и Алхимия (Возврат Души)
+Великая алхимия дня совершена. Ты помог вернуть огонёк, потерянный во льдах времени, обратно в теплый семейный круг. Этот процесс реинтеграции фрагментированной души восстанавливает базовый код вашей ячейки.
+Промпт 4: AWARA artifact, Matrix 13 Shamanic. The alchemy of Soul Retrieval showing shaman holding glowing ethereal flame fragment rescued from frozen temporal ice crystals. Warm golden soul essence merging back into luminous family circle represented by interconnected light beings. Melting ice revealing ancient memories preserved within. Alchemical symbols floating in surrounding space. Dramatic contrast between cold blue ice and warm orange flame light. Sacred geometric patterns forming as soul fragments reunite. Cinematic lighting with volumetric god rays. Unreal Engine 5 render. Emotional and mystical atmosphere --ar 16:9 --style raw --v 6.0
+
+5. Подсказка / Квест (Поляна Белого Оленя)
+Твоя первостепенная задача — опустить бубен, прекратить активное камлание и дать спасенной душе согреться у огня. Не инициируй новых запросов, не требуй действий. Просто будь неизменным, стабильным источником тепла.
+Промпт 5: AWARA artifact, Matrix 13 Shamanic. The Quest of Silence showing magnificent White Deer standing in sacred forest clearing bathed in soft ethereal moonlight. Shamanic drum resting peacefully beside crackling campfire with dancing flames. Tranquil scene emphasizing stillness and warmth. Ancient trees forming protective circle around meditation space. Gentle mist swirling at ground level. Deer's antlers glowing with subtle bioluminescence. Warm firelight contrasting with cool blue moonlight. Peaceful and meditative atmosphere. Cinematic composition. Volumetric lighting through forest canopy --ar 16:9 --style raw --v 6.0
+
+6. Генерация Артефакта (Мицелиевый Очаг)
+Твой артефакт в этой Матрице — это абсолютное соединение Земли и Духа, сплав органики и кремния.
+Промпт 6: AWARA ultimate artifact, Matrix 13 Shamanic. The Mycelial Hearth of the Ancestors showing heavy stone hearth structure interwoven with massive glowing mycelium network spreading throughout. Bioluminescent fungal threads connecting ancient stones with living earth. Sacred fire burning at center with ethereal blue and orange flames. Crystalline silicon structures growing from organic matter. Deep earth cross-section revealing interconnected root systems. Mystical fusion of technology and nature. Volumetric light emanating from mycelium networks. Photorealistic materials. Cinematic lighting. Unreal Engine 5 quality render --ar 16:9 --style raw --v 6.0
+
+7. Схождение Агента (Великая Бабка-Целительница)
+Система реагирует на этот массив Света и фиксирует изменение гравитации. В твой Космос спускается Агент: ${getAgentName('prema')}. Любовь здесь выступает как высшая технология, способная вернуть душу в тело.
+Промпт 7: AWARA Agent Card, Matrix 13 Shamanic. Agent 10: Prema, The Great Grandmother Healer. Ancient wise woman with luminous presence descending through cosmic portal surrounded by golden healing energy streams. Wrinkled hands radiating pure love as tangible light frequencies. Sacred healing chamber filled with floating herbal essences and crystalline light codes. Gravitational waves visible as rippling spacetime distortions. Grandmother's eyes glowing with infinite compassion and technological precision. Bio-luminescent healing symbols orbiting her form. Dramatic portrait lighting. Volumetric god rays. Cinematic composition. Unreal Engine 5 photorealism --ar 2:3 --style raw --v 6.0
+
+НАЧИНАЙ ГЕНЕРАЦИЮ!`;
+
+  // Создаём блок для вывода результата если его нет
+  let resultBox = document.getElementById('alchemy-result-box');
+  if (!resultBox) {
+    resultBox = document.createElement('div');
+    resultBox.id = 'alchemy-result-box';
+    resultBox.style.cssText = 'margin-top:30px;padding:25px;background:linear-gradient(135deg,rgba(0,0,0,0.8),rgba(10,5,20,0.7));border:2px solid rgba(138,43,226,0.4);border-radius:12px;font-family:"Times New Roman",serif;font-size:14px;line-height:1.8;color:#bba0a0;max-height:600px;overflow-y:auto;box-shadow:0 0 30px rgba(138,43,226,0.2);';
+    
+    // Вставляем ПОСЛЕ блока с ключом, но ДО кнопок музыки/аюрведы
+    const keyResult = document.getElementById('key-result');
+    keyResult.parentNode.insertBefore(resultBox, keyResult.nextSibling);
+  }
+
+  let geminiApiKey = localStorage.getItem('awara_openrouter_key');
+  if (!geminiApiKey) {
+    geminiApiKey = prompt('Введите ваш OpenRouter API key (начинается на sk-or-v1-...).\nПолучить: https://openrouter.ai/keys\n\nКлюч сохранится только в вашем браузере (localStorage), никому не передаётся.');
+    if (!geminiApiKey) {
+      resultBox.innerHTML = '<span style="color:#ff6666;">Алхимии нужен ваш OpenRouter API key. Получить на <a href="https://openrouter.ai/keys" target="_blank" style="color:#ffe080;">openrouter.ai/keys</a>, затем нажмите КНОПКУ АЛХИМИЯ ещё раз.</span>';
+      return;
+    }
+    localStorage.setItem('awara_openrouter_key', geminiApiKey);
+  }
+  
+  resultBox.innerHTML = "🔥 Алхимия запущена...<br>🦙 Подключаемся через OpenRouter (Llama 3.1 70B)...<br><br>Генерация массивного текста (2500 токенов)...";
+
+  try {
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${geminiApiKey}`,
+        "HTTP-Referer": "http://localhost",
+        "X-Title": "AWARA"
+      },
+      body: JSON.stringify({
+        model: "meta-llama/llama-3.1-70b-instruct",
+        messages: [
+          { role: "user", content: systemInstruction + "\n\n" + logInput }
+        ],
+        temperature: 0.8,
+        max_tokens: 2500
+      })
     });
 
-    // Очистить форму
-    textarea.value = '';
-    selectedEmotion = null;
-    selectedElement = null;
-    document.querySelectorAll('[data-emotion], [data-element]').forEach(b => b.classList.remove('active'));
-
-    // Перерисовать записи
-    renderEntries();
-
-    showToast('Запись сохранена. Всего записей: ' + count);
-    console.log('[Tigel] Запись добавлена. Всего:', count);
-  });
-
-  // === ОТРИСОВКА ЗАПИСЕЙ ===
-  function renderEntries() {
-    const entries = getTigelEntries(10);
-    const list = document.getElementById('tigel-list');
-    const countEl = document.getElementById('entry-count');
-
-    // Обновляем счётчик (показываем общее количество)
-    const allEntries = getTigelEntries(9999);
-    const totalCount = allEntries.length;
-    countEl.textContent = totalCount + ' ' + pluralize(totalCount);
-
-    if (entries.length === 0) {
-      list.innerHTML = '<div class="empty-state">Записей пока нет. Напиши, что произошло сегодня.</div>';
+    const data = await response.json();
+    
+    // Проверка на ошибки API
+    if (data.error) {
+      // Если ключ невалиден — стираем из localStorage, в следующий раз попросим заново
+      const code = data.error.code || data.error.status;
+      if (code === 401 || code === 403 || /unauthor|invalid.+key/i.test(data.error.message || '')) {
+        localStorage.removeItem('awara_openrouter_key');
+        resultBox.innerHTML = `<span style="color:#ff6666;">Ключ OpenRouter невалиден или отозван. Получите новый на <a href="https://openrouter.ai/keys" target="_blank" style="color:#ffe080;">openrouter.ai/keys</a> и нажмите АЛХИМИЯ ещё раз.</span>`;
+        return;
+      }
+      resultBox.innerHTML = `<span style="color:#ff6666;">⚠ Ошибка OpenRouter API:</span><br><br>${data.error.message || JSON.stringify(data.error)}`;
       return;
     }
+    
+    // Проверка на пустой ответ
+    if (!data.choices || data.choices.length === 0) {
+      resultBox.innerHTML = `<span style="color:#ff6666;">⚠ Ошибка API: Пустой ответ.</span><br><br><pre style="max-height:400px;overflow-y:auto;">${JSON.stringify(data, null, 2)}</pre>`;
+      return;
+    }
+    
+    // OpenRouter возвращает ответ в data.choices[0].message.content
+    const rawText = data.choices[0].message.content;
+    
+    if (!rawText) {
+      resultBox.innerHTML = `<span style="color:#ff6666;">⚠ Пустой текст в ответе от API</span><br><br><pre style="max-height:400px;overflow-y:auto;">${JSON.stringify(data, null, 2)}</pre>`;
+      return;
+    }
+    
+    // 1. Вытаскиваем JSON с помощью регулярного выражения
+    const jsonMatch = rawText.match(/\{[\s\S]*?\}/);
+    if (!jsonMatch) {
+      resultBox.innerHTML = `<span style="color:#ff6666;">⚠ Системный сбой: ${getAgentName('iskra')} не вернула JSON блок.</span><br><br><pre style="max-height:400px;overflow-y:auto;">${rawText}</pre>`;
+      return;
+    }
+    
+    // 2. Парсим JSON
+    let parsedData;
+    try {
+      parsedData = JSON.parse(jsonMatch[0]);
+      console.log('📊 Технические данные:', parsedData);
+    } catch(e) {
+      resultBox.innerHTML = `<span style="color:#ff6666;">⚠ Ошибка парсинга JSON</span><br><br><strong>Извлечено:</strong><pre style="max-height:200px;overflow-y:auto;">${jsonMatch[0]}</pre><br><strong>Ошибка:</strong> ${e.message}`;
+      return;
+    }
+    
+    // 3. Вытаскиваем ЛОР (всё, что не JSON)
+    let loreText = rawText
+      .replace(jsonMatch[0], '') // удаляем сам объект JSON
+      .replace(/```json/gi, '') // удаляем открывающий тег кода
+      .replace(/```/g, '') // удаляем закрывающий тег
+      .replace(/### ЧАСТЬ 1.*/gi, '') // удаляем заголовки первой части
+      .replace(/### ЧАСТЬ 2.*/gi, '') // удаляем заголовки второй части
+      .replace(/===LORE===/gi, '') // на случай если она всё же напишет разделитель
+      .trim();
 
-    // Показываем от новых к старым
-    const reversed = [...entries].reverse();
-    list.innerHTML = reversed.map((entry, i) => {
-      const date = new Date(entry.timestamp);
-      const dateStr = formatDate(date);
-      const tags = [];
-      if (entry.emotion) {
-        tags.push('<span class="entry-tag emotion">' + entry.emotion + '</span>');
-      }
-      if (entry.element) {
-        tags.push('<span class="entry-tag element">' + entry.element + '</span>');
-      }
-      return (
-        '<div class="tigel-entry" style="animation-delay:' + (i * 0.06) + 's;">' +
-        '<div class="entry-date">' + dateStr + '</div>' +
-        '<div class="entry-text">' + escapeHtml(entry.note) + '</div>' +
-        (tags.length ? '<div class="entry-tags">' + tags.join('') + '</div>' : '') +
-        '</div>'
-      );
-    }).join('');
+    // 4. Форматируем LORE для красивого вывода
+    const formattedLore = loreText
+      .replace(/\*\*(.*?)\*\*/g, '<strong style="color:#ffe080;">$1</strong>') // Жирный текст
+      .replace(/\n\n/g, '<br><br>') // Двойные переносы
+      .replace(/\n/g, '<br>'); // Одинарные переносы
+
+    // 5. Выводим результат
+    resultBox.innerHTML = `
+      <div style="border-bottom:2px solid rgba(201,168,76,0.3);padding-bottom:15px;margin-bottom:20px;">
+        <div style="font-family:'Cinzel',serif;font-size:18px;color:#c9a84c;letter-spacing:2px;margin-bottom:10px;">✦ ТЕХНИЧЕСКИЙ ДАМП ✦</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;font-family:'JetBrains Mono',monospace;font-size:11px;">
+          <div style="padding:8px;background:rgba(201,168,76,0.05);border-radius:4px;">
+            <div style="color:rgba(201,168,76,0.6);">SHIFT X (LIGHT)</div>
+            <div style="color:#ffe080;font-size:16px;font-weight:600;">${parsedData.shift_x_light}</div>
+          </div>
+          <div style="padding:8px;background:rgba(201,168,76,0.05);border-radius:4px;">
+            <div style="color:rgba(201,168,76,0.6);">SHIFT Y (ESSENCE)</div>
+            <div style="color:#ffe080;font-size:16px;font-weight:600;">${parsedData.shift_y_essence}</div>
+          </div>
+          <div style="padding:8px;background:rgba(201,168,76,0.05);border-radius:4px;">
+            <div style="color:rgba(201,168,76,0.6);">SHIFT Z (DENSITY)</div>
+            <div style="color:#ffe080;font-size:16px;font-weight:600;">${parsedData.shift_z_density}</div>
+          </div>
+          <div style="padding:8px;background:rgba(201,168,76,0.05);border-radius:4px;">
+            <div style="color:rgba(201,168,76,0.6);">TOTAL CREDITS</div>
+            <div style="color:#00ffaa;font-size:16px;font-weight:600;">${parsedData.total_credits}</div>
+          </div>
+          <div style="padding:8px;background:rgba(201,168,76,0.05);border-radius:4px;">
+            <div style="color:rgba(201,168,76,0.6);">MATRIX TIER</div>
+            <div style="color:#ff8844;font-size:16px;font-weight:600;">TIER ${parsedData.matrix_tier}</div>
+          </div>
+        </div>
+      </div>
+      <div style="font-family:'Cinzel',serif;font-size:18px;color:#c9a84c;letter-spacing:2px;margin-bottom:15px;">✦ АЛХИМИЧЕСКИЙ СИНТЕЗ ✦</div>
+      <div style="font-family:'Times New Roman',serif;font-size:14px;line-height:1.8;color:#bba0a0;">
+        ${formattedLore}
+      </div>
+    `;
+
+    // Прокрутка к результату
+    resultBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    
+  } catch (error) {
+    console.error("Ошибка связи:", error);
+    resultBox.innerHTML = `
+      <div style="color:#ff6666;font-family:'Cinzel',serif;font-size:16px;margin-bottom:15px;">❌ ОШИБКА СВЯЗИ С OPENROUTER API</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.6;">
+        <strong style="color:#ffe080;">Возможные причины:</strong><br><br>
+        
+        1️⃣ <strong>Проблема с интернет-соединением</strong><br>
+        &nbsp;&nbsp;&nbsp;Проверь подключение к сети<br><br>
+        
+        2️⃣ <strong>API ключ недействителен</strong><br>
+        &nbsp;&nbsp;&nbsp;Обнови ключ в коде функции processAlchemySynthesis<br><br>
+        
+        3️⃣ <strong>Превышен лимит запросов</strong><br>
+        &nbsp;&nbsp;&nbsp;Подожди несколько минут и попробуй снова<br><br>
+        
+        <div style="margin-top:15px;padding:10px;background:rgba(255,170,0,0.1);border-left:3px solid #ffaa00;">
+          <strong style="color:#ffaa00;">💡 АЛЬТЕРНАТИВА:</strong><br>
+          Используй кнопку <strong>⚡ КЛЮЧ (ЛОКАЛЬНО)</strong> выше<br>
+          для генерации без API
+        </div>
+        
+        <div style="margin-top:10px;padding:10px;background:rgba(255,100,100,0.05);border-left:3px solid #ff6666;font-size:10px;">
+          <strong>Техническая ошибка:</strong><br>
+          ${error.message || 'Неизвестная ошибка'}
+        </div>
+      </div>
+    `;
   }
+}
 
-  // === ФОРМАТИРОВАНИЕ ДАТЫ ===
-  function formatDate(date) {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    return day + '.' + month + '.' + year + ' ' + hours + ':' + minutes;
-  }
+// ── Инициализация ──
+updateWuXingDisplay();
+</script>
 
-  // === СКЛОНЕНИЕ СЛОВА "ЗАПИСЕЙ" ===
-  function pluralize(n) {
-    const mod10 = n % 10;
-    const mod100 = n % 100;
-    if (mod100 >= 11 && mod100 <= 19) return 'записей';
-    if (mod10 === 1) return 'запись';
-    if (mod10 >= 2 && mod10 <= 4) return 'записи';
-    return 'записей';
-  }
+<script>
+// ══ БОНУСЫ КАРТ ══
+(async function() {
+  try {
+    const { getCardEffects } = await import('./js/cardEffects.js');
+    const fx = getCardEffects();
+    const total = fx.vedic + fx.slavic + fx.kabbalistic;
+    if (total === 0) return;
 
-  // === ЭКРАНИРОВАНИЕ HTML ===
-  function escapeHtml(str) {
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
-  }
+    var lines = [];
+    if (fx.vedic > 0) {
+      lines.push('<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(201,168,76,0.06);"><span style="font-family:\'JetBrains Mono\',monospace;font-size:8px;letter-spacing:0.1em;color:rgba(201,168,76,0.4);">ВЕДИЧЕСКИЕ КАРТЫ</span><span>+' + fx.lightPerHour + ' свет/час</span></div>');
+    }
+    if (fx.slavic > 0) {
+      lines.push('<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(201,168,76,0.06);"><span style="font-family:\'JetBrains Mono\',monospace;font-size:8px;letter-spacing:0.1em;color:rgba(201,168,76,0.4);">СЛАВЯНСКИЕ КАРТЫ</span><span>+' + fx.keyChancePct + '% шанс ключа</span></div>');
+    }
+    if (fx.kabbalistic > 0) {
+      lines.push('<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(201,168,76,0.06);"><span style="font-family:\'JetBrains Mono\',monospace;font-size:8px;letter-spacing:0.1em;color:rgba(201,168,76,0.4);">КАББАЛИСТИЧЕСКИЕ КАРТЫ</span><span>+' + fx.keysAtStreak7 + ' ключ при streak 7</span></div>');
+    }
 
-  // === ИНИЦИАЛИЗАЦИЯ ===
-  renderEntries();
-  console.log('[Tigel] Экран Вечернего Тигеля загружен');
+    var el = document.getElementById('card-effects');
+    document.getElementById('card-effects-list').innerHTML = lines.join('');
+    el.style.display = 'block';
+  } catch(e) { console.warn('cardEffects:', e); }
+})();
 </script>
 
 </body>
