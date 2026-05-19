@@ -231,6 +231,70 @@
 
 ---
 
+### Phase 6 — Companion & Grace
+
+- [x] **T-073 · js/milost-module.js — расчёт Милости дня**
+  DoD: новый ES6-модуль `js/milost-module.js`; экспортирует `computeMilost(natalChart, date)`, `getMilostToday()`, `refreshMilost()`; считает 4 источника милости, множитель `1.0 + score`, сохраняет `state.milostToday` через `state-module`.
+  Файлы: `js/milost-module.js`, `TASKS.md`, `HANDOFF.md`
+  Est: 10 мин
+
+- [ ] **T-074 · passport.html — панель «Милость Дня»**
+  DoD: в паспорте показаны score, 4 источника, множитель и дата расчёта; использует `getMilostToday()`.
+  Файлы: `passport.html`, `js/milost-module.js`
+  Est: 10 мин
+
+- [ ] **T-075 · tigel.html — применить множитель Милости**
+  DoD: итоговый свет Тигеля умножается на `milostToday.multiplier`, в итогах дня видно базу, множитель и результат.
+  Файлы: `tigel.html`, `js/milost-module.js`
+  Est: 8 мин
+
+- [ ] **T-076 · data/daimon-forms.json — 27 накшатр → форма Даймона**
+  DoD: новый JSON с 27 объектами накшатр и формами хранителя, валиден и пригоден для lookup.
+  Файлы: `data/daimon-forms.json`
+  Est: 10 мин
+
+- [ ] **T-077 · js/daimon-module.js — генерация Даймона**
+  DoD: новый ES6-модуль создаёт/читает Даймона из натальной карты, dosha, сильнейшей планеты, уровня и stage.
+  Файлы: `js/daimon-module.js`, `data/daimon-forms.json`
+  Est: 10 мин
+
+- [ ] **T-078 · daimon.html — экран Хранителя**
+  DoD: новый экран показывает форму, элемент, архетип, имя, stage, уровень и resonanceBonus; mobile-pass 320/375/768.
+  Файлы: `daimon.html`, `js/daimon-module.js`
+  Est: 15 мин
+
+- [ ] **T-079 · tigel.html — resonance bonus от Даймона**
+  DoD: при совпадении стихии дня и элемента Даймона применяется `resonanceBonus`; UI показывает источник бонуса.
+  Файлы: `tigel.html`, `js/daimon-module.js`
+  Est: 8 мин
+
+- [ ] **T-080 · passport.html — иконка Даймона**
+  DoD: паспорт показывает компактную карточку/иконку Даймона и ссылку на `daimon.html`.
+  Файлы: `passport.html`, `js/daimon-module.js`
+  Est: 7 мин
+
+- [ ] **T-081 · data/temple-ecosystems.json — экосистемы 33 храмов**
+  DoD: новый JSON из 33 объектов матриц с шаблоном имени храма, вселенной, flora, minerals, creatures, ambient, basePassiveSvet.
+  Файлы: `data/temple-ecosystems.json`
+  Est: 10 мин
+
+- [ ] **T-082 · js/temple-module.js — логика храмов**
+  DoD: модуль умеет `buildTemple(matrixId)`, `getTemples()`, `collectPassiveSvet()`, `getTempleByMatrix(matrixId)` и использует Daimon stage + Milost multiplier.
+  Файлы: `js/temple-module.js`, `data/temple-ecosystems.json`
+  Est: 12 мин
+
+- [ ] **T-083 · earth-player.html — маркеры храмов на Canvas**
+  DoD: построенные храмы отображаются золотыми точками, клик открывает попап экосистемы и сбор пассивного света; mobile-pass 320/375/768.
+  Файлы: `earth-player.html`, `js/temple-module.js`
+  Est: 15 мин
+
+- [ ] **T-084 · matrix.html — кнопка «Воздвигнуть Храм»**
+  DoD: у матрицы появляется кнопка постройки за 10000 света, disabled при нехватке света, после постройки церемониальный попап.
+  Файлы: `matrix.html`, `js/temple-module.js`
+  Est: 10 мин
+
+---
+
 ## Done (закрытые)
 
 *(Сюда не двигаем. Просто помечаем `[x]` в основном списке. Эта секция — placeholder для аналитики позже.)*
