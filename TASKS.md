@@ -115,6 +115,13 @@
   Файлы: `docs/screen-status.md`
   Est: 8 мин
 
+### Логика храмов
+
+- [x] **T-082 · js/temple-module.js — логика храмов**
+  DoD: ES-модуль с функциями `buildTemple(matrixId)`, `getTemples()`, `collectPassiveSvet()`, `getTempleByMatrix(matrixId)`. Использует Daimon stage (7 стадий, множитель 1.0–3.5) + Milost multiplier (5 тиров по totalLight). Данные экосистем из `data/temple-ecosystems.json`.
+  Файлы: `js/temple-module.js`
+  Est: 10 мин
+
 ---
 
 ## Done (закрытые)
