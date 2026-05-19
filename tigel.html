@@ -1003,6 +1003,16 @@ function applyMilostToCauldronResult(result) {
   };
 }
 
+function getToroidRecommendations(result) {
+  if (typeof ToroidEngine.recommend === 'function') return ToroidEngine.recommend(result);
+  if (!result || result.balance >= 0.78) return [];
+  return [{
+    priority: result.balance < 0.35 ? 'HIGH' : 'MED',
+    action: result.dominant.advice,
+    effect: 'Поддержит баланс Ида/Пингала и усилит Сушумну'
+  }];
+}
+
 // ── Инициализация даты ──
 document.getElementById('current-date').textContent = new Date().toLocaleDateString('ru-RU', {
   weekday:'long', year:'numeric', month:'long', day:'numeric'
@@ -1162,7 +1172,7 @@ function calculateToroid() {
   document.getElementById('light-total').textContent = formatLightValue(milostLight.finalLight)+' ✦';
 
   // Рекомендации
-  const recs = ToroidEngine.recommend(toroidResult);
+  const recs = getToroidRecommendations(toroidResult);
   const recHTML = recs.map(r => `
     <div class="rec-item">
       <span class="rec-priority ${r.priority.toLowerCase()}">${r.priority}</span>
