@@ -131,6 +131,43 @@ body::before{
 .streak-label{
   font-size:7px;color:var(--text-mute);text-align:center;margin-top:2px;
 }
+.milost-card{border-color:rgba(255,215,0,0.28)}
+.milost-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
+.milost-title{
+  font-family:Cinzel,serif;font-size:14px;letter-spacing:0.12em;
+  color:var(--gold);text-transform:uppercase;
+}
+.milost-date{font-size:8px;letter-spacing:0.12em;color:var(--text-mute)}
+.milost-score-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.milost-bar{
+  flex:1;height:8px;border-radius:99px;overflow:hidden;
+  background:rgba(255,255,255,0.08);border:1px solid rgba(201,168,76,0.10);
+}
+.milost-bar-fill{
+  height:100%;width:0%;border-radius:99px;
+  background:linear-gradient(90deg,rgba(201,168,76,0.55),#ffd700);
+  box-shadow:0 0 12px rgba(255,215,0,0.35);transition:width 0.5s ease;
+}
+.milost-score{font-size:9px;color:var(--text-soft);min-width:54px;text-align:right}
+.milost-sources{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:12px}
+.milost-source{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:8px 4px;border-radius:10px;
+  border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.03);
+  color:rgba(255,255,255,0.35);
+}
+.milost-source.active{
+  color:var(--gold-bright);border-color:rgba(255,215,0,0.28);
+  background:rgba(201,168,76,0.08);box-shadow:inset 0 0 14px rgba(255,215,0,0.06);
+}
+.milost-icon{font-family:Cinzel,serif;font-size:18px;line-height:1}
+.milost-source-label{font-size:7px;letter-spacing:0.08em;text-align:center;text-transform:uppercase}
+.milost-bottom{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
+.milost-note{font-size:8px;line-height:1.35;color:var(--text-mute)}
+.milost-multiplier{
+  font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;
+  color:var(--gold-bright);text-shadow:0 0 10px rgba(255,215,0,0.25);
+}
 </style>
 </head>
 <body>
@@ -190,11 +227,79 @@ body::before{
     <div class="streak-row" id="pp-streak-dots"></div>
   </div>
 
+  <div class="passport-card milost-card">
+    <div class="milost-head">
+      <div class="milost-title">Милость Дня</div>
+      <div class="milost-date" id="milost-date">—</div>
+    </div>
+    <div class="milost-score-row">
+      <div class="milost-bar"><div class="milost-bar-fill" id="milost-bar-fill"></div></div>
+      <div class="milost-score" id="milost-score">0.0 / 1.5</div>
+    </div>
+    <div class="milost-sources" id="milost-sources"></div>
+    <div class="milost-bottom">
+      <div class="milost-note" id="milost-note">расчёт на сегодня</div>
+      <div class="milost-multiplier" id="milost-multiplier">×1.0</div>
+    </div>
+  </div>
+
 </div>
 
 <script type="module">
 import { getState } from './js/playerState.js';
 import { getStreak } from './js/streak.js';
+import { getMilostToday, refreshMilost } from './js/milost-module.js';
+
+const MILOST_SOURCE_META = [
+  ['jupiter', '♃', 'Юпитер'],
+  ['dayNakshatra', '✦', 'Накшатра'],
+  ['birthNakshatra', '☽', 'Родная'],
+  ['intentionPurity', 'AI', 'AI']
+];
+
+function todayKey() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function formatMilost(value) {
+  return Number(value || 0).toFixed(1);
+}
+
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+}
+
+function renderMilostPanel(milost) {
+  const score = Number(milost?.score || 0);
+  const multiplier = Number(milost?.multiplier || 1);
+  const width = Math.max(0, Math.min(100, (score / 1.5) * 100));
+
+  document.getElementById('milost-date').textContent = milost?.date || todayKey();
+  document.getElementById('milost-score').textContent = formatMilost(score) + ' / 1.5';
+  document.getElementById('milost-bar-fill').style.width = width + '%';
+  document.getElementById('milost-multiplier').textContent = '×' + formatMilost(multiplier);
+
+  const sources = milost?.sources || {};
+  document.getElementById('milost-sources').innerHTML = MILOST_SOURCE_META.map(([key, icon, label]) => {
+    const source = sources[key] || { active: false, details: '' };
+    const title = escapeHtml(source.details || source.label || label);
+    return '<div class="milost-source' + (source.active ? ' active' : '') + '" title="' + title + '">' +
+      '<div class="milost-icon">' + icon + '</div>' +
+      '<div class="milost-source-label">' + label + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+async function initMilostPanel() {
+  try {
+    let milost = getMilostToday();
+    if (!milost || milost.date !== todayKey()) milost = await refreshMilost();
+    renderMilostPanel(milost);
+  } catch (e) {
+    console.warn('milost:', e);
+    document.getElementById('milost-note').textContent = 'милость пока не рассчитана';
+  }
+}
 
 async function init() {
   const state = getState();
@@ -250,6 +355,8 @@ async function init() {
       '<div class="streak-dot' + (d.visited ? ' active' : '') + '"></div>' +
       '<div class="streak-label">' + label + '</div></div>';
   }).join('');
+
+  await initMilostPanel();
 }
 
 init();
