@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#02010a">
+<title>Даймон-Хранитель · AWARA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --gold:#c9a84c;
+  --gold-bright:#ffd700;
+  --gold-light:#fff8d6;
+  --bg:#02010a;
+  --line:rgba(201,168,76,0.18);
+  --text:rgba(255,248,214,0.85);
+  --text-soft:rgba(255,248,214,0.55);
+  --text-mute:rgba(255,255,255,0.35);
+}
+html,body{background:var(--bg);color:var(--text);min-height:100vh}
+body{
+  font-family:'JetBrains Mono',monospace;
+  padding:18px 14px 110px;
+  background:
+    radial-gradient(ellipse at 20% 18%, rgba(124,58,237,0.40), transparent 38%),
+    radial-gradient(ellipse at 82% 72%, rgba(245,158,11,0.22), transparent 40%),
+    radial-gradient(ellipse at 50% 110%, rgba(80,40,160,0.30), transparent 55%),
+    linear-gradient(180deg,#070318 0%,#0d0626 45%,#05021a 100%),
+    var(--bg);
+  -webkit-font-smoothing:antialiased;
+  position:relative;overflow-x:hidden;
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:url('assets/starfield.svg');
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+  opacity:0.95;
+}
+.wrap{max-width:580px;margin:0 auto;position:relative;z-index:1}
+
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:24px;gap:8px;
+}
+.back-link{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:9px 14px;min-height:44px;
+  border:1px solid var(--line);border-radius:10px;
+  font-family:Cinzel,serif;font-size:11px;
+  letter-spacing:0.2em;color:var(--text-soft);
+  text-decoration:none;cursor:pointer;transition:all 0.3s;
+}
+.back-link:hover{border-color:var(--gold);color:var(--gold)}
+
+.daimon-title{
+  font-family:'Cinzel Decorative',serif;
+  font-size:clamp(16px,4vw,22px);
+  color:var(--gold);letter-spacing:0.15em;
+  text-align:center;margin-bottom:6px;
+}
+.daimon-sub{
+  font-size:9px;letter-spacing:0.2em;
+  color:var(--text-mute);text-align:center;margin-bottom:28px;
+}
+
+.daimon-card{
+  border:1px solid rgba(201,168,76,0.20);border-radius:14px;
+  padding:clamp(16px,4vw,24px);margin-bottom:16px;
+  background:rgba(14,8,32,0.28);
+  position:relative;overflow:hidden;
+  backdrop-filter:blur(8px) saturate(130%);
+  -webkit-backdrop-filter:blur(8px) saturate(130%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.04),0 6px 22px rgba(0,0,0,0.32);
+}
+.daimon-card::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 0%,rgba(201,168,76,0.06),transparent 60%);
+  pointer-events:none;
+}
+
+.section-title{
+  font-family:Cinzel,serif;font-size:9px;
+  letter-spacing:0.2em;color:rgba(201,168,76,0.45);
+  margin-bottom:12px;
+}
+
+.d-row{
+  display:flex;justify-content:space-between;align-items:baseline;
+  padding:6px 0;border-bottom:1px solid rgba(201,168,76,0.06);
+}
+.d-label{font-size:9px;letter-spacing:0.1em;color:var(--text-mute)}
+.d-value{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(13px,3vw,15px);color:var(--text);
+}
+.d-value-gold{color:var(--gold)}
+
+/* --- Форма Даймона (центральная визуализация) --- */
+.daimon-form-visual{
+  display:flex;flex-direction:column;align-items:center;
+  padding:24px 16px 20px;gap:12px;
+}
+.daimon-glyph{
+  width:clamp(80px,22vw,120px);
+  height:clamp(80px,22vw,120px);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:clamp(36px,10vw,56px);
+  border:2px solid rgba(201,168,76,0.25);
+  box-shadow:
+    0 0 30px rgba(124,58,237,0.25),
+    inset 0 0 20px rgba(201,168,76,0.08);
+  transition:all 0.5s;
+}
+.daimon-glyph.fire{background:radial-gradient(circle,rgba(255,100,30,0.18),rgba(14,8,32,0.6))}
+.daimon-glyph.water{background:radial-gradient(circle,rgba(30,100,255,0.18),rgba(14,8,32,0.6))}
+.daimon-glyph.earth{background:radial-gradient(circle,rgba(100,180,60,0.18),rgba(14,8,32,0.6))}
+.daimon-glyph.air{background:radial-gradient(circle,rgba(200,220,255,0.18),rgba(14,8,32,0.6))}
+.daimon-glyph.ether{background:radial-gradient(circle,rgba(180,100,255,0.18),rgba(14,8,32,0.6))}
+
+.daimon-name-display{
+  font-family:'Cinzel Decorative',serif;
+  font-size:clamp(18px,5vw,26px);
+  color:var(--gold-bright);
+  text-shadow:0 0 14px rgba(255,215,0,0.25);
+  text-align:center;
+}
+.daimon-archetype{
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;
+  font-size:clamp(13px,3.5vw,16px);
+  color:var(--text-soft);
+  text-align:center;
+}
+.daimon-description{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(12px,3vw,14px);
+  line-height:1.5;
+  color:var(--text-soft);
+  text-align:center;
+  max-width:360px;
+  margin-top:4px;
+}
+
+/* --- Прогресс-бар чакры --- */
+.chakra-progress{
+  margin-top:8px;
+}
+.chakra-bar{
+  height:8px;border-radius:99px;overflow:hidden;
+  background:rgba(255,255,255,0.08);border:1px solid rgba(201,168,76,0.10);
+}
+.chakra-bar-fill{
+  height:100%;width:0%;border-radius:99px;
+  background:linear-gradient(90deg,rgba(124,58,237,0.55),rgba(201,168,76,0.85),#ffd700);
+  box-shadow:0 0 12px rgba(255,215,0,0.25);
+  transition:width 0.5s ease;
+}
+.chakra-labels{
+  display:flex;justify-content:space-between;margin-top:6px;
+}
+.chakra-current{font-size:8px;letter-spacing:0.1em;color:var(--gold)}
+.chakra-next{font-size:8px;letter-spacing:0.1em;color:var(--text-mute)}
+
+/* --- Сетка характеристик --- */
+.stat-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));
+  gap:8px;margin-top:8px;
+}
+.stat-cell{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:10px 6px;border-radius:8px;
+  background:rgba(201,168,76,0.04);border:1px solid rgba(201,168,76,0.08);
+}
+.stat-label{font-size:7px;letter-spacing:0.12em;color:var(--text-mute);text-transform:uppercase}
+.stat-val{
+  font-family:'Cinzel',serif;font-size:clamp(14px,3.5vw,18px);
+  color:var(--gold-light);
+}
+.stat-sub{font-size:7px;color:var(--text-mute)}
+
+/* --- Пустое состояние --- */
+.empty-state{
+  text-align:center;padding:40px 16px;
+}
+.empty-title{
+  font-family:'Cinzel Decorative',serif;
+  font-size:clamp(16px,4vw,20px);
+  color:var(--text-soft);margin-bottom:12px;
+}
+.empty-text{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(13px,3vw,15px);
+  color:var(--text-mute);line-height:1.5;
+  max-width:320px;margin:0 auto 20px;
+}
+.empty-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:12px 24px;min-height:44px;
+  border:1px solid var(--gold);border-radius:10px;
+  font-family:Cinzel,serif;font-size:12px;
+  letter-spacing:0.15em;color:var(--gold);
+  background:rgba(201,168,76,0.08);
+  cursor:pointer;transition:all 0.3s;
+  text-decoration:none;
+}
+.empty-btn:hover{
+  background:rgba(201,168,76,0.18);
+  box-shadow:0 0 16px rgba(201,168,76,0.15);
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <a class="back-link" href="index.html">&larr; ЛОББИ</a>
+    <div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:0.15em;color:var(--text-mute);">AWARA</div>
+  </div>
+
+  <div class="daimon-title">ДАЙМОН-ХРАНИТЕЛЬ</div>
+  <div class="daimon-sub">ТВОЙ КОСМИЧЕСКИЙ СПУТНИК</div>
+
+  <div id="daimon-content"></div>
+
+</div>
+
+<script type="module">
+import {
+  getDaimon,
+  generateDaimon,
+  getDaimonProgress,
+  getDaimonStage,
+  getResonanceBonus,
+  loadDaimonForms
+} from './js/daimon-module.js';
+
+const FORM_GLYPHS = {
+  stag: '\u{1F98C}',
+  phoenix: '\u{1F525}',
+  swan: '\u{1F9A2}',
+  dolphin: '\u{1F42C}',
+  naga: '\u{1F40D}',
+  lion: '\u{1F981}',
+  tiger: '\u{1F405}',
+  bear: '\u{1F43B}',
+  raven: '\u{1F426}',
+  unicorn: '\u{1F984}',
+  owl: '\u{1F989}',
+  dragon: '\u{1F409}',
+  kirin: '\u{1F984}',
+  eagle: '\u{1F985}',
+  garuda: '\u{1F985}',
+  wolf: '\u{1F43A}',
+  deer: '\u{1F98C}',
+  elephant: '\u{1F418}'
+};
+
+const ELEMENT_RU = {
+  fire: '\u041E\u0433\u043E\u043D\u044C',
+  water: '\u0412\u043E\u0434\u0430',
+  earth: '\u0417\u0435\u043C\u043B\u044F',
+  air: '\u0412\u043E\u0437\u0434\u0443\u0445',
+  ether: '\u042D\u0444\u0438\u0440'
+};
+
+function escapeHtml(val) {
+  return String(val ?? '').replace(/[&<>"]/g, ch =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+}
+
+function renderDaimon(daimon) {
+  const glyph = FORM_GLYPHS[daimon.form] || '\u2728';
+  const elemRu = ELEMENT_RU[daimon.element] || daimon.element;
+  const secondElemRu = daimon.secondaryElement ? (ELEMENT_RU[daimon.secondaryElement] || daimon.secondaryElement) : null;
+  const progress = getDaimonProgress();
+  const stage = getDaimonStage();
+
+  let elemDisplay = elemRu;
+  if (secondElemRu) {
+    elemDisplay = elemRu + ' + ' + secondElemRu;
+  }
+
+  let progressPct = 0;
+  let progressLabel = '';
+  if (progress && !progress.isMaxLevel) {
+    progressPct = Math.round(progress.progress * 100);
+    progressLabel = progress.experienceToNext + ' \u043E\u043F\u044B\u0442\u0430 \u0434\u043E ' + progress.nextChakra.name;
+  } else if (progress && progress.isMaxLevel) {
+    progressPct = 100;
+    progressLabel = '\u041C\u0430\u043A\u0441\u0438\u043C\u0430\u043B\u044C\u043D\u044B\u0439 \u0443\u0440\u043E\u0432\u0435\u043D\u044C';
+  }
+
+  const content = document.getElementById('daimon-content');
+  content.innerHTML = '' +
+    '<div class="daimon-card">' +
+      '<div class="daimon-form-visual">' +
+        '<div class="daimon-glyph ' + escapeHtml(daimon.element) + '">' + glyph + '</div>' +
+        '<div class="daimon-name-display">' + escapeHtml(daimon.name) + '</div>' +
+        '<div class="daimon-archetype">' + escapeHtml(daimon.archetype) + '</div>' +
+        '<div class="daimon-description">' + escapeHtml(daimon.description) + '</div>' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="daimon-card">' +
+      '<div class="section-title">\u0425\u0410\u0420\u0410\u041A\u0422\u0415\u0420\u0418\u0421\u0422\u0418\u041A\u0418</div>' +
+      '<div class="d-row">' +
+        '<span class="d-label">\u041D\u0410\u041A\u0428\u0410\u0422\u0420\u0410</span>' +
+        '<span class="d-value">' + escapeHtml(daimon.nakshatraName) + ' <span style="color:var(--text-mute);font-size:10px;">(' + escapeHtml(daimon.sanskrit) + ')</span></span>' +
+      '</div>' +
+      '<div class="d-row">' +
+        '<span class="d-label">\u0424\u041E\u0420\u041C\u0410</span>' +
+        '<span class="d-value d-value-gold">' + escapeHtml(daimon.formName) + '</span>' +
+      '</div>' +
+      '<div class="d-row">' +
+        '<span class="d-label">\u0421\u0422\u0418\u0425\u0418\u042F</span>' +
+        '<span class="d-value">' + escapeHtml(elemDisplay) + '</span>' +
+      '</div>' +
+      '<div class="d-row">' +
+        '<span class="d-label">\u041F\u041B\u0410\u041D\u0415\u0422\u0410-\u041F\u041E\u041A\u0420\u041E\u0412\u0418\u0422\u0415\u041B\u042C</span>' +
+        '<span class="d-value">' + escapeHtml(daimon.ruler) + '</span>' +
+      '</div>' +
+      (daimon.dosha ? '<div class="d-row">' +
+        '<span class="d-label">\u0414\u041E\u0428\u0410</span>' +
+        '<span class="d-value">' + escapeHtml(daimon.dosha) + '</span>' +
+      '</div>' : '') +
+      (daimon.strongestPlanet ? '<div class="d-row">' +
+        '<span class="d-label">\u0421\u0418\u041B\u042C\u041D\u0415\u0419\u0428\u0410\u042F \u041F\u041B\u0410\u041D\u0415\u0422\u0410</span>' +
+        '<span class="d-value">' + escapeHtml(daimon.strongestPlanet) + '</span>' +
+      '</div>' : '') +
+    '</div>' +
+
+    '<div class="daimon-card">' +
+      '<div class="section-title">\u0420\u0410\u0417\u0412\u0418\u0422\u0418\u0415</div>' +
+      '<div class="stat-grid">' +
+        '<div class="stat-cell">' +
+          '<div class="stat-label">\u0427\u0410\u041A\u0420\u0410</div>' +
+          '<div class="stat-val">' + escapeHtml(daimon.chakra) + '</div>' +
+          '<div class="stat-sub">' + escapeHtml(daimon.chakraName) + '</div>' +
+        '</div>' +
+        '<div class="stat-cell">' +
+          '<div class="stat-label">\u0420\u0410\u041D\u0413</div>' +
+          '<div class="stat-val">' + escapeHtml(stage.id) + '</div>' +
+          '<div class="stat-sub">' + escapeHtml(stage.name) + '</div>' +
+        '</div>' +
+        '<div class="stat-cell">' +
+          '<div class="stat-label">\u041E\u041F\u042B\u0422</div>' +
+          '<div class="stat-val">' + (daimon.experience || 0) + '</div>' +
+          '<div class="stat-sub">XP</div>' +
+        '</div>' +
+        '<div class="stat-cell">' +
+          '<div class="stat-label">\u0420\u0415\u0417\u041E\u041D\u0410\u041D\u0421</div>' +
+          '<div class="stat-val">+' + ((daimon.resonanceBonus || 0) * 100).toFixed(0) + '%</div>' +
+          '<div class="stat-sub">\u0431\u043E\u043D\u0443\u0441 \u0441\u0442\u0438\u0445\u0438\u0438</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="chakra-progress">' +
+        '<div class="chakra-bar"><div class="chakra-bar-fill" style="width:' + progressPct + '%"></div></div>' +
+        '<div class="chakra-labels">' +
+          '<span class="chakra-current">' + escapeHtml(daimon.chakraName) + '</span>' +
+          '<span class="chakra-next">' + escapeHtml(progressLabel) + '</span>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+}
+
+function renderEmpty() {
+  const content = document.getElementById('daimon-content');
+  content.innerHTML = '' +
+    '<div class="daimon-card">' +
+      '<div class="empty-state">' +
+        '<div class="empty-title">\u0414\u0430\u0439\u043C\u043E\u043D \u0435\u0449\u0435 \u043D\u0435 \u043F\u0440\u0438\u0437\u0432\u0430\u043D</div>' +
+        '<div class="empty-text">\u0422\u0432\u043E\u0439 \u043A\u043E\u0441\u043C\u0438\u0447\u0435\u0441\u043A\u0438\u0439 \u0445\u0440\u0430\u043D\u0438\u0442\u0435\u043B\u044C \u043F\u043E\u044F\u0432\u0438\u0442\u0441\u044F, \u043A\u043E\u0433\u0434\u0430 \u0431\u0443\u0434\u0435\u0442 \u0437\u0430\u043F\u043E\u043B\u043D\u0435\u043D\u0430 \u043D\u0430\u0442\u0430\u043B\u044C\u043D\u0430\u044F \u043A\u0430\u0440\u0442\u0430. \u0414\u043E \u044D\u0442\u043E\u0433\u043E \u043C\u043E\u043C\u0435\u043D\u0442\u0430 \u043C\u043E\u0436\u043D\u043E \u043F\u0440\u0438\u0437\u0432\u0430\u0442\u044C \u0441\u043B\u0443\u0447\u0430\u0439\u043D\u043E\u0433\u043E \u0445\u0440\u0430\u043D\u0438\u0442\u0435\u043B\u044F.</div>' +
+        '<button class="empty-btn" id="btn-summon">\u041F\u0420\u0418\u0417\u0412\u0410\u0422\u042C \u0425\u0420\u0410\u041D\u0418\u0422\u0415\u041B\u042F</button>' +
+      '</div>' +
+    '</div>';
+
+  document.getElementById('btn-summon').addEventListener('click', async () => {
+    const daimon = await generateDaimon({});
+    if (daimon) renderDaimon(daimon);
+  });
+}
+
+async function init() {
+  await loadDaimonForms();
+  const daimon = getDaimon();
+  if (daimon) {
+    renderDaimon(daimon);
+  } else {
+    renderEmpty();
+  }
+}
+
+init().catch(e => {
+  console.error('[Daimon Page]', e);
+  document.getElementById('daimon-content').innerHTML =
+    '<div class="daimon-card"><div style="color:#f00;padding:20px;">\u041E\u0448\u0438\u0431\u043A\u0430: ' + e.message + '</div></div>';
+});
+</script>
+</body>
+</html>
