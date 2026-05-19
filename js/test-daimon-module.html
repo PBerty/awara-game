@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AWARA — Тест daimon-module.js (T-077)</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0a0a14;
+      color: #e0d4b8;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 20px;
+      font-size: 14px;
+    }
+    h1 { color: #c9a84c; margin-bottom: 16px; font-size: 18px; }
+    h2 { color: #ffe080; margin: 16px 0 8px; font-size: 15px; }
+    .test { padding: 8px 12px; margin: 4px 0; border-radius: 4px; }
+    .pass { background: rgba(0,200,0,0.15); border-left: 3px solid #0c0; }
+    .fail { background: rgba(200,0,0,0.15); border-left: 3px solid #c00; }
+    .info { background: rgba(200,200,0,0.1); border-left: 3px solid #cc0; }
+    pre { background: #111; padding: 12px; border-radius: 4px; overflow-x: auto; margin: 8px 0; font-size: 12px; }
+    #results { margin-top: 16px; }
+    .summary { margin-top: 16px; padding: 12px; border-radius: 4px; font-weight: bold; }
+    .summary.ok { background: rgba(0,200,0,0.2); color: #0f0; }
+    .summary.err { background: rgba(200,0,0,0.2); color: #f00; }
+  </style>
+</head>
+<body>
+  <h1>AWARA — Тест daimon-module.js (T-077)</h1>
+  <div id="results"></div>
+
+  <script type="module">
+    import {
+      loadDaimonForms,
+      getDaimonFormByNakshatra,
+      getDaimonFormById,
+      generateDaimon,
+      getDaimon,
+      saveDaimon,
+      getResonanceBonus,
+      addDaimonExperience,
+      getDaimonProgress,
+      getDaimonStage,
+      getChakraThresholds,
+      resetDaimon
+    } from './daimon-module.js';
+
+    const results = document.getElementById('results');
+    let passed = 0;
+    let failed = 0;
+
+    function log(text, cls = 'info') {
+      const div = document.createElement('div');
+      div.className = `test ${cls}`;
+      div.textContent = text;
+      results.appendChild(div);
+    }
+
+    function assert(condition, label) {
+      if (condition) {
+        passed++;
+        log(`PASS: ${label}`, 'pass');
+      } else {
+        failed++;
+        log(`FAIL: ${label}`, 'fail');
+      }
+    }
+
+    function heading(text) {
+      const h = document.createElement('h2');
+      h.textContent = text;
+      results.appendChild(h);
+    }
+
+    function pre(obj) {
+      const el = document.createElement('pre');
+      el.textContent = JSON.stringify(obj, null, 2);
+      results.appendChild(el);
+    }
+
+    async function runTests() {
+      // === 1. Загрузка форм ===
+      heading('1. loadDaimonForms()');
+      const forms = await loadDaimonForms();
+      assert(forms !== null, 'Формы загружены');
+      assert(Array.isArray(forms), 'Формы — массив');
+      assert(forms.length === 27, `27 форм (получено: ${forms?.length})`);
+
+      // === 2. Lookup по slug ===
+      heading('2. getDaimonFormByNakshatra()');
+      const rohini = await getDaimonFormByNakshatra('rohini');
+      assert(rohini !== null, 'Рохини найдена');
+      assert(rohini?.form === 'swan', `Рохини -> swan (получено: ${rohini?.form})`);
+      assert(rohini?.element === 'water', `Рохини -> water (получено: ${rohini?.element})`);
+
+      const pushya = await getDaimonFormByNakshatra('pushya');
+      assert(pushya !== null, 'Пушья найдена');
+      assert(pushya?.form === 'dolphin', `Пушья -> dolphin (получено: ${pushya?.form})`);
+      assert(pushya?.resonanceBonus === 0.07, `Пушья bonus 0.07 (получено: ${pushya?.resonanceBonus})`);
+
+      const none = await getDaimonFormByNakshatra('nonexistent');
+      assert(none === null, 'Несуществующая накшатра -> null');
+
+      // === 3. Lookup по id ===
+      heading('3. getDaimonFormById()');
+      const form1 = await getDaimonFormById(1);
+      assert(form1?.slug === 'ashvini', `id=1 -> ashvini (получено: ${form1?.slug})`);
+
+      const form27 = await getDaimonFormById(27);
+      assert(form27?.slug === 'revati', `id=27 -> revati (получено: ${form27?.slug})`);
+
+      // === 4. Генерация Даймона ===
+      heading('4. generateDaimon()');
+      resetDaimon();
+
+      const daimon = await generateDaimon({
+        nakshatra: 'rohini',
+        dosha: 'kapha',
+        strongestPlanet: 'Луна'
+      });
+      assert(daimon !== null, 'Даймон создан');
+      assert(daimon?.form === 'swan', `Форма: swan (получено: ${daimon?.form})`);
+      assert(daimon?.element === 'water', `Элемент: water (получено: ${daimon?.element})`);
+      assert(daimon?.archetype === 'Творец', `Архетип: Творец (получено: ${daimon?.archetype})`);
+      assert(daimon?.name === 'Водный Лебедь', `Имя: Водный Лебедь (получено: ${daimon?.name})`);
+      assert(daimon?.dosha === 'kapha', `Доша: kapha (получено: ${daimon?.dosha})`);
+      assert(daimon?.strongestPlanet === 'Луна', `Планета: Луна (получено: ${daimon?.strongestPlanet})`);
+      assert(typeof daimon?.createdAt === 'number', 'createdAt — число');
+      assert(daimon?.chakra === 1, `Чакра: 1 (получено: ${daimon?.chakra})`);
+      pre(daimon);
+
+      // === 5. getDaimon() ===
+      heading('5. getDaimon() из state');
+      const saved = getDaimon();
+      assert(saved !== null, 'Даймон в state');
+      assert(saved?.nakshatra === 'rohini', `Накшатра в state: rohini (получено: ${saved?.nakshatra})`);
+
+      // === 6. Resonance bonus ===
+      heading('6. getResonanceBonus()');
+      const bonusMatch = getResonanceBonus(daimon, 'water');
+      assert(bonusMatch === 0.06, `water+water -> 0.06 (получено: ${bonusMatch})`);
+
+      const bonusNoMatch = getResonanceBonus(daimon, 'fire');
+      assert(bonusNoMatch === 0, `water+fire -> 0 (получено: ${bonusNoMatch})`);
+
+      const bonusNull = getResonanceBonus(null, 'water');
+      assert(bonusNull === 0, 'null daimon -> 0');
+
+      // === 7. Опыт и эволюция ===
+      heading('7. addDaimonExperience()');
+      const result1 = addDaimonExperience(100);
+      assert(result1 !== null, 'Опыт добавлен');
+      assert(result1?.daimon?.experience === 100, `Опыт: 100 (получено: ${result1?.daimon?.experience})`);
+      assert(result1?.evolved === false, 'Нет эволюции при 100 опыта');
+
+      const result2 = addDaimonExperience(500);
+      assert(result2?.daimon?.experience === 600, `Опыт: 600 (получено: ${result2?.daimon?.experience})`);
+      assert(result2?.evolved === true, `Эволюция на 600 опыта (chakra 2)`);
+      assert(result2?.daimon?.chakra === 2, `Чакра 2 (получено: ${result2?.daimon?.chakra})`);
+
+      // === 8. Прогресс ===
+      heading('8. getDaimonProgress()');
+      const progress = getDaimonProgress();
+      assert(progress !== null, 'Прогресс получен');
+      assert(progress?.currentChakra?.chakra === 2, `Текущая чакра: 2 (получено: ${progress?.currentChakra?.chakra})`);
+      assert(progress?.nextChakra?.chakra === 3, `Следующая чакра: 3 (получено: ${progress?.nextChakra?.chakra})`);
+      assert(progress?.isMaxLevel === false, 'Не максимальный уровень');
+      pre(progress);
+
+      // === 9. Stage ===
+      heading('9. getDaimonStage()');
+      const stage = getDaimonStage();
+      assert(stage !== null, 'Stage получен');
+      assert(typeof stage.id === 'number', 'Stage id — число');
+      assert(typeof stage.name === 'string', 'Stage name — строка');
+      pre(stage);
+
+      // === 10. Chakra thresholds ===
+      heading('10. getChakraThresholds()');
+      const thresholds = getChakraThresholds();
+      assert(thresholds.length === 9, `9 чакр (получено: ${thresholds.length})`);
+      assert(thresholds[0].chakra === 1, 'Первая: Муладхара');
+      assert(thresholds[8].chakra === 9, 'Последняя: Абсолют');
+
+      // === 11. Reset ===
+      heading('11. resetDaimon()');
+      resetDaimon();
+      const afterReset = getDaimon();
+      assert(afterReset === null, 'После сброса: null');
+
+      // === 12. Генерация без накшатры (случайная) ===
+      heading('12. generateDaimon() без накшатры');
+      const randomDaimon = await generateDaimon({});
+      assert(randomDaimon !== null, 'Случайный Даймон создан');
+      assert(typeof randomDaimon?.form === 'string', `Форма: ${randomDaimon?.form}`);
+      assert(typeof randomDaimon?.element === 'string', `Элемент: ${randomDaimon?.element}`);
+      pre(randomDaimon);
+
+      // === Итог ===
+      const summary = document.createElement('div');
+      summary.className = `summary ${failed === 0 ? 'ok' : 'err'}`;
+      summary.textContent = `Итого: ${passed} пройдено, ${failed} провалено из ${passed + failed}`;
+      results.appendChild(summary);
+    }
+
+    runTests().catch(e => {
+      log(`ОШИБКА: ${e.message}`, 'fail');
+      console.error(e);
+    });
+  </script>
+</body>
+</html>

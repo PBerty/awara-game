@@ -248,7 +248,7 @@
   Файлы: `tigel.html`, `js/milost-module.js`
   Est: 8 мин
 
-- [ ] **T-076 · data/daimon-forms.json — 27 накшатр → форма Даймона**
+- [x] **T-076 · data/daimon-forms.json — 27 накшатр → форма Даймона**
   DoD: новый JSON с 27 объектами накшатр и формами хранителя, валиден и пригоден для lookup.
   Файлы: `data/daimon-forms.json`
   Est: 10 мин
