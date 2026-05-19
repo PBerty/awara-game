@@ -923,11 +923,23 @@ let wuXingState = { water:0, wood:0, fire:0, earth:0, metal:0 };
 let toroidResult = null;
 let generatedKey = null;
 let milostModulePromise = null;
+let daimonModulePromise = null;
+let currentDaimon = null;
+let getDaimonResonanceBonus = null;
 let milostToday = { date: new Date().toISOString().slice(0, 10), score: 0, sources: {}, multiplier: 1 };
+
+const ELEM_RU = { water:'Вода', wood:'Дерево', fire:'Огонь', earth:'Земля', metal:'Металл' };
+const DAIMON_ELEM_RU = { fire:'Огонь', water:'Вода', earth:'Земля', air:'Воздух', ether:'Эфир' };
+const WUXING_TO_DAIMON_ELEMENT = { water:'water', wood:'air', fire:'fire', earth:'earth', metal:'ether' };
 
 function loadMilostModule() {
   if (!milostModulePromise) milostModulePromise = import('./js/milost-module.js');
   return milostModulePromise;
+}
+
+function loadDaimonModule() {
+  if (!daimonModulePromise) daimonModulePromise = import('./js/daimon-module.js');
+  return daimonModulePromise;
 }
 
 function currentDateKey() {
@@ -964,6 +976,79 @@ function applyMilostMultiplier(baseLight) {
   };
 }
 
+function getDominantWuXingElement(wuXing) {
+  return Object.entries(wuXing || wuXingState).sort((a,b) => b[1] - a[1])[0] || ['earth', 0];
+}
+
+function getDaimonDayElement(wuXingElement) {
+  return WUXING_TO_DAIMON_ELEMENT[wuXingElement] || wuXingElement;
+}
+
+function formatElementBridge(wuXingElement, daimonElement) {
+  const wuXingRu = ELEM_RU[wuXingElement] || wuXingElement;
+  const daimonRu = DAIMON_ELEM_RU[daimonElement] || daimonElement;
+  return wuXingRu === daimonRu ? wuXingRu : wuXingRu + ' → ' + daimonRu;
+}
+
+function getDaimonResonance(dayWuXingElement) {
+  const dayElement = getDaimonDayElement(dayWuXingElement);
+  const daimon = currentDaimon;
+  if (!daimon || !getDaimonResonanceBonus) {
+    return {
+      active: false,
+      daimon: null,
+      dayWuXingElement,
+      dayElement,
+      bonus: 0,
+      bonusPct: 0,
+      multiplier: 1,
+      source: 'Даймон не пробуждён',
+      bridge: formatElementBridge(dayWuXingElement, dayElement)
+    };
+  }
+
+  const bonus = getDaimonResonanceBonus(daimon, dayElement);
+  const direct = daimon.element === dayElement;
+  const secondary = daimon.secondaryElement === dayElement;
+  const daimonElementRu = DAIMON_ELEM_RU[daimon.element] || daimon.element;
+  const matchType = direct ? 'прямое совпадение' : (secondary ? 'вторичная стихия' : 'нет совпадения');
+
+  return {
+    active: bonus > 0,
+    daimon,
+    dayWuXingElement,
+    dayElement,
+    bonus,
+    bonusPct: Math.round(bonus * 100),
+    multiplier: +(1 + bonus).toFixed(3),
+    source: daimon.name + ' · ' + daimonElementRu + ' · ' + matchType,
+    bridge: formatElementBridge(dayWuXingElement, dayElement)
+  };
+}
+
+function applyDaimonResonance(baseLight, dayWuXingElement) {
+  const base = Number(baseLight || 0);
+  const resonance = getDaimonResonance(dayWuXingElement);
+  const finalLight = +(base * resonance.multiplier).toFixed(2);
+  return {
+    ...resonance,
+    baseLight: base,
+    finalLight,
+    bonusLight: Math.max(0, +(finalLight - base).toFixed(2))
+  };
+}
+
+async function initTigelDaimon() {
+  try {
+    const module = await loadDaimonModule();
+    currentDaimon = module.getDaimon();
+    getDaimonResonanceBonus = module.getResonanceBonus;
+    if (toroidResult) calculateToroid();
+  } catch(e) {
+    console.warn('daimon:', e);
+  }
+}
+
 async function initTigelMilost() {
   try {
     const { getMilostToday, refreshMilost } = await loadMilostModule();
@@ -973,6 +1058,34 @@ async function initTigelMilost() {
     if (toroidResult) calculateToroid();
   } catch(e) {
     console.warn('milost:', e);
+  }
+}
+
+function applyDaimonToGeneratedKey() {
+  if (!generatedKey?.key) return;
+  const dayElement = getDominantWuXingElement(generatedKey.key.wu_xing || wuXingState)[0];
+  const baseLight = Number(generatedKey.key.light_before_daimon || generatedKey.key.light_total || 0);
+  const light = applyDaimonResonance(baseLight, dayElement);
+  generatedKey.key.light_before_daimon = light.baseLight;
+  generatedKey.key.light_total = Math.round(light.finalLight);
+  generatedKey.key.daimon_resonance = {
+    active: light.active,
+    daimon_id: light.daimon ? light.daimon.id : null,
+    daimon_name: light.daimon ? light.daimon.name : null,
+    day_element: light.dayElement,
+    day_source: light.bridge,
+    multiplier: light.multiplier,
+    bonus_pct: light.bonusPct,
+    bonus_light: Math.round(light.bonusLight),
+    source: light.source
+  };
+  if (light.active && Array.isArray(generatedKey.key.buffs) && !generatedKey.key.buffs.some(b => b.id === 'buff_daimon_resonance')) {
+    generatedKey.key.buffs.push({
+      id: 'buff_daimon_resonance',
+      label: 'Резонанс Даймона',
+      value: '+' + light.bonusPct + '%',
+      desc: light.source
+    });
   }
 }
 
@@ -1145,9 +1258,13 @@ function calculateToroid() {
   }
 
   toroidResult = ToroidEngine.compute(wuXingState);
-  const milostLight = applyMilostMultiplier(toroidResult.light_total);
-  toroidResult.light_total_base = milostLight.baseLight;
+  const topElem = getDominantWuXingElement(wuXingState);
+  const daimonLight = applyDaimonResonance(toroidResult.light_total, topElem[0]);
+  const milostLight = applyMilostMultiplier(daimonLight.finalLight);
+  toroidResult.light_total_base = daimonLight.baseLight;
+  toroidResult.light_total_daimon = daimonLight.finalLight;
   toroidResult.light_total_milost = milostLight.finalLight;
+  toroidResult.daimon_resonance = daimonLight;
   toroidResult.milost = milostLight.milost;
   
   // Обновление UI
@@ -1183,10 +1300,9 @@ function calculateToroid() {
   document.getElementById('recommendations').innerHTML = recHTML || '<div class="hint-text">Баланс отличный — продолжай в том же духе!</div>';
 
   // ── ИТОГИ ДНЯ ──
-  const ELEM_RU = {water:'Вода',wood:'Дерево',fire:'Огонь',earth:'Земля',metal:'Металл'};
-  const topElem = Object.entries(wuXingState).sort((a,b) => b[1] - a[1])[0];
   const summaryEl = document.getElementById('day-summary');
   const listEl = document.getElementById('day-summary-list');
+  const daimonSummaryColor = daimonLight.active ? '#ffd700' : 'rgba(255,248,214,0.55)';
   const params = [
     { label: 'Доминантная стихия', value: ELEM_RU[topElem[0]] || topElem[0], sub: Math.round(topElem[1]*100) + '%' },
     { label: 'Канал Пингала (Ян)', value: Math.round(pingala*100) + '%' },
@@ -1194,14 +1310,16 @@ function calculateToroid() {
     { label: 'Баланс Сушумны', value: sushumna.label, sub: Math.round(balance*100) + '%' },
     { label: 'Множитель майнинга', value: '×' + mining_multiplier },
     { label: 'Свет база', value: formatLightValue(light_total) + ' ✦' },
+    { label: 'Резонанс Даймона', value: daimonLight.active ? '×' + daimonLight.multiplier : 'нет', sub: daimonLight.bridge + ' · ' + daimonLight.source + (daimonLight.active ? ' · +' + daimonLight.bonusPct + '% света' : ''), color: daimonSummaryColor },
+    { label: 'Свет после Даймона', value: formatLightValue(daimonLight.finalLight) + ' ✦', color: daimonSummaryColor },
     { label: 'Милость', value: '×' + formatMilostMultiplier(milostLight.milost.multiplier), sub: '+' + milostLight.bonusPct + '% света', color: milostLight.color },
     { label: 'Свет итог', value: formatLightValue(milostLight.finalLight) + ' ✦', color: milostLight.color },
     { label: 'Рекомендация', value: dominant.advice },
   ];
   listEl.innerHTML = params.map(p =>
-    '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:4px 0;border-bottom:1px solid rgba(201,168,76,0.07);">' +
+    '<div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px 12px;padding:4px 0;border-bottom:1px solid rgba(201,168,76,0.07);">' +
       '<span style="font-family:\'JetBrains Mono\',monospace;font-size:9px;letter-spacing:0.1em;color:rgba(201,168,76,0.4);">' + p.label + '</span>' +
-      '<span style="text-align:right;color:' + (p.color || 'rgba(255,248,214,0.85)') + ';">' + p.value + (p.sub ? ' <span style="font-size:10px;color:rgba(201,168,76,0.5);">(' + p.sub + ')</span>' : '') + '</span>' +
+      '<span style="flex:1;min-width:150px;text-align:right;color:' + (p.color || 'rgba(255,248,214,0.85)') + ';">' + p.value + (p.sub ? ' <span style="font-size:10px;color:rgba(201,168,76,0.5);">(' + p.sub + ')</span>' : '') + '</span>' +
     '</div>'
   ).join('');
   summaryEl.style.display = 'block';
@@ -1297,6 +1415,7 @@ function generateKey() {
       mining_multiplier: toroidResult.mining_multiplier,
     }
   });
+  applyDaimonToGeneratedKey();
   applyMilostToGeneratedKey();
 
   displayKey(generatedKey);
@@ -1849,6 +1968,7 @@ async function processAlchemySynthesis() {
 
 // ── Инициализация ──
 updateWuXingDisplay();
+initTigelDaimon();
 initTigelMilost();
 </script>
 

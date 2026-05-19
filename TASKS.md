@@ -263,7 +263,7 @@
   Файлы: `daimon.html`, `js/daimon-module.js`
   Est: 15 мин
 
-- [ ] **T-079 · tigel.html — resonance bonus от Даймона**
+- [x] **T-079 · tigel.html — resonance bonus от Даймона**
   DoD: при совпадении стихии дня и элемента Даймона применяется `resonanceBonus`; UI показывает источник бонуса.
   Файлы: `tigel.html`, `js/daimon-module.js`
   Est: 8 мин
