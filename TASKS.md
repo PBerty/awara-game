@@ -115,6 +115,13 @@
   Файлы: `docs/screen-status.md`
   Est: 8 мин
 
+### Кнопка храма в матрицах
+
+- [x] **T-084 · matrices.html — кнопка "Воздвигнуть Храм"**
+  DoD: на каждой карточке матрицы кнопка для воздвижения храма. Клик записывает храм в `localStorage awara_temples_v258`. Построенные храмы показывают имя храма из `data/temple-ecosystems.json`. CSS: золото на чёрном, mobile-first.
+  Файлы: `matrices.html`
+  Est: 10 мин
+
 ---
 
 ## Done (закрытые)

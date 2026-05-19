@@ -21,18 +21,25 @@
 
 | Поле | Значение |
 |---|---|
-| Аккаунт | paharaduga-beep |
-| Сессия | https://app.devin.ai/sessions/e84aad0cb623469da4d71a42da4d46ce |
+| Аккаунт | PBerty |
+| Сессия | https://app.devin.ai/sessions/9d453bf023e443aa81e97630c1286199 |
 | Модель | Agent |
-| Дата | 2026-05-10 (UTC) |
-| Закрытая задача | T-004 |
-| Следующая задача | **T-005** (см. TASKS.md) |
+| Дата | 2026-05-19 (UTC) |
+| Закрытая задача | T-084 |
+| Следующая задача | **T-085** (см. TASKS.md) |
 | Состояние master | ожидает merge PR |
 | Pages | включён, master/root |
 
 ---
 
 ## Лог смен (новые записи СВЕРХУ)
+
+### 2026-05-19 · PBerty · T-084
+
+- Закрыто: T-084 — matrices.html, кнопка "Воздвигнуть Храм"
+- Кнопка на каждой карточке матрицы: клик → запись в awara_temples_v258
+- Построенные храмы показывают имя из temple-ecosystems.json
+- CSS .temple-btn / .temple-btn.built — золото на чёрном
 
 ### 2026-05-10 · paharaduga-beep · T-004
 

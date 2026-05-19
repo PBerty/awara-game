@@ -23,6 +23,9 @@ body{background:#02010a;color:#d4d4d4;font-family:'JetBrains Mono',monospace;min
 @media(max-width:375px){.matrix-name{font-size:12px}.matrix-conflict{font-size:10px}.matrix-visual{font-size:7px}.matrix-card{padding:10px 6px}}
 .back{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:12px 30px;background:rgba(201,168,76,.15);border:2px solid #c9a84c;border-radius:6px;color:#c9a84c;font-family:Cinzel,serif;font-size:11px;letter-spacing:.2em;cursor:pointer;z-index:1000}
 .back:hover{background:rgba(201,168,76,.25);border-color:#ffe080}
+.temple-btn{display:block;margin:8px auto 0;padding:5px 12px;border-radius:16px;font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:.1em;cursor:pointer;transition:.2s;border:1px solid rgba(201,168,76,.35);background:rgba(201,168,76,.08);color:rgba(201,168,76,.85)}
+.temple-btn:hover{background:rgba(201,168,76,.2);border-color:rgba(201,168,76,.6)}
+.temple-btn.built{cursor:default;border-color:rgba(201,168,76,.25);background:rgba(201,168,76,.05);color:rgba(201,168,76,.5)}
 .agents-section{margin-bottom:50px}
 .agents-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 .agent-card{background:rgba(20,20,30,.8);border:1px solid rgba(201,168,76,.2);border-radius:8px;padding:14px 10px;transition:.3s;text-align:center}
@@ -56,17 +59,37 @@ grid.appendChild(c);
 });
 }).catch(err=>console.warn('agents.json:',err));
 let activeMatrix=localStorage.getItem('awara_active_matrix')||'vedic';
+var _builtTemples={};
+try{_builtTemples=JSON.parse(localStorage.getItem('awara_temples_v258')||'{}');}catch(e){}
+var _templeEco=null;
+fetch('data/temple-ecosystems.json').then(r=>r.json()).then(d=>{_templeEco=d;}).catch(()=>{_templeEco=[];});
+
+function buildTempleFromCard(matrixId, slug){
+if(_builtTemples[String(matrixId)]) return;
+_builtTemples[String(matrixId)]={matrix_id:matrixId,matrix_slug:slug,builtAt:Date.now(),lastCollected:Date.now()};
+try{localStorage.setItem('awara_temples_v258',JSON.stringify(_builtTemples));}catch(e){}
+if(_matricesData) renderMatrices(_matricesData);
+}
+
+var _matricesData=null;
 function renderMatrices(matrices){
+_matricesData=matrices;
 const grid=document.getElementById('matrices-grid');
 grid.innerHTML='';
 matrices.forEach(m=>{
 const isActive=m.slug===activeMatrix;
+const isBuilt=!!_builtTemples[String(m.id)];
+const eco=_templeEco?_templeEco.find(e=>e.matrix_id===m.id):null;
+const templeName=eco?eco.templeName:'\u0425\u0440\u0430\u043c';
 const c=document.createElement('div');
 c.className='matrix-card'+(isActive?' active':'');
-c.innerHTML=(isActive?'<div class="matrix-badge">АКТИВНА</div>':'')+
+c.innerHTML=(isActive?'<div class="matrix-badge">\u0410\u041a\u0422\u0418\u0412\u041d\u0410</div>':'')+
 '<div class="matrix-name">'+m.name+'</div>'+
 '<div class="matrix-conflict">'+m.conflict+'</div>'+
-'<div class="matrix-visual">'+m.visual_code+'</div>';
+'<div class="matrix-visual">'+m.visual_code+'</div>'+
+(isBuilt
+?'<div class="temple-btn built">\u2726 '+templeName+'</div>'
+:'<div class="temple-btn" onclick="event.stopPropagation();buildTempleFromCard('+m.id+',\''+m.slug+'\');">\u26D2 \u0412\u041e\u0417\u0414\u0412\u0418\u0413\u041d\u0423\u0422\u042C \u0425\u0420\u0410\u041c</div>');
 c.onclick=()=>{activeMatrix=m.slug;localStorage.setItem('awara_active_matrix',m.slug);renderMatrices(matrices);};
 grid.appendChild(c);
 });
