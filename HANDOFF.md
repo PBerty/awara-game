@@ -21,18 +21,25 @@
 
 | Поле | Значение |
 |---|---|
-| Аккаунт | paharaduga-beep |
-| Сессия | https://app.devin.ai/sessions/e84aad0cb623469da4d71a42da4d46ce |
+| Аккаунт | PBerty |
+| Сессия | https://app.devin.ai/sessions/9d453bf023e443aa81e97630c1286199 |
 | Модель | Agent |
-| Дата | 2026-05-10 (UTC) |
-| Закрытая задача | T-004 |
-| Следующая задача | **T-005** (см. TASKS.md) |
+| Дата | 2026-05-19 (UTC) |
+| Закрытая задача | T-081 |
+| Следующая задача | **T-082** (см. TASKS.md) |
 | Состояние master | ожидает merge PR |
 | Pages | включён, master/root |
 
 ---
 
 ## Лог смен (новые записи СВЕРХУ)
+
+### 2026-05-19 · PBerty · T-081
+
+- Закрыто: T-081 — data/temple-ecosystems.json (экосистемы 33 храмов)
+- 33 объекта: templeName, universe, flora[], minerals[], creatures[], ambient, basePassiveSvet
+- Привязка по matrix_id/matrix_slug к data/matrices.json
+- Лор-консистентные данные: флора, минералы, существа и эмбиент соответствуют культуре каждой матрицы
 
 ### 2026-05-10 · paharaduga-beep · T-004
 

@@ -115,6 +115,13 @@
   Файлы: `docs/screen-status.md`
   Est: 8 мин
 
+### Экосистемы храмов
+
+- [x] **T-081 · data/temple-ecosystems.json — экосистемы 33 храмов**
+  DoD: новый JSON из 33 объектов: `{matrix_id, matrix_slug, templeName, universe, flora[], minerals[], creatures[], ambient, basePassiveSvet}`. По одному храму на каждую матрицу из `data/matrices.json`.
+  Файлы: `data/temple-ecosystems.json`
+  Est: 10 мин
+
 ---
 
 ## Done (закрытые)
