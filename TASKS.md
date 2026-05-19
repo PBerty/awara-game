@@ -268,7 +268,7 @@
   Файлы: `tigel.html`, `js/daimon-module.js`
   Est: 8 мин
 
-- [ ] **T-080 · passport.html — иконка Даймона**
+- [x] **T-080 · passport.html — иконка Даймона**
   DoD: паспорт показывает компактную карточку/иконку Даймона и ссылку на `daimon.html`.
   Файлы: `passport.html`, `js/daimon-module.js`
   Est: 7 мин
