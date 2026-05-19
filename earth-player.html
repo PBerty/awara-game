@@ -183,6 +183,18 @@ html,body{width:100%;height:100%;overflow:hidden;background:#020108;font-family:
 #tooltip.show{opacity:1;}
 #tt-name{font-family:'Cinzel',serif;font-size:9px;color:rgba(201,168,76,.9);letter-spacing:.12em;margin-bottom:4px;}
 #tt-desc{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:12px;color:rgba(255,255,255,.55);line-height:1.45;}
+
+/* ── Маркеры храмов ── */
+#temple-ring-info{
+  position:fixed;z-index:91;pointer-events:none;
+  background:rgba(2,1,8,.96);border:1px solid rgba(201,168,76,.35);
+  border-radius:10px;padding:8px 12px;opacity:0;transition:opacity .2s;
+  max-width:180px;
+}
+#temple-ring-info.show{opacity:1;}
+#tri-name{font-family:'Cinzel',serif;font-size:9px;color:rgba(201,168,76,.9);letter-spacing:.1em;margin-bottom:3px;}
+#tri-universe{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:11px;color:rgba(255,255,255,.45);line-height:1.4;margin-bottom:3px;}
+#tri-status{font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:.1em;}
 </style>
 </head>
 <body>
@@ -255,6 +267,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:#020108;font-family:
 
 <!-- Тултип -->
 <div id="tooltip"><div id="tt-name"></div><div id="tt-desc"></div></div>
+
+<!-- Тултип храмов -->
+<div id="temple-ring-info"><div id="tri-name"></div><div id="tri-universe"></div><div id="tri-status"></div></div>
 
 <!-- Кнопка строительства -->
 <div id="build-btn" onclick="toggleBuild()">
@@ -554,13 +569,139 @@ function updateTime(){
 }
 updateTime(); setInterval(updateTime,60000);
 
+// ══ ХРАМЫ — МАРКЕРЫ НА CANVAS ══
+var _templeEcosystems = null;
+var _templeMarkers = []; // координаты маркеров для hover
+
+function loadTempleEcosystems(cb) {
+  if (_templeEcosystems) { cb(_templeEcosystems); return; }
+  fetch('data/temple-ecosystems.json')
+    .then(function(r){ return r.json(); })
+    .then(function(data){ _templeEcosystems = data; cb(data); })
+    .catch(function(){ _templeEcosystems = []; cb([]); });
+}
+
+function getBuiltTemples() {
+  try { return JSON.parse(localStorage.getItem('awara_temples_v258') || '{}'); } catch(e) { return {}; }
+}
+
+function drawTempleMarkers(ctx, cx, cy, sz) {
+  var ecosystems = _templeEcosystems || [];
+  if (ecosystems.length === 0) return;
+
+  var built = getBuiltTemples();
+  var radius = sz / 2 + 18;
+  var count = ecosystems.length; // 33
+  _templeMarkers = [];
+
+  for (var i = 0; i < count; i++) {
+    var eco = ecosystems[i];
+    var angle = (i / count) * Math.PI * 2 - Math.PI / 2;
+    var mx = cx + Math.cos(angle) * radius;
+    var my = cy + Math.sin(angle) * radius;
+    var isBuilt = !!built[String(eco.matrix_id)];
+    var markerR = isBuilt ? 5 : 3.5;
+
+    // Свечение для построенных
+    if (isBuilt) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(mx, my, 10, 0, Math.PI * 2);
+      var glow = ctx.createRadialGradient(mx, my, 0, mx, my, 10);
+      glow.addColorStop(0, 'rgba(201,168,76,0.25)');
+      glow.addColorStop(1, 'rgba(201,168,76,0)');
+      ctx.fillStyle = glow;
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // Маркер
+    ctx.beginPath();
+    ctx.arc(mx, my, markerR, 0, Math.PI * 2);
+    ctx.fillStyle = isBuilt ? 'rgba(201,168,76,0.9)' : 'rgba(255,255,255,0.15)';
+    ctx.fill();
+
+    // Тонкая обводка
+    ctx.strokeStyle = isBuilt ? 'rgba(201,168,76,0.6)' : 'rgba(255,255,255,0.08)';
+    ctx.lineWidth = 0.5;
+    ctx.stroke();
+
+    _templeMarkers.push({ x: mx, y: my, r: markerR + 4, eco: eco, built: isBuilt });
+  }
+
+  // Счётчик храмов
+  var builtCount = Object.keys(built).length;
+  if (builtCount > 0) {
+    ctx.save();
+    ctx.font = '7px JetBrains Mono, monospace';
+    ctx.fillStyle = 'rgba(201,168,76,0.5)';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText(builtCount + '/33 ХРАМОВ', cx, cy - sz / 2 - 26);
+    ctx.restore();
+  }
+}
+
+// Hover на маркерах храмов
+(function(){
+  var canvas = document.getElementById('vastu-canvas');
+  var tip = document.getElementById('temple-ring-info');
+  canvas.addEventListener('mousemove', function(e) {
+    var rect = canvas.getBoundingClientRect();
+    var scaleX = canvas.width / rect.width;
+    var scaleY = canvas.height / rect.height;
+    var px = (e.clientX - rect.left) * scaleX;
+    var py = (e.clientY - rect.top) * scaleY;
+    var hit = null;
+    for (var i = 0; i < _templeMarkers.length; i++) {
+      var m = _templeMarkers[i];
+      var dx = px - m.x, dy = py - m.y;
+      if (dx * dx + dy * dy <= m.r * m.r) { hit = m; break; }
+    }
+    if (hit) {
+      document.getElementById('tri-name').textContent = hit.eco.templeName;
+      document.getElementById('tri-universe').textContent = hit.eco.universe;
+      var statusEl = document.getElementById('tri-status');
+      statusEl.textContent = hit.built ? '✦ ВОЗДВИГНУТ' : '◇ НЕ ПОСТРОЕН';
+      statusEl.style.color = hit.built ? 'rgba(201,168,76,0.8)' : 'rgba(255,255,255,0.3)';
+      tip.style.left = Math.min(e.clientX + 12, innerWidth - 200) + 'px';
+      tip.style.top = Math.max(e.clientY - 50, 60) + 'px';
+      tip.classList.add('show');
+      canvas.style.cursor = 'pointer';
+    } else {
+      tip.classList.remove('show');
+      canvas.style.cursor = '';
+    }
+  });
+  canvas.addEventListener('mouseleave', function() {
+    tip.classList.remove('show');
+    canvas.style.cursor = '';
+  });
+})();
+
+// Модифицируем drawMap для рисования маркеров храмов
+var _origDrawMap = drawMap;
+drawMap = function() {
+  _origDrawMap();
+  var c = document.getElementById('vastu-canvas');
+  var ctx = c.getContext('2d');
+  var W = c.width, H = c.height;
+  var cx = W / 2, cy = H / 2;
+  var sz = Math.min(W, H) * 0.92;
+  if (_templeEcosystems) {
+    drawTempleMarkers(ctx, cx, cy, sz);
+  }
+};
+
 // ══ ИНИЦИАЛИЗАЦИЯ ══
 updateCoins();
 updateElCounts();
 renderBuildGrid('all');
 
-// Карта рисуется после layout
-setTimeout(drawMap, 100);
+// Загрузить экосистемы, затем нарисовать карту
+loadTempleEcosystems(function() {
+  setTimeout(drawMap, 100);
+});
 window.addEventListener('resize', function(){ setTimeout(drawMap,50); });
 </script>
 </body>
