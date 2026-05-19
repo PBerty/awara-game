@@ -774,7 +774,7 @@ body::after {
       <!-- РЕКОМЕНДАЦИИ -->
       <div id="recommendations" class="recommendations"></div>
 
-      <!-- ИТОГИ ДНЯ — 7 параметров -->
+      <!-- ИТОГИ ДНЯ -->
       <div id="day-summary" style="display:none;margin-top:18px;padding:14px;border-radius:10px;background:rgba(201,168,76,0.04);border:1px solid rgba(201,168,76,0.15);">
         <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.2em;color:rgba(201,168,76,0.5);margin-bottom:12px;text-align:center;">ИТОГИ ДНЯ</div>
         <div id="day-summary-list" style="display:flex;flex-direction:column;gap:8px;font-family:'Cormorant Garamond',serif;font-size:clamp(12px,3vw,14px);color:rgba(220,210,190,0.75);line-height:1.4;"></div>
@@ -922,6 +922,96 @@ fetch('data/agents.json')
 let wuXingState = { water:0, wood:0, fire:0, earth:0, metal:0 };
 let toroidResult = null;
 let generatedKey = null;
+let milostModulePromise = null;
+let milostToday = { date: new Date().toISOString().slice(0, 10), score: 0, sources: {}, multiplier: 1 };
+
+function loadMilostModule() {
+  if (!milostModulePromise) milostModulePromise = import('./js/milost-module.js');
+  return milostModulePromise;
+}
+
+function currentDateKey() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function normalizeMilost(milost) {
+  const multiplier = Math.max(1, Number(milost?.multiplier || 1));
+  return {
+    date: milost?.date || currentDateKey(),
+    score: Number(milost?.score || 0),
+    sources: milost?.sources || {},
+    multiplier: +multiplier.toFixed(2)
+  };
+}
+
+function formatMilostMultiplier(multiplier) {
+  return Number(multiplier || 1).toFixed(1);
+}
+
+function formatLightValue(value) {
+  return Number(value || 0).toLocaleString('ru-RU', { maximumFractionDigits: 2 });
+}
+
+function applyMilostMultiplier(baseLight) {
+  const milost = normalizeMilost(milostToday);
+  const base = Number(baseLight || 0);
+  return {
+    milost,
+    baseLight: base,
+    finalLight: +(base * milost.multiplier).toFixed(2),
+    bonusPct: Math.round((milost.multiplier - 1) * 100),
+    color: milost.multiplier > 1.5 ? '#ffd700' : 'rgba(255,248,214,0.85)'
+  };
+}
+
+async function initTigelMilost() {
+  try {
+    const { getMilostToday, refreshMilost } = await loadMilostModule();
+    let current = getMilostToday();
+    if (!current || current.date !== currentDateKey()) current = await refreshMilost();
+    milostToday = normalizeMilost(current);
+    if (toroidResult) calculateToroid();
+  } catch(e) {
+    console.warn('milost:', e);
+  }
+}
+
+function applyMilostToGeneratedKey() {
+  if (!generatedKey?.key) return;
+  const baseLight = Number(generatedKey.key.light_before_milost || generatedKey.key.light_total || 0);
+  const light = applyMilostMultiplier(baseLight);
+  generatedKey.key.light_before_milost = light.baseLight;
+  generatedKey.key.light_total = Math.round(light.finalLight);
+  generatedKey.key.milost = {
+    date: light.milost.date,
+    multiplier: light.milost.multiplier,
+    bonus_pct: light.bonusPct,
+    bonus_light: Math.max(0, Math.round(light.finalLight - light.baseLight))
+  };
+}
+
+function applyMilostToCauldronResult(result) {
+  if (!result) return result;
+  const light = applyMilostMultiplier(result.lightAwarded);
+  return {
+    ...result,
+    lightBeforeMilost: result.lightAwarded,
+    lightAwarded: Math.round(light.finalLight),
+    milostMultiplier: light.milost.multiplier,
+    milostBonusLight: Math.max(0, Math.round(light.finalLight - light.baseLight)),
+    milostDate: light.milost.date
+  };
+}
+
+function getToroidRecommendations(result) {
+  if (typeof ToroidEngine.recommend === 'function') return ToroidEngine.recommend(result);
+  if (!result || result.balance >= 0.78) return [];
+  return [{
+    priority: result.balance < 0.35 ? 'HIGH' : 'MED',
+    action: result.dominant.advice,
+    effect: 'Поддержит баланс Ида/Пингала и усилит Сушумну'
+  }];
+}
 
 // ── Инициализация даты ──
 document.getElementById('current-date').textContent = new Date().toLocaleDateString('ru-RU', {
@@ -1055,6 +1145,10 @@ function calculateToroid() {
   }
 
   toroidResult = ToroidEngine.compute(wuXingState);
+  const milostLight = applyMilostMultiplier(toroidResult.light_total);
+  toroidResult.light_total_base = milostLight.baseLight;
+  toroidResult.light_total_milost = milostLight.finalLight;
+  toroidResult.milost = milostLight.milost;
   
   // Обновление UI
   const { pingala, ida, balance, sushumna, dominant, mining_multiplier, light_total } = toroidResult;
@@ -1075,10 +1169,10 @@ function calculateToroid() {
   document.getElementById('mining-value').textContent = '×'+mining_multiplier;
 
   // Свет
-  document.getElementById('light-total').textContent = light_total+' ✦';
+  document.getElementById('light-total').textContent = formatLightValue(milostLight.finalLight)+' ✦';
 
   // Рекомендации
-  const recs = ToroidEngine.recommend(toroidResult);
+  const recs = getToroidRecommendations(toroidResult);
   const recHTML = recs.map(r => `
     <div class="rec-item">
       <span class="rec-priority ${r.priority.toLowerCase()}">${r.priority}</span>
@@ -1088,7 +1182,7 @@ function calculateToroid() {
   `).join('');
   document.getElementById('recommendations').innerHTML = recHTML || '<div class="hint-text">Баланс отличный — продолжай в том же духе!</div>';
 
-  // ── ИТОГИ ДНЯ — 7 параметров ──
+  // ── ИТОГИ ДНЯ ──
   const ELEM_RU = {water:'Вода',wood:'Дерево',fire:'Огонь',earth:'Земля',metal:'Металл'};
   const topElem = Object.entries(wuXingState).sort((a,b) => b[1] - a[1])[0];
   const summaryEl = document.getElementById('day-summary');
@@ -1099,13 +1193,15 @@ function calculateToroid() {
     { label: 'Канал Ида (Инь)', value: Math.round(ida*100) + '%' },
     { label: 'Баланс Сушумны', value: sushumna.label, sub: Math.round(balance*100) + '%' },
     { label: 'Множитель майнинга', value: '×' + mining_multiplier },
-    { label: 'Свет за сессию', value: light_total + ' ✦' },
+    { label: 'Свет база', value: formatLightValue(light_total) + ' ✦' },
+    { label: 'Милость', value: '×' + formatMilostMultiplier(milostLight.milost.multiplier), sub: '+' + milostLight.bonusPct + '% света', color: milostLight.color },
+    { label: 'Свет итог', value: formatLightValue(milostLight.finalLight) + ' ✦', color: milostLight.color },
     { label: 'Рекомендация', value: dominant.advice },
   ];
   listEl.innerHTML = params.map(p =>
-    '<div style="display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;border-bottom:1px solid rgba(201,168,76,0.07);">' +
+    '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:4px 0;border-bottom:1px solid rgba(201,168,76,0.07);">' +
       '<span style="font-family:\'JetBrains Mono\',monospace;font-size:9px;letter-spacing:0.1em;color:rgba(201,168,76,0.4);">' + p.label + '</span>' +
-      '<span style="color:rgba(255,248,214,0.85);">' + p.value + (p.sub ? ' <span style="font-size:10px;color:rgba(201,168,76,0.5);">(' + p.sub + ')</span>' : '') + '</span>' +
+      '<span style="text-align:right;color:' + (p.color || 'rgba(255,248,214,0.85)') + ';">' + p.value + (p.sub ? ' <span style="font-size:10px;color:rgba(201,168,76,0.5);">(' + p.sub + ')</span>' : '') + '</span>' +
     '</div>'
   ).join('');
   summaryEl.style.display = 'block';
@@ -1201,6 +1297,7 @@ function generateKey() {
       mining_multiplier: toroidResult.mining_multiplier,
     }
   });
+  applyMilostToGeneratedKey();
 
   displayKey(generatedKey);
 }
@@ -1292,8 +1389,9 @@ function saveKey() {
     if (window._playerState && window._playerState.analyzeCauldronEntry && window._playerState.applyCauldronResult) {
       const logText = document.getElementById('log-input').value.trim();
       cauldronResult = window._playerState.analyzeCauldronEntry(logText, {
-        toroidLight: generatedKey && generatedKey.key ? generatedKey.key.light_total : 0
+        toroidLight: generatedKey && generatedKey.key ? (generatedKey.key.light_before_milost || generatedKey.key.light_total) : 0
       });
+      cauldronResult = applyMilostToCauldronResult(cauldronResult);
       const currentState = window._playerState.getState();
       const nextState = window._playerState.applyCauldronResult(currentState, cauldronResult);
       nextState.cauldron = {
@@ -1751,6 +1849,7 @@ async function processAlchemySynthesis() {
 
 // ── Инициализация ──
 updateWuXingDisplay();
+initTigelMilost();
 </script>
 
 <script>

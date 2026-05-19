@@ -243,7 +243,7 @@
   Файлы: `passport.html`, `js/milost-module.js`
   Est: 10 мин
 
-- [ ] **T-075 · tigel.html — применить множитель Милости**
+- [x] **T-075 · tigel.html — применить множитель Милости**
   DoD: итоговый свет Тигеля умножается на `milostToday.multiplier`, в итогах дня видно базу, множитель и результат.
   Файлы: `tigel.html`, `js/milost-module.js`
   Est: 8 мин
