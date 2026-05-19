@@ -238,7 +238,7 @@
   Файлы: `js/milost-module.js`, `TASKS.md`, `HANDOFF.md`
   Est: 10 мин
 
-- [ ] **T-074 · passport.html — панель «Милость Дня»**
+- [x] **T-074 · passport.html — панель «Милость Дня»**
   DoD: в паспорте показаны score, 4 источника, множитель и дата расчёта; использует `getMilostToday()`.
   Файлы: `passport.html`, `js/milost-module.js`
   Est: 10 мин
