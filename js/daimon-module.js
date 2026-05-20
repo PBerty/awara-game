@@ -495,3 +495,25 @@ export function getDaimonHint() {
   }
   return { id: 'default', text: HINTS_BY_CONTEXT[HINTS_BY_CONTEXT.length - 1].text };
 }
+
+// === Контекст Даймона для Оракула ===
+export function getDaimonContext() {
+  const daimon = getDaimon();
+  if (!daimon) return null;
+
+  const granthi = daimon.granthiPierced || { ...DEFAULT_GRANTHI_STATUS };
+  const evolutionStage = daimon.evolutionStage || 1;
+  const STAGE_NAMES = { 1: 'Пашу', 2: 'Вира', 3: 'Садхака', 4: 'Дживанмукта', 5: 'Парамукти' };
+
+  return {
+    name: daimon.name || null,
+    form: daimon.formName || null,
+    element: daimon.element || null,
+    archetype: daimon.archetype || null,
+    nakshatra: daimon.nakshatraName || null,
+    chakra: daimon.chakraName || null,
+    stage: STAGE_NAMES[evolutionStage] || 'Пашу',
+    dnaStrands: daimon.dnaStrands || 2,
+    granthiPierced: Object.keys(granthi).filter(k => granthi[k])
+  };
+}
