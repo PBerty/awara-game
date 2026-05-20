@@ -1112,6 +1112,24 @@ window.applyMatrixTheme = function(mid) {
       <div id="streak-count" style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(201,168,76,0.7);min-width:20px;text-align:center;">0</div>
     </div>
 
+    <!-- МИЛОСТЬ (БЛАГОДАТЬ) -->
+    <div id="milost-widget" ontouchstart="this.click()" onclick="location.href='milost.html'" style="
+      padding:8px 12px;border-radius:10px;cursor:pointer;
+      background:linear-gradient(135deg,rgba(124,58,237,0.06),rgba(201,168,76,0.04));
+      border:1px solid rgba(124,58,237,0.2);
+      display:flex;align-items:center;gap:10px;
+      transition:all 0.3s;
+    "
+    onmouseenter="this.style.borderColor='rgba(124,58,237,0.45)';this.style.background='linear-gradient(135deg,rgba(124,58,237,0.12),rgba(201,168,76,0.08))'"
+    onmouseleave="this.style.borderColor='rgba(124,58,237,0.2)';this.style.background='linear-gradient(135deg,rgba(124,58,237,0.06),rgba(201,168,76,0.04))'">
+      <div style="font-size:clamp(16px,4vw,20px);filter:drop-shadow(0 0 8px rgba(124,58,237,0.6));flex-shrink:0;width:32px;text-align:center;">☼</div>
+      <div style="flex:1;">
+        <div style="font-family:'Cinzel',serif;font-size:clamp(11px,2.5vw,12px);color:rgba(201,168,76,0.85);letter-spacing:0.15em;">МИЛОСТЬ</div>
+        <div id="milost-source-name" style="font-family:'JetBrains Mono',monospace;font-size:clamp(8px,1.8vw,9px);color:rgba(124,58,237,0.5);margin-top:1px;">...</div>
+      </div>
+      <div id="milost-multiplier" style="font-family:'JetBrains Mono',monospace;font-size:clamp(12px,3vw,14px);color:rgba(201,168,76,0.7);padding:3px 10px;border-radius:8px;background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.15);">x1.0</div>
+    </div>
+
     <!-- 4. НИЖНИЙ РЯД: ОБМЕН / КЛЮЧИ / ЯЗЫК -->
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
 
@@ -1263,6 +1281,23 @@ window.applyMatrixTheme = function(mid) {
     document.getElementById('streak-count').textContent = s.current + '/7';
     if (s.current >= 7) document.getElementById('streak-count').style.color = '#ffd700';
   } catch(e) { console.warn('streak:', e); }
+})();
+
+// ══ MILOST WIDGET ══
+(async function() {
+  try {
+    const { getCurrentSource, getSourceMultiplier } = await import('./js/milost-module.js');
+    const state = JSON.parse(localStorage.getItem('awara_player_state') || '{}');
+    const ray = state.ray || 4;
+    const source = await getCurrentSource(ray);
+    const multiplier = await getSourceMultiplier(ray);
+    if (source) {
+      const nameEl = document.getElementById('milost-source-name');
+      if (nameEl) nameEl.textContent = source.name_ru;
+    }
+    const multEl = document.getElementById('milost-multiplier');
+    if (multEl) multEl.textContent = 'x' + (multiplier || 1.0).toFixed(1);
+  } catch(e) { console.warn('milost-widget:', e); }
 })();
 
 // Бейдж колоды карт
