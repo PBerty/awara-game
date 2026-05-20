@@ -253,12 +253,12 @@
   Файлы: `data/daimon-forms.json`
   Est: 10 мин
 
-- [ ] **T-077 · js/daimon-module.js — генерация Даймона**
+- [x] **T-077 · js/daimon-module.js — генерация Даймона**
   DoD: новый ES6-модуль создаёт/читает Даймона из натальной карты, dosha, сильнейшей планеты, уровня и stage.
   Файлы: `js/daimon-module.js`, `data/daimon-forms.json`
   Est: 10 мин
 
-- [ ] **T-078 · daimon.html — экран Хранителя**
+- [x] **T-078 · daimon.html — экран Хранителя**
   DoD: новый экран показывает форму, элемент, архетип, имя, stage, уровень и resonanceBonus; mobile-pass 320/375/768.
   Файлы: `daimon.html`, `js/daimon-module.js`
   Est: 15 мин
