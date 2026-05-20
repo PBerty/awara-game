@@ -771,6 +771,9 @@ body::after {
         <div id="card-effects-list" style="display:flex;flex-direction:column;gap:6px;font-family:'Cormorant Garamond',serif;font-size:clamp(11px,2.8vw,13px);color:rgba(220,210,190,0.7);"></div>
       </div>
 
+      <!-- ЗАВЕСА ЗАБВЕНИЯ -->
+      <div id="veil-panel" style="display:none;margin-top:12px;padding:12px;border-radius:10px;background:rgba(100,40,200,0.04);border:1px solid rgba(124,58,237,0.15);"></div>
+
       <!-- РЕКОМЕНДАЦИИ -->
       <div id="recommendations" class="recommendations"></div>
 
@@ -1051,14 +1054,51 @@ async function initTigelDaimon() {
 
 async function initTigelMilost() {
   try {
-    const { getMilostToday, refreshMilost } = await loadMilostModule();
-    let current = getMilostToday();
-    if (!current || current.date !== currentDateKey()) current = await refreshMilost();
-    milostToday = normalizeMilost(current);
+    const { getCurrentSource, getSourceMultiplier, checkVeilBreach, getMacrocosmMessage } = await loadMilostModule();
+    const state = JSON.parse(localStorage.getItem('awara_player_state') || '{}');
+    const playerRay = state.ray || 4;
+    const resonance = state.resonance || 0;
+    const source = await getCurrentSource(playerRay);
+    const multiplier = await getSourceMultiplier(playerRay);
+    milostToday = normalizeMilost({
+      date: currentDateKey(),
+      score: resonance,
+      sources: source ? { [source.name_ru]: true } : {},
+      multiplier: multiplier || 1
+    });
+    const breached = await checkVeilBreach(playerRay, resonance);
+    const msg = breached ? await getMacrocosmMessage(playerRay) : null;
+    renderVeilPanel(source, resonance, breached, msg);
     if (toroidResult) calculateToroid();
   } catch(e) {
     console.warn('milost:', e);
   }
+}
+
+function renderVeilPanel(source, resonance, breached, msg) {
+  const panel = document.getElementById('veil-panel');
+  if (!panel || !source) return;
+  const pct = Math.min(100, Math.round((resonance / source.veil_threshold) * 100));
+  const remaining = Math.max(0, source.veil_threshold - resonance);
+  let html = '';
+  html += '<div style="font-family:\'JetBrains Mono\',monospace;font-size:8px;letter-spacing:0.2em;color:rgba(201,168,76,0.45);margin-bottom:6px;">ИСТОЧНИК: ' + source.name_ru.toUpperCase() + '</div>';
+  html += '<div style="display:flex;justify-content:space-between;font-family:\'JetBrains Mono\',monospace;font-size:9px;color:rgba(255,248,214,0.5);margin-bottom:4px;">';
+  html += '  <span>Резонанс</span><span>' + resonance + ' / ' + source.veil_threshold + '</span>';
+  html += '</div>';
+  html += '<div style="height:6px;background:rgba(201,168,76,0.12);border-radius:3px;overflow:hidden;">';
+  html += '  <div style="height:100%;width:' + pct + '%;border-radius:3px;transition:width 0.6s;background:linear-gradient(90deg,' + (breached ? '#ffd700,#ffe680' : '#7c3aed,#c9a84c') + ');"></div>';
+  html += '</div>';
+  if (breached) {
+    html += '<div style="margin-top:8px;font-family:\'Cinzel\',serif;font-size:11px;letter-spacing:0.1em;color:#ffd700;">ЗАВЕСА ПРОБИТА</div>';
+    if (msg) {
+      html += '<div style="margin-top:8px;padding:10px 12px;border-left:2px solid rgba(255,215,0,0.5);background:rgba(255,215,0,0.04);border-radius:0 8px 8px 0;font-family:\'Cormorant Garamond\',serif;font-style:italic;font-size:12px;color:rgba(255,248,214,0.8);line-height:1.5;white-space:pre-line;">' + msg + '</div>';
+    }
+  } else {
+    html += '<div style="margin-top:6px;font-family:\'JetBrains Mono\',monospace;font-size:9px;color:rgba(255,248,214,0.4);">До пробоя: ' + remaining + ' очков</div>';
+  }
+  html += '<div style="margin-top:6px;font-family:\'JetBrains Mono\',monospace;font-size:9px;color:rgba(201,168,76,0.4);">Множитель: x' + source.multiplier + '</div>';
+  panel.style.display = 'block';
+  panel.innerHTML = html;
 }
 
 function applyDaimonToGeneratedKey() {
