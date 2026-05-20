@@ -251,6 +251,22 @@ body::before{
     <div class="daimon-open" aria-hidden="true">→</div>
   </a>
 
+  <!-- ХРАМ -->
+  <a class="passport-card" href="temple.html" id="temple-card" style="text-decoration:none;display:flex;align-items:center;gap:12px;cursor:pointer;border-color:rgba(201,168,76,0.22);"
+     aria-label="Открыть управление храмом">
+    <div style="font-size:28px;width:40px;text-align:center;filter:drop-shadow(0 0 6px rgba(201,168,76,0.3));">&#9784;</div>
+    <div style="flex:1;">
+      <div class="pp-section-title">ХРАМ</div>
+      <div id="temple-pp-status" style="font-family:'Cormorant Garamond',serif;font-size:12px;color:var(--text-soft);">не построен</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;">
+        <span id="temple-pp-svet" style="font-size:8px;letter-spacing:.06em;padding:3px 8px;border-radius:6px;border:1px solid rgba(201,168,76,0.12);color:rgba(201,168,76,0.5);">0/ч</span>
+        <span id="temple-pp-levels" style="font-size:8px;letter-spacing:.06em;padding:3px 8px;border-radius:6px;border:1px solid rgba(201,168,76,0.12);color:rgba(201,168,76,0.5);">0/55</span>
+        <span id="temple-pp-mult" style="font-size:8px;letter-spacing:.06em;padding:3px 8px;border-radius:6px;border:1px solid rgba(201,168,76,0.12);color:rgba(201,168,76,0.5);">x1.0</span>
+      </div>
+    </div>
+    <div style="font-size:16px;color:var(--text-mute);opacity:.4;" aria-hidden="true">→</div>
+  </a>
+
   <!-- ЭНЕРГИЯ -->
   <div class="passport-card">
     <div class="pp-section-title">ЭНЕРГИЯ</div>
@@ -303,6 +319,7 @@ import { getState } from './js/playerState.js';
 import { getStreak } from './js/streak.js';
 import { getMilostToday, refreshMilost } from './js/milost-module.js';
 import { getDaimon } from './js/daimon-module.js';
+import { getTemple, getPassiveSvetPerHour, getTempleSummary } from './js/temple-module.js';
 
 const MILOST_SOURCE_META = [
   ['jupiter', '♃', 'Юпитер'],
@@ -466,6 +483,26 @@ async function init() {
   }).join('');
 
   await initMilostPanel();
+  await renderTempleCard();
+}
+
+async function renderTempleCard() {
+  try {
+    var temple = getTemple('vedic');
+    if (!temple) return;
+    var summary = await getTempleSummary('vedic');
+    var perHour = await getPassiveSvetPerHour('vedic');
+    if (summary) {
+      var statusEl = document.getElementById('temple-pp-status');
+      if (statusEl) statusEl.textContent = summary.ecosystemName || 'Храм активен';
+      var svetEl = document.getElementById('temple-pp-svet');
+      if (svetEl) svetEl.textContent = '+' + perHour + '/ч';
+      var levelsEl = document.getElementById('temple-pp-levels');
+      if (levelsEl) levelsEl.textContent = summary.totalLevels + '/55';
+      var multEl = document.getElementById('temple-pp-mult');
+      if (multEl) multEl.textContent = 'x' + summary.multiplier;
+    }
+  } catch(e) { console.warn('temple passport:', e); }
 }
 
 init();

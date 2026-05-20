@@ -1148,6 +1148,25 @@ window.applyMatrixTheme = function(mid) {
       <div id="daimon-dna-badge" style="font-family:'JetBrains Mono',monospace;font-size:clamp(12px,3vw,14px);color:rgba(201,168,76,0.7);padding:3px 10px;border-radius:8px;background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.15);">2/12</div>
     </div>
 
+    <!-- ХРАМ -->
+    <div id="temple-widget" ontouchstart="this.click()" onclick="location.href='temple.html'" style="
+      padding:8px 12px;border-radius:10px;cursor:pointer;
+      background:linear-gradient(135deg,rgba(201,168,76,0.06),rgba(112,96,168,0.04));
+      border:1px solid rgba(201,168,76,0.2);
+      display:flex;align-items:center;gap:10px;
+      transition:all 0.3s;
+    "
+    onmouseenter="this.style.borderColor='rgba(201,168,76,0.5)';this.style.background='linear-gradient(135deg,rgba(201,168,76,0.12),rgba(112,96,168,0.08))'"
+    onmouseleave="this.style.borderColor='rgba(201,168,76,0.2)';this.style.background='linear-gradient(135deg,rgba(201,168,76,0.06),rgba(112,96,168,0.04))'">
+      <div style="font-size:clamp(16px,4vw,20px);filter:drop-shadow(0 0 8px rgba(201,168,76,0.4));flex-shrink:0;width:32px;text-align:center;">&#9784;</div>
+      <div style="flex:1;">
+        <div style="font-family:'Cinzel',serif;font-size:clamp(11px,2.5vw,12px);color:rgba(201,168,76,0.85);letter-spacing:0.15em;">ХРАМ</div>
+        <div id="temple-status-text" style="font-family:'JetBrains Mono',monospace;font-size:clamp(8px,1.8vw,9px);color:rgba(201,168,76,0.4);margin-top:1px;">...</div>
+      </div>
+      <div id="temple-svet-badge" style="font-family:'JetBrains Mono',monospace;font-size:clamp(12px,3vw,14px);color:rgba(201,168,76,0.7);padding:3px 10px;border-radius:8px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.15);">--</div>
+    </div>
+
+
     <!-- 4. НИЖНИЙ РЯД: ОБМЕН / КЛЮЧИ / ЯЗЫК -->
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
 
@@ -1338,6 +1357,25 @@ window.applyMatrixTheme = function(mid) {
     const dnaEl = document.getElementById('daimon-dna-badge');
     if (dnaEl) dnaEl.textContent = (dna || 2) + '/12';
   } catch(e) { console.warn('daimon-widget:', e); }
+})();
+
+// ══ TEMPLE WIDGET ══
+(async function() {
+  try {
+    const { getTemple, getPassiveSvetPerHour, getTempleSummary } = await import('./js/temple-module.js');
+    var temple = getTemple('vedic');
+    if (!temple) {
+      document.getElementById('temple-status-text').textContent = 'не построен';
+      document.getElementById('temple-svet-badge').textContent = '--';
+      return;
+    }
+    var summary = await getTempleSummary('vedic');
+    var perHour = await getPassiveSvetPerHour('vedic');
+    var statusEl = document.getElementById('temple-status-text');
+    if (statusEl && summary) statusEl.textContent = '+' + perHour + '/ч · x' + summary.multiplier;
+    var badgeEl = document.getElementById('temple-svet-badge');
+    if (badgeEl && summary) badgeEl.textContent = summary.totalLevels + '/55';
+  } catch(e) { console.warn('temple-widget:', e); }
 })();
 
 // Бейдж колоды карт

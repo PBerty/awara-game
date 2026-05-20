@@ -383,7 +383,7 @@
   Файлы: `matrix.html`, `js/temple-module.js`
   Est: 10 мин
 
-- [ ] **E-017 · интеграция Temple в лобби и паспорт**
+- [x] **E-017 · интеграция Temple в лобби и паспорт**
   DoD: виджет храмов в лобби, секция храмов в паспорте.
   Файлы: `index.html`, `passport.html`, `js/temple-module.js`
   Est: 10 мин
