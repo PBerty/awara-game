@@ -1130,6 +1130,24 @@ window.applyMatrixTheme = function(mid) {
       <div id="milost-multiplier" style="font-family:'JetBrains Mono',monospace;font-size:clamp(12px,3vw,14px);color:rgba(201,168,76,0.7);padding:3px 10px;border-radius:8px;background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.15);">x1.0</div>
     </div>
 
+    <!-- ДАЙМОН-ХРАНИТЕЛЬ -->
+    <div id="daimon-widget" ontouchstart="this.click()" onclick="location.href='daimon.html'" style="
+      padding:8px 12px;border-radius:10px;cursor:pointer;
+      background:linear-gradient(135deg,rgba(124,58,237,0.06),rgba(34,197,94,0.04));
+      border:1px solid rgba(124,58,237,0.2);
+      display:flex;align-items:center;gap:10px;
+      transition:all 0.3s;
+    "
+    onmouseenter="this.style.borderColor='rgba(124,58,237,0.5)';this.style.background='linear-gradient(135deg,rgba(124,58,237,0.12),rgba(34,197,94,0.08))'"
+    onmouseleave="this.style.borderColor='rgba(124,58,237,0.2)';this.style.background='linear-gradient(135deg,rgba(124,58,237,0.06),rgba(34,197,94,0.04))'">
+      <div style="font-size:clamp(16px,4vw,20px);filter:drop-shadow(0 0 8px rgba(124,58,237,0.6));flex-shrink:0;width:32px;text-align:center;">&#9734;</div>
+      <div style="flex:1;">
+        <div style="font-family:'Cinzel',serif;font-size:clamp(11px,2.5vw,12px);color:rgba(201,168,76,0.85);letter-spacing:0.15em;">ХРАНИТЕЛЬ</div>
+        <div id="daimon-stage-name" style="font-family:'JetBrains Mono',monospace;font-size:clamp(8px,1.8vw,9px);color:rgba(124,58,237,0.5);margin-top:1px;">...</div>
+      </div>
+      <div id="daimon-dna-badge" style="font-family:'JetBrains Mono',monospace;font-size:clamp(12px,3vw,14px);color:rgba(201,168,76,0.7);padding:3px 10px;border-radius:8px;background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.15);">2/12</div>
+    </div>
+
     <!-- 4. НИЖНИЙ РЯД: ОБМЕН / КЛЮЧИ / ЯЗЫК -->
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
 
@@ -1298,6 +1316,28 @@ window.applyMatrixTheme = function(mid) {
     const multEl = document.getElementById('milost-multiplier');
     if (multEl) multEl.textContent = 'x' + (multiplier || 1.0).toFixed(1);
   } catch(e) { console.warn('milost-widget:', e); }
+})();
+
+// ══ DAIMON WIDGET ══
+(async function() {
+  try {
+    const { getDaimon, getCurrentEvolutionStage, getDNAStrands } = await import('./js/daimon-module.js');
+    const daimon = getDaimon();
+    if (!daimon) {
+      const w = document.getElementById('daimon-widget');
+      if (w) {
+        document.getElementById('daimon-stage-name').textContent = 'не призван';
+        document.getElementById('daimon-dna-badge').textContent = '--';
+      }
+      return;
+    }
+    const stage = await getCurrentEvolutionStage();
+    const dna = await getDNAStrands();
+    const stageEl = document.getElementById('daimon-stage-name');
+    if (stageEl && stage) stageEl.textContent = (daimon.name || 'Хранитель') + ' / ' + stage.name_ru;
+    const dnaEl = document.getElementById('daimon-dna-badge');
+    if (dnaEl) dnaEl.textContent = (dna || 2) + '/12';
+  } catch(e) { console.warn('daimon-widget:', e); }
 })();
 
 // Бейдж колоды карт
