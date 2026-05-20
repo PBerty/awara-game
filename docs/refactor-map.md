@@ -20,7 +20,6 @@
 | `dashboard.html` | 29.6 KB |
 | `earth-player.html` | 31.7 KB |
 | `index.html` | 1023.4 KB |
-| `initiation-space-ORIGINAL.html` | 375.9 KB |
 | `initiation-space.html` | 395.0 KB |
 | `matrices.html` | 5.7 KB |
 | `natal.html` | 22.1 KB |
@@ -245,7 +244,6 @@
 | Натальная карта | `natal.html` | Вынесена |
 | Земля игрока | `earth-player.html` | Вынесена |
 | Пространство инициации / universe view | `initiation-space.html` | Вынесено, но файл крупный |
-| Оригинальная копия инициации | `initiation-space-ORIGINAL.html` | Reference/backup, не целевой экран |
 
 ### Уже извлечённый CSS
 

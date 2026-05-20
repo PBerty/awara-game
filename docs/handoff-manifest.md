@@ -83,7 +83,6 @@ awara-v258-modular/
 ├── netlify.toml                    # на случай деплоя в Netlify
 ├── index.html                      # лобби (с Светкоином в шапке)
 ├── initiation-space.html           # пространство инициации (4 сферы + связи)
-├── initiation-space-ORIGINAL.html  # бэкап оригинала
 ├── tigel.html                      # вечерний лог (3 вкладки)
 ├── earth-player.html               # Земля игрока (Васту-builder, скелет)
 ├── matrices.html                   # выбор матрицы восприятия (не до конца)
