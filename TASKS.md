@@ -278,19 +278,114 @@
   Файлы: `data/temple-ecosystems.json`
   Est: 10 мин
 
-- [ ] **T-082 · js/temple-module.js — логика храмов**
+- [ ] **T-082 · js/temple-module.js — логика храмов (superseded by Phase 7: см. E-013/E-014/E-016)**
   DoD: модуль умеет `buildTemple(matrixId)`, `getTemples()`, `collectPassiveSvet()`, `getTempleByMatrix(matrixId)` и использует Daimon stage + Milost multiplier.
   Файлы: `js/temple-module.js`, `data/temple-ecosystems.json`
   Est: 12 мин
 
-- [ ] **T-083 · earth-player.html — маркеры храмов на Canvas**
+- [ ] **T-083 · earth-player.html — маркеры храмов на Canvas (superseded by Phase 7: см. E-013/E-014/E-016)**
   DoD: построенные храмы отображаются золотыми точками, клик открывает попап экосистемы и сбор пассивного света; mobile-pass 320/375/768.
   Файлы: `earth-player.html`, `js/temple-module.js`
   Est: 15 мин
 
-- [ ] **T-084 · matrix.html — кнопка «Воздвигнуть Храм»**
+- [ ] **T-084 · matrix.html — кнопка «Воздвигнуть Храм» (superseded by Phase 7: см. E-013/E-014/E-016)**
   DoD: у матрицы появляется кнопка постройки за 10000 света, disabled при нехватке света, после постройки церемониальный попап.
   Файлы: `matrix.html`, `js/temple-module.js`
+  Est: 10 мин
+
+---
+
+## Phase 7 -- Enhancement (E-001..E-017)
+
+### Milost v2.0 (E-001..E-005)
+
+- [x] **E-001 · data/milost-sources.json -- 7 источников Милости по 7 Лучам**
+  DoD: JSON-массив из 7 объектов (id, ray, name_ru, description, veil_threshold, macrocosm_message, multiplier).
+  Файлы: `data/milost-sources.json`
+  Est: 10 мин
+
+- [ ] **E-002 · js/milost-module.js -- движок Милости v2.0**
+  DoD: модуль загружает milost-sources.json, вычисляет текущий уровень благодати, множитель луча, пробой Завесы.
+  Файлы: `js/milost-module.js`
+  Est: 15 мин
+
+- [ ] **E-003 · milost.html -- экран Милости**
+  DoD: новая страница отображает 7 источников, прогресс-бары до veil_threshold, послание макрокосма при пробое.
+  Файлы: `milost.html`
+  Est: 15 мин
+
+- [ ] **E-004 · интеграция Милости в Тигель**
+  DoD: множитель Милости влияет на расчёт баланса в tigel.html.
+  Файлы: `tigel.html`, `js/milost-module.js`
+  Est: 10 мин
+
+- [ ] **E-005 · интеграция Милости в лобби**
+  DoD: в лобби виджет текущего уровня благодати и активного Луча.
+  Файлы: `index.html`, `js/milost-module.js`
+  Est: 10 мин
+
+### Daimon v2.0 (E-006..E-011)
+
+- [ ] **E-006 · расширение data/daimon-stages.json -- стадии роста Даймона**
+  DoD: JSON с расширенными стадиями эволюции, порогами перехода, бонусами.
+  Файлы: `data/daimon-stages.json`
+  Est: 10 мин
+
+- [ ] **E-007 · js/daimon-module.js v2.0 -- расширенная логика Даймона**
+  DoD: модуль поддерживает новые стадии, диалоги, влияние на Милость.
+  Файлы: `js/daimon-module.js`
+  Est: 15 мин
+
+- [ ] **E-008 · daimon.html v2.0 -- расширенный экран Даймона**
+  DoD: экран показывает текущую стадию, прогресс, диалог с Даймоном.
+  Файлы: `daimon.html`
+  Est: 15 мин
+
+- [ ] **E-009 · диалоговая система Даймона**
+  DoD: Даймон может давать подсказки на основе состояния игрока.
+  Файлы: `js/daimon-module.js`, `daimon.html`
+  Est: 15 мин
+
+- [ ] **E-010 · интеграция Даймона с Оракулом**
+  DoD: Даймон влияет на контексты Оракула, добавляет свой голос.
+  Файлы: `js/oracle.js`, `js/daimon-module.js`
+  Est: 10 мин
+
+- [ ] **E-011 · интеграция Даймона в лобби**
+  DoD: виджет состояния Даймона в лобби, индикатор стадии.
+  Файлы: `index.html`, `js/daimon-module.js`
+  Est: 10 мин
+
+### Temple v2.0 (E-012..E-017)
+
+- [ ] **E-012 · data/temple-upgrades.json -- улучшения храмов**
+  DoD: JSON с деревом улучшений для храмов, стоимостями, эффектами.
+  Файлы: `data/temple-upgrades.json`
+  Est: 10 мин
+
+- [ ] **E-013 · js/temple-module.js v2.0 -- расширенная логика храмов**
+  DoD: модуль поддерживает постройку, улучшение, сбор пассивного света, экосистемы.
+  Файлы: `js/temple-module.js`
+  Est: 15 мин
+
+- [ ] **E-014 · earth-player.html v2.0 -- храмы на карте**
+  DoD: маркеры храмов на Canvas, попап экосистемы, сбор света, mobile-pass.
+  Файлы: `earth-player.html`, `js/temple-module.js`
+  Est: 15 мин
+
+- [ ] **E-015 · temple.html -- экран управления храмом**
+  DoD: отдельная страница для управления храмом, просмотра экосистемы, улучшений.
+  Файлы: `temple.html`
+  Est: 15 мин
+
+- [ ] **E-016 · matrix.html v2.0 -- кнопка постройки храма**
+  DoD: кнопка постройки за свет, церемониальный попап, связь с temple-module.
+  Файлы: `matrix.html`, `js/temple-module.js`
+  Est: 10 мин
+
+- [ ] **E-017 · интеграция Temple в лобби и паспорт**
+  DoD: виджет храмов в лобби, секция храмов в паспорте.
+  Файлы: `index.html`, `passport.html`, `js/temple-module.js`
   Est: 10 мин
 
 ---
