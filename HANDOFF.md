@@ -25,8 +25,8 @@
 | Сессия | https://app.devin.ai/sessions/7fd0e6b2baac42a5b0b0ba6bb6d73ea5 |
 | Модель | Fast Mode |
 | Дата | 2026-05-20 (UTC) |
-| Закрытые задачи | E-012 |
-| Следующая задача | E-013 -- js/temple-module.js v2.0 |
+| Закрытые задачи | E-012, E-013 |
+| Следующая задача | E-014 -- earth-player.html v2.0 |
 | Состояние master | master с E-011 смерджен (PR #91) |
 | Pages | включён, master/root |
 
@@ -34,13 +34,12 @@
 
 ## Лог смен (новые записи СВЕРХУ)
 
-### 2026-05-20 · PBerty · E-012
-- Закрыто: E-012 -- data/temple-upgrades.json: дерево улучшений храмов.
-- 11 зон star_temple (center, library, body_temple, creative_workshop, service_hall, relationship_house, garden, fire_altar, water_sanctuary, air_tower, ether_dome).
-- Каждая зона -- 5 уровней с ростом стоимости (300-25000 света), материалами, пассивным светом и разблокировками.
-- 5 глобальных бонусов за полное улучшение всех зон (Пробуждение Храма -> Космический Маяк).
-- Стихии/чакры привязаны к каждой зоне; материалы используют earth_crystal/water_pearl/fire_seed/air_feather/ether_thread.
-- Следующая задача: E-013 -- js/temple-module.js v2.0.
+### 2026-05-20 · PBerty · E-013
+- Закрыто: E-013 -- js/temple-module.js v2.0: расширенная логика храмов.
+- ES6-модуль: buildTemple, upgradeZone, collectPassiveLight, getTempleEcosystem, getTempleMultiplier, getUnlockedAbilities, getTempleSummary.
+- Загрузка temple-upgrades.json и temple-ecosystems.json с кэшем.
+- Постройка с вычетом света, улучшения с проверкой материалов, пассивный свет (макс 24ч), глобальные бонусы.
+- Следующая задача: E-014 -- earth-player.html v2.0.
 
 ### 2026-05-10 · victorianpieraverdi-dev · E-011
 - Закрыто: E-011 -- интеграция Даймона в лобби.
