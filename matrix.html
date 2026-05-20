@@ -243,6 +243,63 @@
       border-color: #ffe080;
     }
 
+    /* === ХРАМ БЛОК === */
+    .temple-block{
+      margin-bottom:24px;padding:16px;
+      border:1px solid rgba(201,168,76,.2);border-radius:14px;
+      background:rgba(14,8,32,.28);
+      backdrop-filter:blur(8px);text-align:center;
+    }
+    .tb-label{
+      font-size:8px;letter-spacing:.2em;color:rgba(201,168,76,.4);
+      margin-bottom:10px;
+    }
+    .tb-info{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px;}
+    .tb-stat{
+      padding:5px 12px;border-radius:8px;
+      border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.02);
+      text-align:center;
+    }
+    .tb-stat-lbl{font-size:7px;letter-spacing:.1em;color:rgba(201,168,76,.35);}
+    .tb-stat-val{font-family:'Cormorant Garamond',serif;font-size:14px;color:rgba(255,248,214,.8);}
+    .tb-btn{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:10px 24px;min-height:44px;border-radius:10px;
+      border:1px solid rgba(201,168,76,.4);
+      background:linear-gradient(135deg,rgba(201,168,76,.12),rgba(201,168,76,.04));
+      color:#c9a84c;font-family:'Cinzel',serif;font-size:11px;
+      letter-spacing:.12em;cursor:pointer;transition:all .2s;
+      text-decoration:none;
+    }
+    .tb-btn:hover{background:rgba(201,168,76,.2);border-color:rgba(201,168,76,.6);}
+    .tb-popup{
+      position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:90;
+      width:min(360px,90vw);padding:24px;border-radius:16px;
+      background:rgba(6,4,18,.97);border:1px solid rgba(201,168,76,.3);
+      box-shadow:0 0 60px rgba(0,0,0,.8);display:none;text-align:center;
+    }
+    .tb-popup.show{display:block;}
+    .tb-popup-title{
+      font-family:'Cinzel Decorative',serif;font-size:16px;color:#c9a84c;
+      letter-spacing:.15em;margin-bottom:8px;
+    }
+    .tb-popup-text{
+      font-family:'Cormorant Garamond',serif;font-size:13px;
+      color:rgba(255,255,255,.5);line-height:1.6;margin-bottom:16px;
+    }
+    .tb-popup-btn{
+      display:inline-block;padding:12px 32px;min-height:44px;border-radius:10px;
+      border:1px solid rgba(201,168,76,.5);
+      background:linear-gradient(135deg,rgba(201,168,76,.15),rgba(201,168,76,.05));
+      color:#c9a84c;font-family:'Cinzel',serif;font-size:12px;
+      letter-spacing:.12em;cursor:pointer;transition:all .2s;margin:4px;
+    }
+    .tb-popup-btn:hover{background:rgba(201,168,76,.25);}
+    .tb-popup-btn.cancel{
+      border-color:rgba(255,255,255,.1);background:rgba(255,255,255,.03);
+      color:rgba(255,255,255,.4);font-size:10px;
+    }
+
     /* === АНИМАЦИИ === */
     @keyframes matrixPulse {
       0% { transform: scale(1); }
@@ -288,6 +345,20 @@
     <div id="matrix-switcher-container"></div>
   </div>
 
+  <!-- ХРАМ -->
+  <div class="temple-block" id="temple-block">
+    <div class="tb-label">ХРАМ МАТРИЦЫ</div>
+    <div class="tb-info" id="tb-info"></div>
+    <div id="tb-action"></div>
+  </div>
+
+  <!-- Церемониальный попап -->
+  <div class="tb-popup" id="tb-popup">
+    <div class="tb-popup-title" id="tbp-title">ВОЗВЕСТИ ХРАМ</div>
+    <div class="tb-popup-text" id="tbp-text"></div>
+    <div id="tbp-actions"></div>
+  </div>
+
   <!-- 21 АГЕНТ -->
   <div class="agents-section">
     <div class="section-title">21 АГЕНТ</div>
@@ -307,6 +378,7 @@
   import { renderSwitcher, getActivePerception, setActivePerception, PERCEPTIONS } from './js/matrixSwitcher.js';
   import { loadState, updateState } from './js/state-module.js';
   import { showToast } from './js/ui-module.js';
+  import { getTemple, buildTemple, getPassiveSvetPerHour, getTempleSummary, getTempleEcosystem } from './js/temple-module.js';
 
   // === СОСТОЯНИЕ ===
   let activeMatrixSlug = getActivePerception();
@@ -435,8 +507,71 @@
     console.log('[Matrix Screen] Восприятие изменено:', perceptionId);
   }
 
+  // === ХРАМ БЛОК ===
+  async function renderTempleBlock() {
+    var slug = activeMatrixSlug;
+    var temple = getTemple(slug);
+    var infoEl = document.getElementById('tb-info');
+    var actionEl = document.getElementById('tb-action');
+
+    if (!temple) {
+      infoEl.innerHTML = '';
+      actionEl.innerHTML = '<button class="tb-btn" id="tb-build-btn">' +
+        '\u2638 \u0412\u041e\u0417\u0412\u0415\u0421\u0422\u0418 \u0425\u0420\u0410\u041c (500 \u0441\u0432\u0435\u0442\u0430)</button>';
+      document.getElementById('tb-build-btn').onclick = function() {
+        showBuildPopup(slug);
+      };
+      return;
+    }
+
+    var summary = await getTempleSummary(slug);
+    var perHour = await getPassiveSvetPerHour(slug);
+    if (summary) {
+      infoEl.innerHTML =
+        '<div class="tb-stat"><div class="tb-stat-lbl">\u0421\u0412\u0415\u0422/\u0427\u0410\u0421</div><div class="tb-stat-val">+' + perHour + '</div></div>' +
+        '<div class="tb-stat"><div class="tb-stat-lbl">\u041c\u041d\u041e\u0416.</div><div class="tb-stat-val">x' + summary.multiplier + '</div></div>' +
+        '<div class="tb-stat"><div class="tb-stat-lbl">\u0423\u0420\u041e\u0412\u041d\u0418</div><div class="tb-stat-val">' + summary.totalLevels + '/55</div></div>';
+    }
+    actionEl.innerHTML = '<a class="tb-btn" href="temple.html">' +
+      '\u2638 \u0423\u041f\u0420\u0410\u0412\u041b\u0415\u041d\u0418\u0415 \u0425\u0420\u0410\u041c\u041e\u041c</a>';
+  }
+
+  function showBuildPopup(slug) {
+    var popup = document.getElementById('tb-popup');
+    var matrix = allMatrices.find(function(m){ return m.slug === slug; });
+    var name = matrix ? matrix.name : slug;
+    document.getElementById('tbp-title').textContent = '\u0412\u041e\u0417\u0412\u0415\u0421\u0422\u0418 \u0425\u0420\u0410\u041c';
+    document.getElementById('tbp-text').textContent =
+      '\u0412\u043e\u0437\u0432\u0435\u0441\u0442\u0438 \u0425\u0440\u0430\u043c \u043c\u0430\u0442\u0440\u0438\u0446\u044b \u00ab' + name + '\u00bb? \u0421\u0442\u043e\u0438\u043c\u043e\u0441\u0442\u044c: 500 \u0441\u0432\u0435\u0442\u0430.';
+    document.getElementById('tbp-actions').innerHTML =
+      '<button class="tb-popup-btn" id="tbp-confirm">\u0412\u041e\u0417\u0412\u0415\u0421\u0422\u0418</button>' +
+      '<button class="tb-popup-btn cancel" id="tbp-cancel">\u041e\u0422\u041c\u0415\u041d\u0410</button>';
+    popup.classList.add('show');
+
+    document.getElementById('tbp-confirm').onclick = async function() {
+      var result = await buildTemple(slug);
+      popup.classList.remove('show');
+      if (result.success) {
+        showToast('\u0425\u0440\u0430\u043c \u0432\u043e\u0437\u0432\u0435\u0434\u0451\u043d! (-' + result.spent + ' \u0441\u0432\u0435\u0442\u0430)', 3000);
+        renderTempleBlock();
+      } else if (result.error === 'not_enough_light') {
+        showToast('\u041d\u0435\u0434\u043e\u0441\u0442\u0430\u0442\u043e\u0447\u043d\u043e \u0441\u0432\u0435\u0442\u0430 (\u043d\u0443\u0436\u043d\u043e ' + result.required + ')', 3000);
+      }
+    };
+    document.getElementById('tbp-cancel').onclick = function() {
+      popup.classList.remove('show');
+    };
+  }
+
+  document.addEventListener('click', function(e) {
+    var popup = document.getElementById('tb-popup');
+    if (popup.classList.contains('show') && !popup.contains(e.target)) {
+      popup.classList.remove('show');
+    }
+  });
+
   // === СТАРТ ===
-  init();
+  init().then(function() { renderTempleBlock(); });
 </script>
 
 </body>
