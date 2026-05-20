@@ -358,7 +358,7 @@
 
 ### Temple v2.0 (E-012..E-017)
 
-- [ ] **E-012 · data/temple-upgrades.json -- улучшения храмов**
+- [x] **E-012 · data/temple-upgrades.json -- улучшения храмов**
   DoD: JSON с деревом улучшений для храмов, стоимостями, эффектами.
   Файлы: `data/temple-upgrades.json`
   Est: 10 мин
