@@ -273,7 +273,7 @@
   Файлы: `passport.html`, `js/daimon-module.js`
   Est: 7 мин
 
-- [ ] **T-081 · data/temple-ecosystems.json — экосистемы 33 храмов**
+- [x] **T-081 · data/temple-ecosystems.json — экосистемы 33 храмов**
   DoD: новый JSON из 33 объектов матриц с шаблоном имени храма, вселенной, flora, minerals, creatures, ambient, basePassiveSvet.
   Файлы: `data/temple-ecosystems.json`
   Est: 10 мин

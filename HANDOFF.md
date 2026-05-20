@@ -25,14 +25,21 @@
 | Сессия | https://app.devin.ai/sessions/f121411f6a6c4013b460966581bf1c01 |
 | Модель | Devin |
 | Дата | 2026-05-19 (UTC) |
-| Закрытые задачи | T-080 |
-| Следующая задача | T-081 — data/temple-ecosystems.json: экосистемы 33 храмов |
-| Состояние master | master `69b8972` содержит T-076/T-077/T-078/T-079; текущая ветка закрывает T-080 |
+| Закрытые задачи | T-081 |
+| Следующая задача | T-082 — js/temple-module.js: логика храмов |
+| Состояние master | master `8da267a` содержит T-076/T-077/T-078/T-079/T-080; текущая ветка закрывает T-081 |
 | Pages | включён, master/root |
 
 ---
 
 ## Лог смен (новые записи СВЕРХУ)
+
+### 2026-05-19 · Devin · T-081
+- Закрыто: T-081 — data/temple-ecosystems.json: экосистемы 33 храмов.
+- Создан `data/temple-ecosystems.json` с 33 объектами по всем матрицам из `data/matrices.json`.
+- Каждый объект содержит `matrixId`, `matrixSlug`, `matrixName`, `templeNameTemplate`, `universe`, `flora`, `minerals`, `creatures`, `ambient`, `basePassiveSvet`.
+- JSON валиден; проверены 33 объекта, уникальные `matrixId`, совпадение slug/name с каноном 33 матриц.
+- Следующая задача: T-082 — js/temple-module.js.
 
 ### 2026-05-19 · Devin · T-080
 - Закрыто: T-080 — passport.html: иконка Даймона.
