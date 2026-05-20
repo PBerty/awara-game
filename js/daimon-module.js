@@ -9,8 +9,9 @@ import { loadState, updateState } from './state-module.js';
 // === Базовый путь к корню проекта ===
 const BASE = new URL('..', import.meta.url).href;
 
-// === Кэш загруженных форм ===
+// === Кэш загруженных форм и стадий ===
 let formsCache = null;
+let stagesCache = null;
 
 // === Универсальный загрузчик JSON ===
 async function loadJson(path) {
@@ -333,4 +334,101 @@ export function getChakraThresholds() {
 export function resetDaimon() {
   updateState({ daimon: null });
   console.log('[Daimon] Даймон сброшен');
+}
+
+// =============================================
+// Phase 7 / E-007 — Стадии эволюции v2.0
+// =============================================
+
+const DEFAULT_GRANTHI_STATUS = { brahma: false, vishnu: false, rudra: false };
+
+// === Загрузка стадий эволюции ===
+async function loadStages() {
+  if (stagesCache) return stagesCache;
+  const data = await loadJson(BASE + 'data/daimon-stages.json');
+  if (!data) return null;
+  stagesCache = Array.isArray(data) ? data : Object.values(data);
+  return stagesCache;
+}
+
+// === Текущая стадия эволюции (1..5) из daimon-stages.json ===
+export async function getCurrentEvolutionStage() {
+  const stages = await loadStages();
+  if (!stages) return null;
+  const state = loadState();
+  const stageNum = state.daimon?.evolutionStage || 1;
+  return stages.find(s => s.stage === stageNum) || stages[0];
+}
+
+// === Количество нитей ДНК текущей стадии ===
+export async function getDNAStrands() {
+  const stage = await getCurrentEvolutionStage();
+  return stage ? stage.dna_strands : 2;
+}
+
+// === Статус 3 грантхи (пробиты / нет) ===
+export function getGranthiStatus() {
+  const state = loadState();
+  return state.daimon?.granthiPierced || { ...DEFAULT_GRANTHI_STATUS };
+}
+
+// === Эволюция при пробое грантхи ===
+export async function evolveToNextStage(granthiId) {
+  if (!granthiId || !['brahma', 'vishnu', 'rudra'].includes(granthiId)) {
+    console.error('[Daimon] Неизвестный грантхи:', granthiId);
+    return null;
+  }
+
+  const state = loadState();
+  const daimon = state.daimon;
+  if (!daimon) {
+    console.error('[Daimon] Даймон не создан');
+    return null;
+  }
+
+  const granthi = daimon.granthiPierced || { ...DEFAULT_GRANTHI_STATUS };
+  if (granthi[granthiId]) {
+    console.warn('[Daimon] Грантхи уже пробит:', granthiId);
+    return { daimon, evolved: false, alreadyPierced: true };
+  }
+
+  granthi[granthiId] = true;
+  daimon.granthiPierced = granthi;
+
+  const stages = await loadStages();
+  if (!stages) return null;
+
+  const GRANTHI_TO_STAGE = { brahma: 2, vishnu: 3, rudra: 4 };
+  const targetStage = GRANTHI_TO_STAGE[granthiId];
+  const currentStage = daimon.evolutionStage || 1;
+
+  if (targetStage > currentStage) {
+    daimon.evolutionStage = targetStage;
+    const stageData = stages.find(s => s.stage === targetStage);
+    if (stageData) {
+      daimon.dnaStrands = stageData.dna_strands;
+      daimon.evolutionMultiplier = stageData.multiplier;
+    }
+    console.log(`[Daimon] Эволюция: стадия ${currentStage} -> ${targetStage} (${stageData?.name_ru || ''})`);
+  }
+
+  // Парамукти: все 3 грантхи пробиты
+  if (granthi.brahma && granthi.vishnu && granthi.rudra && daimon.evolutionStage < 5) {
+    daimon.evolutionStage = 5;
+    const paramukti = stages.find(s => s.stage === 5);
+    if (paramukti) {
+      daimon.dnaStrands = paramukti.dna_strands;
+      daimon.evolutionMultiplier = paramukti.multiplier;
+    }
+    console.log('[Daimon] Парамукти достигнут -- все грантхи открыты');
+  }
+
+  saveDaimon(daimon);
+  return { daimon, evolved: targetStage > currentStage, newStage: daimon.evolutionStage };
+}
+
+// === Множитель эволюции (влияние на Милость) ===
+export async function getEvolutionMultiplier() {
+  const stage = await getCurrentEvolutionStage();
+  return stage ? stage.multiplier : 1.0;
 }
