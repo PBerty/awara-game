@@ -25,8 +25,8 @@
 | Сессия | https://app.devin.ai/sessions/7fd0e6b2baac42a5b0b0ba6bb6d73ea5 |
 | Модель | Fast Mode |
 | Дата | 2026-05-20 (UTC) |
-| Закрытые задачи | E-012, E-013 |
-| Следующая задача | E-014 -- earth-player.html v2.0 |
+| Закрытые задачи | E-012, E-013, E-014 |
+| Следующая задача | E-015 -- temple.html |
 | Состояние master | master с E-011 смерджен (PR #91) |
 | Pages | включён, master/root |
 
@@ -34,12 +34,10 @@
 
 ## Лог смен (новые записи СВЕРХУ)
 
-### 2026-05-20 · PBerty · E-013
-- Закрыто: E-013 -- js/temple-module.js v2.0: расширенная логика храмов.
-- ES6-модуль: buildTemple, upgradeZone, collectPassiveLight, getTempleEcosystem, getTempleMultiplier, getUnlockedAbilities, getTempleSummary.
-- Загрузка temple-upgrades.json и temple-ecosystems.json с кэшем.
-- Постройка с вычетом света, улучшения с проверкой материалов, пассивный свет (макс 24ч), глобальные бонусы.
-- Следующая задача: E-014 -- earth-player.html v2.0.
+### 2026-05-20 · PBerty · E-014
+- Закрыто: E-014 -- earth-player.html v2.0: храмы на карте.
+- Маркер храма на Canvas, попап с экосистемой, сбор света, mobile-pass.
+- Следующая задача: E-015 -- temple.html.
 
 ### 2026-05-10 · victorianpieraverdi-dev · E-011
 - Закрыто: E-011 -- интеграция Даймона в лобби.

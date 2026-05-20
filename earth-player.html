@@ -156,6 +156,117 @@ html,body{width:100%;height:100%;overflow:hidden;background:#020108;font-family:
   font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.15em;cursor:pointer;
 }
 
+/* ── Храм маркер ── */
+#temple-marker{
+  position:absolute;z-index:6;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:all .3s;
+}
+#temple-marker:hover{transform:scale(1.15);}
+.tm-glow{
+  width:42px;height:42px;border-radius:50%;
+  background:radial-gradient(circle,rgba(201,168,76,.25),transparent 70%);
+  display:flex;align-items:center;justify-content:center;
+  animation:tmPulse 3s infinite;
+}
+@keyframes tmPulse{
+  0%,100%{box-shadow:0 0 8px rgba(201,168,76,.2);}
+  50%{box-shadow:0 0 20px rgba(201,168,76,.4);}
+}
+.tm-ico{font-size:22px;}
+.tm-label{
+  font-family:'Cinzel',serif;font-size:8px;letter-spacing:.12em;
+  color:rgba(201,168,76,.7);margin-top:2px;text-align:center;
+}
+.tm-svet{
+  font-size:7px;color:rgba(201,168,76,.5);letter-spacing:.08em;
+}
+
+/* ── Попап храма ── */
+#temple-popup{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:90;
+  width:min(360px,90vw);max-height:85vh;overflow-y:auto;
+  padding:20px;border-radius:16px;
+  background:rgba(6,4,18,.97);border:1px solid rgba(201,168,76,.3);
+  box-shadow:0 0 60px rgba(0,0,0,.8);display:none;
+  font-family:'JetBrains Mono',monospace;
+}
+#temple-popup.show{display:block;}
+.tp-title{
+  font-family:'Cinzel Decorative',serif;font-size:14px;color:#c9a84c;
+  letter-spacing:.15em;text-align:center;margin-bottom:4px;
+}
+.tp-universe{
+  font-family:'Cormorant Garamond',serif;font-style:italic;font-size:11px;
+  color:rgba(255,255,255,.35);text-align:center;margin-bottom:14px;
+}
+.tp-section{
+  font-size:8px;letter-spacing:.15em;color:rgba(201,168,76,.5);
+  margin:12px 0 6px;border-bottom:1px solid rgba(201,168,76,.1);padding-bottom:3px;
+}
+.tp-row{
+  display:flex;justify-content:space-between;align-items:baseline;
+  padding:4px 0;border-bottom:1px solid rgba(255,255,255,.03);
+}
+.tp-lbl{font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.06em;}
+.tp-val{font-family:'Cormorant Garamond',serif;font-size:13px;color:rgba(255,248,214,.8);}
+.tp-list{
+  font-family:'Cormorant Garamond',serif;font-size:12px;
+  color:rgba(255,255,255,.5);line-height:1.6;
+}
+.tp-collect{
+  display:block;width:100%;margin:16px 0 8px;padding:12px;min-height:44px;
+  border:1px solid rgba(201,168,76,.4);border-radius:10px;
+  background:linear-gradient(135deg,rgba(201,168,76,.12),rgba(201,168,76,.04));
+  color:#c9a84c;font-family:'Cinzel',serif;font-size:11px;
+  letter-spacing:.15em;cursor:pointer;transition:all .2s;text-align:center;
+}
+.tp-collect:hover{background:rgba(201,168,76,.2);border-color:rgba(201,168,76,.6);}
+.tp-close{
+  display:block;margin:8px auto 0;padding:8px 24px;min-height:44px;
+  border:1px solid rgba(255,255,255,.1);border-radius:8px;
+  background:rgba(255,255,255,.03);color:rgba(255,255,255,.4);
+  font-family:'Cinzel',serif;font-size:9px;letter-spacing:.15em;cursor:pointer;
+}
+.tp-manage{
+  display:block;width:100%;margin:6px 0;padding:10px;min-height:44px;
+  border:1px solid rgba(201,168,76,.2);border-radius:8px;
+  background:rgba(201,168,76,.04);color:rgba(201,168,76,.7);
+  font-family:'Cinzel',serif;font-size:10px;letter-spacing:.12em;cursor:pointer;text-align:center;
+}
+.tp-manage:hover{background:rgba(201,168,76,.1);}
+
+/* ── Mobile pass ── */
+@media(max-width:768px){
+  #elements-bar{left:6px;gap:4px;}
+  .el-btn{width:36px;height:36px;border-radius:8px;}
+  .el-ico{font-size:14px;}
+  .el-lbl{font-size:7px;}
+  #map-area{left:48px;}
+  #struct-info{width:160px;right:6px;}
+  #build-btn{font-size:9px;padding:8px 18px;}
+  .bld-card{width:76px;}
+  .bld-name{font-size:8px;}
+  #temple-popup{width:92vw;padding:16px;}
+  .tp-title{font-size:12px;}
+}
+@media(max-width:375px){
+  #elements-bar{left:4px;gap:3px;}
+  .el-btn{width:32px;height:32px;}
+  .el-ico{font-size:12px;}
+  #map-area{left:40px;}
+  #realm-name{font-size:10px;}
+  #top-coins{font-size:8px;padding:4px 8px;}
+  #build-btn{font-size:8px;padding:6px 14px;}
+  .bld-card{width:68px;padding:8px 6px;}
+}
+@media(max-width:320px){
+  .el-btn{width:28px;height:28px;border-radius:6px;}
+  .el-ico{font-size:11px;}
+  .el-lbl{display:none;}
+  #map-area{left:34px;}
+}
+
 /* ── Панель строительства (снизу) ── */
 #build-panel{
   position:fixed;bottom:0;left:0;right:0;z-index:60;
@@ -266,6 +377,26 @@ html,body{width:100%;height:100%;overflow:hidden;background:#020108;font-family:
   <div id="vastu-grid">
     <canvas id="vastu-canvas"></canvas>
   </div>
+</div>
+
+<!-- Попап храма -->
+<div id="temple-popup">
+  <div class="tp-title" id="tp-title">ХРАМ</div>
+  <div class="tp-universe" id="tp-universe"></div>
+  <div class="tp-section">СТАТИСТИКА</div>
+  <div class="tp-row"><span class="tp-lbl">СВЕТ / ЧАС</span><span class="tp-val" id="tp-svet-hr">0</span></div>
+  <div class="tp-row"><span class="tp-lbl">МНОЖИТЕЛЬ</span><span class="tp-val" id="tp-mult">x1.0</span></div>
+  <div class="tp-row"><span class="tp-lbl">УРОВНИ</span><span class="tp-val" id="tp-levels">0 / 55</span></div>
+  <div class="tp-row"><span class="tp-lbl">СПОСОБНОСТИ</span><span class="tp-val" id="tp-abilities">0</span></div>
+  <div class="tp-section">ЭКОСИСТЕМА</div>
+  <div class="tp-row"><span class="tp-lbl">ФЛОРА</span><span class="tp-val tp-list" id="tp-flora">--</span></div>
+  <div class="tp-row"><span class="tp-lbl">СУЩЕСТВА</span><span class="tp-val tp-list" id="tp-creatures">--</span></div>
+  <div class="tp-row"><span class="tp-lbl">МИНЕРАЛЫ</span><span class="tp-val tp-list" id="tp-minerals">--</span></div>
+  <div class="tp-section">НАКОПЛЕННЫЙ СВЕТ</div>
+  <div class="tp-row"><span class="tp-lbl">ОЖИДАЕТ СБОРА</span><span class="tp-val" id="tp-pending">0</span></div>
+  <button class="tp-collect" id="tp-collect-btn" onclick="collectTempleLight()">СОБРАТЬ СВЕТ</button>
+  <button class="tp-manage" onclick="window.location.href='temple.html'">УПРАВЛЕНИЕ ХРАМОМ</button>
+  <button class="tp-close" onclick="closeTemplePopup()">ЗАКРЫТЬ</button>
 </div>
 
 <!-- Инфо строения -->
@@ -562,6 +693,24 @@ function drawMap(){
   ctx.arc(cx, cy, g3*0.2, 0, Math.PI*2);
   ctx.strokeStyle = 'rgba(201,168,76,0.3)';
   ctx.lineWidth = 1; ctx.stroke();
+
+  // Маркер Храма (над центром)
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(cx, cy - g3*0.42, g3*0.13, 0, Math.PI*2);
+  ctx.fillStyle = 'rgba(201,168,76,0.15)';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(201,168,76,0.5)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+  ctx.font = (g3*0.15)+'px serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = 'rgba(201,168,76,0.8)';
+  ctx.fillText('\u2638', cx, cy - g3*0.42);
+  ctx.font = '7px Cinzel, serif';
+  ctx.fillStyle = 'rgba(201,168,76,0.55)';
+  ctx.fillText('\u0425\u0420\u0410\u041c', cx, cy - g3*0.42 + g3*0.17);
+  ctx.restore();
 }
 
 // ══ ФОН ══
@@ -623,6 +772,14 @@ document.getElementById('vastu-canvas').addEventListener('click', function(e){
   var cx = c.width / 2;
   var cy = c.height / 2;
 
+  // Клик по маркеру храма
+  var tmx = cx, tmy = cy - g3*0.42, tmr = g3*0.18;
+  var dx = mx - tmx, dy = my - tmy;
+  if (Math.sqrt(dx*dx + dy*dy) <= tmr) {
+    if (typeof openTemplePopup === 'function') openTemplePopup();
+    return;
+  }
+
   var zones = [
     {r:0,c:0,dir:'СЗ',el:'air',  lbl:'Вайю',  ico:'💨'},
     {r:0,c:1,dir:'С', el:'water',lbl:'Варуна', ico:'🌊'},
@@ -674,6 +831,102 @@ renderBuildGrid('all');
 // Карта рисуется после layout
 setTimeout(drawMap, 100);
 window.addEventListener('resize', function(){ setTimeout(drawMap,50); });
+</script>
+
+<script type="module">
+// ══ ХРАМ НА КАРТЕ ══
+import { getTemple, collectPassiveLight, getPassiveSvetPerHour, getTempleSummary, getTempleEcosystem, buildTemple } from './js/temple-module.js';
+import { loadState } from './js/state-module.js';
+
+var currentMatrix = 'vedic';
+
+async function positionTempleMarker() {
+  var marker = document.getElementById('temple-marker');
+  var grid = document.getElementById('vastu-grid');
+  if (!grid) return;
+  var w = grid.offsetWidth;
+  var h = grid.offsetHeight;
+  marker.style.left = (w / 2 - 28) + 'px';
+  marker.style.top = (h / 2 - 35) + 'px';
+
+  var temple = getTemple(currentMatrix);
+  if (temple) {
+    marker.style.display = 'flex';
+    var perHour = await getPassiveSvetPerHour(currentMatrix);
+    document.getElementById('tm-svet-rate').textContent = '+' + perHour + '/ч';
+  } else {
+    marker.querySelector('.tm-label').textContent = 'ПОСТРОИТЬ';
+    document.getElementById('tm-svet-rate').textContent = '';
+    marker.style.display = 'flex';
+  }
+}
+
+window.openTemplePopup = async function() {
+  var temple = getTemple(currentMatrix);
+  if (!temple) {
+    var result = await buildTemple(currentMatrix);
+    if (result.success) {
+      showStatus('Храм возведён! (-' + result.spent + ' света)');
+      updateCoins();
+      positionTempleMarker();
+    } else if (result.error === 'not_enough_light') {
+      showStatus('Недостаточно света (нужно ' + result.required + ')');
+    }
+    return;
+  }
+
+  var summary = await getTempleSummary(currentMatrix);
+  var eco = await getTempleEcosystem(currentMatrix);
+
+  if (summary) {
+    document.getElementById('tp-title').textContent = summary.ecosystemName || 'ХРАМ';
+    document.getElementById('tp-universe').textContent = summary.universe || '';
+    document.getElementById('tp-svet-hr').textContent = '+' + summary.passiveSvetPerHour;
+    document.getElementById('tp-mult').textContent = 'x' + summary.multiplier;
+    document.getElementById('tp-levels').textContent = summary.totalLevels + ' / ' + summary.maxTotalLevels;
+    document.getElementById('tp-abilities').textContent = summary.abilitiesCount;
+  }
+
+  if (eco) {
+    document.getElementById('tp-flora').textContent = eco.flora.join(', ');
+    document.getElementById('tp-creatures').textContent = eco.creatures.join(', ');
+    document.getElementById('tp-minerals').textContent = eco.minerals.join(', ');
+  }
+
+  var perHour = await getPassiveSvetPerHour(currentMatrix);
+  var elapsed = Date.now() - (temple.lastCollect || temple.builtAt);
+  var hours = Math.min(elapsed / 3600000, 24);
+  var pending = Math.floor(perHour * hours);
+  document.getElementById('tp-pending').textContent = pending;
+
+  document.getElementById('temple-popup').classList.add('show');
+};
+
+window.closeTemplePopup = function() {
+  document.getElementById('temple-popup').classList.remove('show');
+};
+
+window.collectTempleLight = async function() {
+  var result = await collectPassiveLight(currentMatrix);
+  if (result.success && result.collected > 0) {
+    showStatus('+' + result.collected + ' света собрано!');
+    document.getElementById('tp-pending').textContent = '0';
+    updateCoins();
+    positionTempleMarker();
+  } else {
+    showStatus('Свет ещё не накопился');
+  }
+};
+
+setTimeout(positionTempleMarker, 200);
+window.addEventListener('resize', function() { setTimeout(positionTempleMarker, 100); });
+
+document.addEventListener('click', function(e) {
+  var popup = document.getElementById('temple-popup');
+  if (popup.classList.contains('show') && !popup.contains(e.target) && !e.target.closest('#temple-marker')) {
+    popup.classList.remove('show');
+  }
+});
 </script>
 
 <script>
