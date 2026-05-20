@@ -237,7 +237,10 @@ import {
   getDaimonProgress,
   getDaimonStage,
   getResonanceBonus,
-  loadDaimonForms
+  loadDaimonForms,
+  getCurrentEvolutionStage,
+  getDNAStrands,
+  getGranthiStatus
 } from './js/daimon-module.js';
 
 const FORM_GLYPHS = {
@@ -367,6 +370,76 @@ function renderDaimon(daimon) {
         '</div>' +
       '</div>' +
     '</div>';
+
+  renderEvolutionPanel(content);
+}
+
+async function renderEvolutionPanel(container) {
+  const mod = await import('./js/daimon-module.js');
+  const currentStage = await mod.getCurrentEvolutionStage();
+  const dnaStrands = await mod.getDNAStrands();
+  const granthi = mod.getGranthiStatus();
+  const currentNum = currentStage ? currentStage.stage : 1;
+
+  const STAGE_DATA = [
+    { stage: 1, name: 'Пашу', dna: 2, mult: 'x1.0', granthi: null },
+    { stage: 2, name: 'Вира', dna: 4, mult: 'x1.5', granthi: 'brahma' },
+    { stage: 3, name: 'Садхака', dna: 7, mult: 'x2.0', granthi: 'vishnu' },
+    { stage: 4, name: 'Дживанмукта', dna: 10, mult: 'x3.0', granthi: 'rudra' },
+    { stage: 5, name: 'Парамукти', dna: 12, mult: 'x4.0', granthi: null }
+  ];
+
+  const GRANTHI_NAMES = { brahma: 'Брахма', vishnu: 'Вишну', rudra: 'Рудра' };
+
+  let stagesHtml = '';
+  for (const s of STAGE_DATA) {
+    const isCurrent = s.stage === currentNum;
+    const isPast = s.stage < currentNum;
+    const nodeColor = isCurrent ? '#ffd700' : isPast ? 'rgba(201,168,76,0.7)' : 'rgba(255,248,214,0.15)';
+    const textColor = isCurrent ? '#ffd700' : isPast ? 'rgba(201,168,76,0.6)' : 'rgba(255,248,214,0.25)';
+    const lineColor = isPast ? 'rgba(201,168,76,0.4)' : 'rgba(255,248,214,0.08)';
+    const shadow = isCurrent ? 'box-shadow:0 0 10px rgba(255,215,0,0.4);' : '';
+
+    stagesHtml += '<div style="display:flex;align-items:flex-start;gap:12px;">';
+    stagesHtml += '  <div style="display:flex;flex-direction:column;align-items:center;width:16px;">';
+    stagesHtml += '    <div style="width:12px;height:12px;border-radius:50%;background:' + nodeColor + ';flex-shrink:0;' + shadow + '"></div>';
+    if (s.stage < 5) {
+      stagesHtml += '    <div style="width:2px;height:28px;background:' + lineColor + ';"></div>';
+    }
+    stagesHtml += '  </div>';
+    stagesHtml += '  <div style="flex:1;padding-bottom:8px;">';
+    stagesHtml += '    <div style="font-family:\'Cinzel\',serif;font-size:12px;color:' + textColor + ';letter-spacing:0.08em;">' + s.name + '</div>';
+    stagesHtml += '    <div style="font-family:\'JetBrains Mono\',monospace;font-size:9px;color:' + textColor + ';opacity:0.7;margin-top:2px;">' + s.dna + ' ДНК  ' + s.mult + '</div>';
+    stagesHtml += '  </div>';
+    stagesHtml += '</div>';
+  }
+
+  let granthiHtml = '';
+  for (const [id, name] of Object.entries(GRANTHI_NAMES)) {
+    const pierced = granthi[id];
+    const color = pierced ? '#ffd700' : 'rgba(255,248,214,0.2)';
+    const border = pierced ? '2px solid #ffd700' : '2px solid rgba(255,248,214,0.15)';
+    const gShadow = pierced ? 'box-shadow:0 0 8px rgba(255,215,0,0.3);' : '';
+    granthiHtml += '<div style="display:flex;flex-direction:column;align-items:center;gap:4px;">';
+    granthiHtml += '  <div style="width:18px;height:18px;border-radius:50%;border:' + border + ';background:' + (pierced ? 'rgba(255,215,0,0.15)' : 'transparent') + ';' + gShadow + '"></div>';
+    granthiHtml += '  <div style="font-family:\'JetBrains Mono\',monospace;font-size:8px;color:' + color + ';letter-spacing:0.1em;">' + name + '</div>';
+    granthiHtml += '</div>';
+  }
+
+  const panel = '' +
+    '<div class="daimon-card">' +
+      '<div class="section-title">ПУТЬ ЭВОЛЮЦИИ</div>' +
+      '<div style="padding:8px 0;">' + stagesHtml + '</div>' +
+      '<div style="margin-top:8px;padding-top:12px;border-top:1px solid rgba(201,168,76,0.1);">' +
+        '<div style="font-family:\'JetBrains Mono\',monospace;font-size:8px;letter-spacing:0.2em;color:rgba(201,168,76,0.4);margin-bottom:8px;text-align:center;">ГРАНТХИ</div>' +
+        '<div style="display:flex;justify-content:center;gap:24px;">' + granthiHtml + '</div>' +
+      '</div>' +
+      '<div style="margin-top:12px;text-align:center;">' +
+        '<div style="font-family:\'JetBrains Mono\',monospace;font-size:9px;color:rgba(201,168,76,0.5);">Нитей ДНК: <span style="color:#ffd700;">' + dnaStrands + ' / 12</span></div>' +
+      '</div>' +
+    '</div>';
+
+  container.innerHTML += panel;
 }
 
 function renderEmpty() {
