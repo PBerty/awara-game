@@ -240,7 +240,8 @@ import {
   loadDaimonForms,
   getCurrentEvolutionStage,
   getDNAStrands,
-  getGranthiStatus
+  getGranthiStatus,
+  getDaimonHint
 } from './js/daimon-module.js';
 
 const FORM_GLYPHS = {
@@ -372,6 +373,7 @@ function renderDaimon(daimon) {
     '</div>';
 
   renderEvolutionPanel(content);
+  renderDialoguePanel(content, daimon);
 }
 
 async function renderEvolutionPanel(container) {
@@ -436,6 +438,23 @@ async function renderEvolutionPanel(container) {
       '</div>' +
       '<div style="margin-top:12px;text-align:center;">' +
         '<div style="font-family:\'JetBrains Mono\',monospace;font-size:9px;color:rgba(201,168,76,0.5);">Нитей ДНК: <span style="color:#ffd700;">' + dnaStrands + ' / 12</span></div>' +
+      '</div>' +
+    '</div>';
+
+  container.innerHTML += panel;
+}
+
+function renderDialoguePanel(container, daimon) {
+  const hint = getDaimonHint();
+  if (!hint) return;
+
+  const name = daimon.name || 'Даймон';
+  const panel = '' +
+    '<div class="daimon-card">' +
+      '<div class="section-title">ПОСЛАНИЕ ХРАНИТЕЛЯ</div>' +
+      '<div style="padding:12px;background:rgba(124,58,237,0.04);border-radius:8px;border:1px solid rgba(124,58,237,0.12);">' +
+        '<div style="font-family:\'Cinzel\',serif;font-size:10px;color:rgba(124,58,237,0.5);letter-spacing:0.15em;margin-bottom:6px;">' + escapeHtml(name).toUpperCase() + ' ГОВОРИТ:</div>' +
+        '<div style="font-family:\'Cormorant Garamond\',serif;font-size:14px;color:rgba(255,248,214,0.75);line-height:1.5;font-style:italic;">' + escapeHtml(hint.text) + '</div>' +
       '</div>' +
     '</div>';
 

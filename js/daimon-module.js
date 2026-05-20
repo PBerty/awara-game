@@ -432,3 +432,66 @@ export async function getEvolutionMultiplier() {
   const stage = await getCurrentEvolutionStage();
   return stage ? stage.multiplier : 1.0;
 }
+
+// =============================================
+// Phase 7 / E-009 — Диалоговая система
+// =============================================
+
+const HINTS_BY_CONTEXT = [
+  {
+    id: 'no_streak',
+    check: function(state) { return !state.streak || state.streak.current < 1; },
+    text: 'Каждый день, проведённый в осознанности, укрепляет связь между мирами. Начни свою практику сегодня.'
+  },
+  {
+    id: 'low_light',
+    check: function(state) { return (state.totalLight || 0) < 100; },
+    text: 'Свет внутри тебя ещё слаб, но каждое действие в Тигеле усиливает его. Практикуй баланс стихий.'
+  },
+  {
+    id: 'granthi_brahma',
+    check: function(state, granthi) { return !granthi.brahma; },
+    text: 'Брахма-грантхи -- узел сердца -- ждёт раскрытия. Открой сердце через практику сострадания.'
+  },
+  {
+    id: 'granthi_vishnu',
+    check: function(state, granthi) { return granthi.brahma && !granthi.vishnu; },
+    text: 'Сердце открыто, но горло молчит. Вишну-грантхи требует познания Истины. Ищи священные тексты.'
+  },
+  {
+    id: 'granthi_rudra',
+    check: function(state, granthi) { return granthi.brahma && granthi.vishnu && !granthi.rudra; },
+    text: 'Два узла открыты. Рудра-грантхи -- последний порог. Растворись в медитации, чтобы пройти его.'
+  },
+  {
+    id: 'all_granthi',
+    check: function(state, granthi) { return granthi.brahma && granthi.vishnu && granthi.rudra; },
+    text: 'Все грантхи открыты. Ты на пороге Парамукти. Путь завершается там, где начинается бесконечность.'
+  },
+  {
+    id: 'high_streak',
+    check: function(state) { return state.streak && state.streak.current >= 7; },
+    text: 'Семь дней непрерывной практики -- священный цикл завершён. Твоя преданность укрепляет ткань реальности.'
+  },
+  {
+    id: 'default',
+    check: function() { return true; },
+    text: 'Наблюдай за стихиями внутри себя. То, что ты видишь в Тигеле -- отражение твоего внутреннего космоса.'
+  }
+];
+
+// === Получить подсказку Даймона на основе состояния игрока ===
+export function getDaimonHint() {
+  const state = loadState();
+  const daimon = state.daimon;
+  if (!daimon) return null;
+
+  const granthi = daimon.granthiPierced || { ...DEFAULT_GRANTHI_STATUS };
+
+  for (const hint of HINTS_BY_CONTEXT) {
+    if (hint.check(state, granthi)) {
+      return { id: hint.id, text: hint.text };
+    }
+  }
+  return { id: 'default', text: HINTS_BY_CONTEXT[HINTS_BY_CONTEXT.length - 1].text };
+}
