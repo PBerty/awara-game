@@ -1,0 +1,812 @@
+{
+  "meta": {
+    "version": "2.0",
+    "description": "Дерево улучшений храмов AWARA. Каждая зона star_temple имеет 5 уровней. Стоимость в Светкоинах (raw light). Эффекты: пассивный свет, множитель, разблокировка способностей.",
+    "zones_total": 11,
+    "max_level": 5
+  },
+  "zones": [
+    {
+      "id": "center",
+      "name_ru": "Брахма-стхана (Центр)",
+      "name_en": "Brahma-Sthana",
+      "element": null,
+      "chakra": "sahasrara",
+      "description": "Сердце храма -- точка, из которой расходятся все направления. Здесь пульсирует Изначальный Свет, объединяющий все стихии в единое поле.",
+      "upgrades": [
+        {
+          "level": 1,
+          "name_ru": "Искра Центра",
+          "cost": 500,
+          "materials": {},
+          "effects": {
+            "passive_svet_bonus": 10,
+            "multiplier": 1.0,
+            "unlock": null
+          },
+          "description": "Зажечь первый огонь в сердце храма. Свет начинает пульсировать."
+        },
+        {
+          "level": 2,
+          "name_ru": "Алтарь Единства",
+          "cost": 1500,
+          "materials": { "ether_thread": 1 },
+          "effects": {
+            "passive_svet_bonus": 25,
+            "multiplier": 1.1,
+            "unlock": "altar_ritual"
+          },
+          "description": "Воздвигнуть алтарь, через который стихии обретают гармонию."
+        },
+        {
+          "level": 3,
+          "name_ru": "Мандала Основания",
+          "cost": 4000,
+          "materials": { "ether_thread": 2, "earth_crystal": 1 },
+          "effects": {
+            "passive_svet_bonus": 50,
+            "multiplier": 1.2,
+            "unlock": "mandala_shield"
+          },
+          "description": "Начертить мандалу, защищающую храм от хаоса и усиливающую поток света."
+        },
+        {
+          "level": 4,
+          "name_ru": "Столп Брахмы",
+          "cost": 10000,
+          "materials": { "ether_thread": 3, "fire_seed": 2, "earth_crystal": 2 },
+          "effects": {
+            "passive_svet_bonus": 100,
+            "multiplier": 1.35,
+            "unlock": "brahma_pillar"
+          },
+          "description": "Установить центральный столп, соединяющий верхние и нижние локи через ось храма."
+        },
+        {
+          "level": 5,
+          "name_ru": "Пульс Абсолюта",
+          "cost": 25000,
+          "materials": { "ether_thread": 5, "fire_seed": 3, "water_pearl": 3, "earth_crystal": 3, "air_feather": 3 },
+          "effects": {
+            "passive_svet_bonus": 200,
+            "multiplier": 1.5,
+            "unlock": "absolute_pulse"
+          },
+          "description": "Центр храма становится живым сердцем, пульсирующим в ритме Абсолюта. Все зоны получают бонус."
+        }
+      ]
+    },
+    {
+      "id": "library",
+      "name_ru": "Библиотека Акаши",
+      "name_en": "Akashic Library",
+      "element": "ether",
+      "chakra": "ajna",
+      "description": "Хранилище знаний всех матриц и эпох. Здесь записи Акаши обретают форму свитков, доступных пробуждённому сознанию.",
+      "upgrades": [
+        {
+          "level": 1,
+          "name_ru": "Первый Свиток",
+          "cost": 400,
+          "materials": {},
+          "effects": {
+            "passive_svet_bonus": 8,
+            "multiplier": 1.0,
+            "unlock": null
+          },
+          "description": "Положить первый свиток на пустую полку. Библиотека начинает запоминать."
+        },
+        {
+          "level": 2,
+          "name_ru": "Зал Рукописей",
+          "cost": 1200,
+          "materials": { "ether_thread": 1 },
+          "effects": {
+            "passive_svet_bonus": 20,
+            "multiplier": 1.05,
+            "unlock": "lore_access"
+          },
+          "description": "Открыть зал, где свитки 33 матриц хранятся в хрустальных сферах."
+        },
+        {
+          "level": 3,
+          "name_ru": "Кристалл Памяти",
+          "cost": 3500,
+          "materials": { "ether_thread": 2, "air_feather": 1 },
+          "effects": {
+            "passive_svet_bonus": 40,
+            "multiplier": 1.1,
+            "unlock": "akasha_read"
+          },
+          "description": "Установить кристалл, позволяющий читать записи Акаши напрямую."
+        },
+        {
+          "level": 4,
+          "name_ru": "Архив Эонов",
+          "cost": 9000,
+          "materials": { "ether_thread": 3, "air_feather": 2 },
+          "effects": {
+            "passive_svet_bonus": 80,
+            "multiplier": 1.2,
+            "unlock": "eon_archive"
+          },
+          "description": "Библиотека расширяется за пределы времени, включая записи прошлых и будущих Манвантар."
+        },
+        {
+          "level": 5,
+          "name_ru": "Живая Акаша",
+          "cost": 22000,
+          "materials": { "ether_thread": 5, "air_feather": 3 },
+          "effects": {
+            "passive_svet_bonus": 160,
+            "multiplier": 1.35,
+            "unlock": "living_akasha"
+          },
+          "description": "Библиотека становится живым существом -- она сама ищет и предлагает нужное знание."
+        }
+      ]
+    },
+    {
+      "id": "body_temple",
+      "name_ru": "Храм Тела",
+      "name_en": "Body Temple",
+      "element": "earth",
+      "chakra": "muladhara",
+      "description": "Святилище физического тела как инструмента Духа. Здесь плоть очищается и становится проводником высших энергий.",
+      "upgrades": [
+        {
+          "level": 1,
+          "name_ru": "Коврик Практики",
+          "cost": 300,
+          "materials": {},
+          "effects": {
+            "passive_svet_bonus": 6,
+            "multiplier": 1.0,
+            "unlock": null
+          },
+          "description": "Расстелить первый коврик для практики. Тело начинает слушать."
+        },
+        {
+          "level": 2,
+          "name_ru": "Зал Асан",
+          "cost": 1000,
+          "materials": { "earth_crystal": 1 },
+          "effects": {
+            "passive_svet_bonus": 15,
+            "multiplier": 1.05,
+            "unlock": "asana_practice"
+          },
+          "description": "Построить зал для 108 асан. Тело становится гибким сосудом."
+        },
+        {
+          "level": 3,
+          "name_ru": "Купель Очищения",
+          "cost": 3000,
+          "materials": { "earth_crystal": 2, "water_pearl": 1 },
+          "effects": {
+            "passive_svet_bonus": 35,
+            "multiplier": 1.1,
+            "unlock": "purification_bath"
+          },
+          "description": "Построить купель из горного хрусталя для ритуального очищения."
+        },
+        {
+          "level": 4,
+          "name_ru": "Пранаяма-башня",
+          "cost": 8000,
+          "materials": { "earth_crystal": 3, "air_feather": 2 },
+          "effects": {
+            "passive_svet_bonus": 70,
+            "multiplier": 1.2,
+            "unlock": "pranayama_tower"
+          },
+          "description": "Воздвигнуть башню, где ветры четырёх сторон очищают прану."
+        },
+        {
+          "level": 5,
+          "name_ru": "Алмазное Тело",
+          "cost": 20000,
+          "materials": { "earth_crystal": 5, "air_feather": 3, "fire_seed": 2 },
+          "effects": {
+            "passive_svet_bonus": 140,
+            "multiplier": 1.3,
+            "unlock": "diamond_body"
+          },
+          "description": "Тело становится алмазным сосудом -- неразрушимым проводником Духа."
+        }
+      ]
+    },
+    {
+      "id": "creative_workshop",
+      "name_ru": "Творческая Мастерская",
+      "name_en": "Creative Workshop",
+      "element": "fire",
+      "chakra": "svadhisthana",
+      "description": "Кузница творческой силы. Здесь внутренний огонь трансформирует идеи в формы, а замыслы -- в произведения.",
+      "upgrades": [
+        {
+          "level": 1,
+          "name_ru": "Верстак Замысла",
+          "cost": 350,
+          "materials": {},
+          "effects": {
+            "passive_svet_bonus": 7,
+            "multiplier": 1.0,
+            "unlock": null
+          },
+          "description": "Поставить первый верстак. Руки вспоминают, как творить."
+        },
+        {
+          "level": 2,
+          "name_ru": "Горн Вдохновения",
+          "cost": 1100,
+          "materials": { "fire_seed": 1 },
+          "effects": {
+            "passive_svet_bonus": 18,
+            "multiplier": 1.05,
+            "unlock": "craft_basic"
+          },
+          "description": "Разжечь горн, где сырые идеи переплавляются в чистые формы."
+        },
+        {
+          "level": 3,
+          "name_ru": "Галерея Форм",
+          "cost": 3200,
+          "materials": { "fire_seed": 2, "earth_crystal": 1 },
+          "effects": {
+            "passive_svet_bonus": 38,
+            "multiplier": 1.1,
+            "unlock": "form_gallery"
+          },
+          "description": "Открыть галерею, где созданные формы обретают жизнь и резонируют друг с другом."
+        },
+        {
+          "level": 4,
+          "name_ru": "Наковальня Архетипов",
+          "cost": 8500,
+          "materials": { "fire_seed": 3, "ether_thread": 1 },
+          "effects": {
+            "passive_svet_bonus": 75,
+            "multiplier": 1.2,
+            "unlock": "archetype_forge"
+          },
+          "description": "Установить наковальню, на которой куются архетипические образы, влияющие на реальность."
+        },
+        {
+          "level": 5,
+          "name_ru": "Тигель Творца",
+          "cost": 21000,
+          "materials": { "fire_seed": 5, "ether_thread": 3, "earth_crystal": 2 },
+          "effects": {
+            "passive_svet_bonus": 150,
+            "multiplier": 1.3,
+            "unlock": "creator_cauldron"
+          },
+          "description": "Мастерская становится Тиглем Творца -- здесь мысль мгновенно обретает форму."
+        }
+      ]
+    },
+    {
+      "id": "service_hall",
+      "name_ru": "Зал Служения",
+      "name_en": "Service Hall",
+      "element": "water",
+      "chakra": "anahata",
+      "description": "Пространство бескорыстного дара. Здесь свет отдаётся без ожидания возврата, и именно поэтому возвращается стократно.",
+      "upgrades": [
+        {
+          "level": 1,
+          "name_ru": "Стол Дара",
+          "cost": 400,
+          "materials": {},
+          "effects": {
+            "passive_svet_bonus": 8,
+            "multiplier": 1.0,
+            "unlock": null
+          },
+          "description": "Поставить стол, за которым каждый может получить и отдать."
+        },
+        {
+          "level": 2,
+          "name_ru": "Источник Щедрости",
+          "cost": 1200,
+          "materials": { "water_pearl": 1 },
+          "effects": {
+            "passive_svet_bonus": 20,
+            "multiplier": 1.05,
+            "unlock": "seva_basic"
+          },
+          "description": "Открыть источник, из которого вода щедрости течёт ко всем нуждающимся."
+        },
+        {
+          "level": 3,
+          "name_ru": "Круг Взаимопомощи",
+          "cost": 3500,
+          "materials": { "water_pearl": 2, "earth_crystal": 1 },
+          "effects": {
+            "passive_svet_bonus": 42,
+            "multiplier": 1.1,
+            "unlock": "cooperation_circle"
+          },
+          "description": "Создать круг, где игроки обмениваются светом и опытом."
+        },
+        {
+          "level": 4,
+          "name_ru": "Врата Сострадания",
+          "cost": 9000,
+          "materials": { "water_pearl": 3, "air_feather": 1 },
+          "effects": {
+            "passive_svet_bonus": 85,
+            "multiplier": 1.2,
+            "unlock": "compassion_gate"
+          },
+          "description": "Открыть врата, через которые сострадание становится осязаемой силой."
+        },
+        {
+          "level": 5,
+          "name_ru": "Океан Бодхисаттвы",
+          "cost": 22000,
+          "materials": { "water_pearl": 5, "air_feather": 3, "ether_thread": 2 },
+          "effects": {
+            "passive_svet_bonus": 170,
+            "multiplier": 1.35,
+            "unlock": "bodhisattva_ocean"
+          },
+          "description": "Зал становится океаном -- каждый акт служения порождает волну, достигающую всех лок."
+        }
+      ]
+    },
+    {
+      "id": "relationship_house",
+      "name_ru": "Дом Связей",
+      "name_en": "Relationship House",
+      "element": "air",
+      "chakra": "vishuddha",
+      "description": "Пространство осознанных связей между существами. Здесь нити кармы становятся видимыми и могут быть исцелены.",
+      "upgrades": [
+        {
+          "level": 1,
+          "name_ru": "Нить Связи",
+          "cost": 350,
+          "materials": {},
+          "effects": {
+            "passive_svet_bonus": 7,
+            "multiplier": 1.0,
+            "unlock": null
+          },
+          "description": "Протянуть первую нить между двумя душами. Связь начинает пульсировать."
+        },
+        {
+          "level": 2,
+          "name_ru": "Комната Зеркал",
+          "cost": 1100,
+          "materials": { "air_feather": 1 },
+          "effects": {
+            "passive_svet_bonus": 18,
+            "multiplier": 1.05,
+            "unlock": "mirror_room"
+          },
+          "description": "Создать зеркальную комнату, где каждая связь отражает истину о тебе самом."
+        },
+        {
+          "level": 3,
+          "name_ru": "Мост Прощения",
+          "cost": 3200,
+          "materials": { "air_feather": 2, "water_pearl": 1 },
+          "effects": {
+            "passive_svet_bonus": 38,
+            "multiplier": 1.1,
+            "unlock": "forgiveness_bridge"
+          },
+          "description": "Построить мост, по которому можно пройти к любому существу и простить или быть прощённым."
+        },
+        {
+          "level": 4,
+          "name_ru": "Сеть Сангхи",
+          "cost": 8500,
+          "materials": { "air_feather": 3, "ether_thread": 1 },
+          "effects": {
+            "passive_svet_bonus": 75,
+            "multiplier": 1.2,
+            "unlock": "sangha_network"
+          },
+          "description": "Создать сеть духовного сообщества, где каждый узел усиливает целое."
+        },
+        {
+          "level": 5,
+          "name_ru": "Ткань Единства",
+          "cost": 21000,
+          "materials": { "air_feather": 5, "ether_thread": 3, "water_pearl": 2 },
+          "effects": {
+            "passive_svet_bonus": 150,
+            "multiplier": 1.3,
+            "unlock": "unity_weave"
+          },
+          "description": "Все связи сливаются в единую ткань -- границы между я и другим растворяются в любви."
+        }
+      ]
+    },
+    {
+      "id": "garden",
+      "name_ru": "Сад Исцеления",
+      "name_en": "Healing Garden",
+      "element": "earth",
+      "chakra": "manipura",
+      "description": "Живой сад, где растения-целители питаются светом и отдают исцеление. Аюрведа и Прана сплетаются в зелёное полотно жизни.",
+      "upgrades": [
+        {
+          "level": 1,
+          "name_ru": "Первый Росток",
+          "cost": 300,
+          "materials": {},
+          "effects": {
+            "passive_svet_bonus": 6,
+            "multiplier": 1.0,
+            "unlock": null
+          },
+          "description": "Посадить первое семя в почву храма. Росток тянется к свету."
+        },
+        {
+          "level": 2,
+          "name_ru": "Поляна Трав",
+          "cost": 1000,
+          "materials": { "earth_crystal": 1 },
+          "effects": {
+            "passive_svet_bonus": 16,
+            "multiplier": 1.05,
+            "unlock": "herb_gathering"
+          },
+          "description": "Вырастить поляну целебных трав -- тулси, ашваганда, брахми."
+        },
+        {
+          "level": 3,
+          "name_ru": "Роща Бодхи",
+          "cost": 3000,
+          "materials": { "earth_crystal": 2, "water_pearl": 1 },
+          "effects": {
+            "passive_svet_bonus": 35,
+            "multiplier": 1.1,
+            "unlock": "bodhi_grove"
+          },
+          "description": "Посадить дерево Бодхи, под которым медитация усиливается стократно."
+        },
+        {
+          "level": 4,
+          "name_ru": "Озеро Праны",
+          "cost": 8000,
+          "materials": { "earth_crystal": 3, "water_pearl": 2, "air_feather": 1 },
+          "effects": {
+            "passive_svet_bonus": 70,
+            "multiplier": 1.2,
+            "unlock": "prana_lake"
+          },
+          "description": "Вырыть озеро чистой праны, питающее все растения сада."
+        },
+        {
+          "level": 5,
+          "name_ru": "Эдем Восстановленный",
+          "cost": 20000,
+          "materials": { "earth_crystal": 5, "water_pearl": 3, "fire_seed": 2 },
+          "effects": {
+            "passive_svet_bonus": 140,
+            "multiplier": 1.3,
+            "unlock": "eden_restored"
+          },
+          "description": "Сад становится Эдемом -- самовосстанавливающимся раем, где исцеляется всё живое."
+        }
+      ]
+    },
+    {
+      "id": "fire_altar",
+      "name_ru": "Огненный Алтарь",
+      "name_en": "Fire Altar",
+      "element": "fire",
+      "chakra": "manipura",
+      "description": "Место священного Агни -- огня трансформации. Здесь сгорает всё ложное, и из пепла рождается золото Духа.",
+      "upgrades": [
+        {
+          "level": 1,
+          "name_ru": "Первое Пламя",
+          "cost": 350,
+          "materials": {},
+          "effects": {
+            "passive_svet_bonus": 7,
+            "multiplier": 1.0,
+            "unlock": null
+          },
+          "description": "Зажечь первое пламя на алтаре. Огонь начинает очищать."
+        },
+        {
+          "level": 2,
+          "name_ru": "Хома-кунда",
+          "cost": 1100,
+          "materials": { "fire_seed": 1 },
+          "effects": {
+            "passive_svet_bonus": 18,
+            "multiplier": 1.05,
+            "unlock": "homa_ritual"
+          },
+          "description": "Построить огненную яму для ведических ритуалов хома."
+        },
+        {
+          "level": 3,
+          "name_ru": "Тапас-печь",
+          "cost": 3200,
+          "materials": { "fire_seed": 2, "earth_crystal": 1 },
+          "effects": {
+            "passive_svet_bonus": 38,
+            "multiplier": 1.1,
+            "unlock": "tapas_furnace"
+          },
+          "description": "Установить печь тапаса, где жар аскезы переплавляет карму в свет."
+        },
+        {
+          "level": 4,
+          "name_ru": "Столп Агни",
+          "cost": 8500,
+          "materials": { "fire_seed": 3, "air_feather": 1 },
+          "effects": {
+            "passive_svet_bonus": 75,
+            "multiplier": 1.2,
+            "unlock": "agni_pillar"
+          },
+          "description": "Воздвигнуть столп Агни, соединяющий земной огонь с небесным."
+        },
+        {
+          "level": 5,
+          "name_ru": "Вечное Пламя",
+          "cost": 21000,
+          "materials": { "fire_seed": 5, "earth_crystal": 2, "ether_thread": 2 },
+          "effects": {
+            "passive_svet_bonus": 150,
+            "multiplier": 1.3,
+            "unlock": "eternal_flame"
+          },
+          "description": "Огонь становится вечным -- он горит без топлива, питаемый чистой волей."
+        }
+      ]
+    },
+    {
+      "id": "water_sanctuary",
+      "name_ru": "Водное Святилище",
+      "name_en": "Water Sanctuary",
+      "element": "water",
+      "chakra": "svadhisthana",
+      "description": "Святилище живой воды. Здесь потоки эмоций очищаются и становятся прозрачными, как горный ручей.",
+      "upgrades": [
+        {
+          "level": 1,
+          "name_ru": "Первый Ручей",
+          "cost": 300,
+          "materials": {},
+          "effects": {
+            "passive_svet_bonus": 6,
+            "multiplier": 1.0,
+            "unlock": null
+          },
+          "description": "Открыть первый ручей в святилище. Вода начинает петь."
+        },
+        {
+          "level": 2,
+          "name_ru": "Купель Тиртхи",
+          "cost": 1000,
+          "materials": { "water_pearl": 1 },
+          "effects": {
+            "passive_svet_bonus": 16,
+            "multiplier": 1.05,
+            "unlock": "tirtha_bath"
+          },
+          "description": "Построить священную купель -- место омовения и очищения кармы."
+        },
+        {
+          "level": 3,
+          "name_ru": "Водопад Слёз",
+          "cost": 3000,
+          "materials": { "water_pearl": 2, "air_feather": 1 },
+          "effects": {
+            "passive_svet_bonus": 35,
+            "multiplier": 1.1,
+            "unlock": "tears_waterfall"
+          },
+          "description": "Создать водопад, где непрожитые эмоции наконец находят выход и растворяются."
+        },
+        {
+          "level": 4,
+          "name_ru": "Океан Покоя",
+          "cost": 8000,
+          "materials": { "water_pearl": 3, "ether_thread": 1 },
+          "effects": {
+            "passive_svet_bonus": 70,
+            "multiplier": 1.2,
+            "unlock": "peace_ocean"
+          },
+          "description": "Святилище расширяется до внутреннего океана -- бездонного и спокойного."
+        },
+        {
+          "level": 5,
+          "name_ru": "Амрита-кунда",
+          "cost": 20000,
+          "materials": { "water_pearl": 5, "ether_thread": 2, "fire_seed": 2 },
+          "effects": {
+            "passive_svet_bonus": 140,
+            "multiplier": 1.3,
+            "unlock": "amrita_pool"
+          },
+          "description": "Вода становится Амритой -- нектаром бессмертия, исцеляющим и преображающим."
+        }
+      ]
+    },
+    {
+      "id": "air_tower",
+      "name_ru": "Башня Ветров",
+      "name_en": "Air Tower",
+      "element": "air",
+      "chakra": "anahata",
+      "description": "Башня, где ветры всех направлений встречаются и рождают слово. Здесь мысль обретает крылья и становится мантрой.",
+      "upgrades": [
+        {
+          "level": 1,
+          "name_ru": "Первый Вздох",
+          "cost": 350,
+          "materials": {},
+          "effects": {
+            "passive_svet_bonus": 7,
+            "multiplier": 1.0,
+            "unlock": null
+          },
+          "description": "Открыть окно башни. Первый ветер приносит весть."
+        },
+        {
+          "level": 2,
+          "name_ru": "Флейта Ваю",
+          "cost": 1100,
+          "materials": { "air_feather": 1 },
+          "effects": {
+            "passive_svet_bonus": 18,
+            "multiplier": 1.05,
+            "unlock": "vayu_flute"
+          },
+          "description": "Установить флейту, звучащую от касания ветра четырёх сторон."
+        },
+        {
+          "level": 3,
+          "name_ru": "Спираль Вихря",
+          "cost": 3200,
+          "materials": { "air_feather": 2, "fire_seed": 1 },
+          "effects": {
+            "passive_svet_bonus": 38,
+            "multiplier": 1.1,
+            "unlock": "vortex_spiral"
+          },
+          "description": "Создать спираль вихря, поднимающую сознание от земли к небу."
+        },
+        {
+          "level": 4,
+          "name_ru": "Облачный Мост",
+          "cost": 8500,
+          "materials": { "air_feather": 3, "ether_thread": 1 },
+          "effects": {
+            "passive_svet_bonus": 75,
+            "multiplier": 1.2,
+            "unlock": "cloud_bridge"
+          },
+          "description": "Построить мост из облаков, соединяющий башню с верхними локами."
+        },
+        {
+          "level": 5,
+          "name_ru": "Дыхание Мира",
+          "cost": 21000,
+          "materials": { "air_feather": 5, "fire_seed": 2, "water_pearl": 2 },
+          "effects": {
+            "passive_svet_bonus": 150,
+            "multiplier": 1.3,
+            "unlock": "world_breath"
+          },
+          "description": "Башня становится лёгкими мира -- каждый вздох синхронизируется с дыханием Вселенной."
+        }
+      ]
+    },
+    {
+      "id": "ether_dome",
+      "name_ru": "Купол Эфира",
+      "name_en": "Ether Dome",
+      "element": "ether",
+      "chakra": "sahasrara",
+      "description": "Сфера чистого эфира, замыкающая храм сверху. Здесь пространство и время перестают быть преградами.",
+      "upgrades": [
+        {
+          "level": 1,
+          "name_ru": "Тонкий Покров",
+          "cost": 500,
+          "materials": {},
+          "effects": {
+            "passive_svet_bonus": 10,
+            "multiplier": 1.0,
+            "unlock": null
+          },
+          "description": "Натянуть первый покров эфира над храмом. Звёзды становятся ближе."
+        },
+        {
+          "level": 2,
+          "name_ru": "Линза Созерцания",
+          "cost": 1500,
+          "materials": { "ether_thread": 1 },
+          "effects": {
+            "passive_svet_bonus": 25,
+            "multiplier": 1.1,
+            "unlock": "contemplation_lens"
+          },
+          "description": "Установить линзу, через которую видны тонкие слои реальности."
+        },
+        {
+          "level": 3,
+          "name_ru": "Портал Лок",
+          "cost": 4000,
+          "materials": { "ether_thread": 2, "fire_seed": 1 },
+          "effects": {
+            "passive_svet_bonus": 50,
+            "multiplier": 1.2,
+            "unlock": "loka_portal"
+          },
+          "description": "Открыть портал, позволяющий заглядывать в другие локи -- от Бхулоки до Сатьялоки."
+        },
+        {
+          "level": 4,
+          "name_ru": "Звёздный Резонатор",
+          "cost": 10000,
+          "materials": { "ether_thread": 3, "air_feather": 2, "fire_seed": 1 },
+          "effects": {
+            "passive_svet_bonus": 100,
+            "multiplier": 1.35,
+            "unlock": "star_resonator"
+          },
+          "description": "Установить резонатор, настраивающий купол на частоту конкретной звезды или планеты."
+        },
+        {
+          "level": 5,
+          "name_ru": "Брахманда-сфера",
+          "cost": 25000,
+          "materials": { "ether_thread": 5, "air_feather": 3, "fire_seed": 3, "water_pearl": 2, "earth_crystal": 2 },
+          "effects": {
+            "passive_svet_bonus": 200,
+            "multiplier": 1.5,
+            "unlock": "brahmanda_sphere"
+          },
+          "description": "Купол становится миниатюрной Брахмандой -- полной моделью Вселенной внутри храма."
+        }
+      ]
+    }
+  ],
+  "global_bonuses": [
+    {
+      "condition": "all_zones_level_1",
+      "name_ru": "Пробуждение Храма",
+      "description": "Все 11 зон на уровне 1. Храм начинает генерировать пассивный свет.",
+      "bonus": { "passive_svet_percent": 5 }
+    },
+    {
+      "condition": "all_zones_level_2",
+      "name_ru": "Гармония Стихий",
+      "description": "Все 11 зон на уровне 2. Стихии храма приходят в равновесие.",
+      "bonus": { "passive_svet_percent": 10, "element_balance": true }
+    },
+    {
+      "condition": "all_zones_level_3",
+      "name_ru": "Мандала Силы",
+      "description": "Все 11 зон на уровне 3. Храм обретает форму мандалы и начинает влиять на окружающее пространство.",
+      "bonus": { "passive_svet_percent": 20, "ecosystem_boost": 1.2 }
+    },
+    {
+      "condition": "all_zones_level_4",
+      "name_ru": "Столп Миров",
+      "description": "Все 11 зон на уровне 4. Храм становится столпом, соединяющим локи.",
+      "bonus": { "passive_svet_percent": 35, "loka_access": true }
+    },
+    {
+      "condition": "all_zones_level_5",
+      "name_ru": "Космический Маяк",
+      "description": "Все 11 зон на уровне 5. Храм становится маяком, видимым из любой точки Брахманды.",
+      "bonus": { "passive_svet_percent": 50, "cosmic_beacon": true, "all_unlocks": true }
+    }
+  ]
+}
