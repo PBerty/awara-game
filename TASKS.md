@@ -304,7 +304,7 @@
   Файлы: `data/milost-sources.json`
   Est: 10 мин
 
-- [ ] **E-002 · js/milost-module.js -- движок Милости v2.0**
+- [x] **E-002 · js/milost-module.js -- движок Милости v2.0**
   DoD: модуль загружает milost-sources.json, вычисляет текущий уровень благодати, множитель луча, пробой Завесы.
   Файлы: `js/milost-module.js`
   Est: 15 мин
