@@ -1,0 +1,62 @@
+[
+  {
+    "stage": 1,
+    "name_ru": "Пашу (Связанная Душа)",
+    "name_en": "Pashu",
+    "description": "Душа, погружённая в материю Чатур-локи. Даймон только пробуждается, его свет тлеет под слоями забвения. Две нити ДНК несут минимальный код -- достаточный, чтобы слышать зов, но не видеть путь.",
+    "dna_strands": 2,
+    "multiplier": 1.0,
+    "unlock_condition": "start",
+    "granthi": null,
+    "chakra_range": [1, 2],
+    "abilities": []
+  },
+  {
+    "stage": 2,
+    "name_ru": "Вира (Герой)",
+    "name_en": "Vira",
+    "description": "Пробой Брахма-грантхи открывает сердце. Даймон становится спутником-воином, его свет обретает форму и направление. Четыре нити ДНК позволяют ощущать составные стихии и видеть эмоциональные поля.",
+    "dna_strands": 4,
+    "multiplier": 1.5,
+    "unlock_condition": "pierce_brahma_granthi",
+    "granthi": "brahma",
+    "chakra_range": [3, 4],
+    "abilities": ["seeEmotions", "compositeElement"]
+  },
+  {
+    "stage": 3,
+    "name_ru": "Садхака (Практикующий)",
+    "name_en": "Sadhaka",
+    "description": "Пробой Вишну-грантхи освобождает волю от привязанностей. Даймон обретает голос -- мантру, резонирующую с Акашей. Семь нитей ДНК несут полный спектр тонких восприятий.",
+    "dna_strands": 7,
+    "multiplier": 2.0,
+    "unlock_condition": "pierce_vishnu_granthi",
+    "granthi": "vishnu",
+    "chakra_range": [5, 6],
+    "abilities": ["mantra", "seeThoughMaya"]
+  },
+  {
+    "stage": 4,
+    "name_ru": "Дживанмукта (Освобождённый при Жизни)",
+    "name_en": "Jivanmukta",
+    "description": "Пробой Рудра-грантхи растворяет последний узел отождествления с формой. Даймон становится каналом между локами -- его свет питает домен и читает записи Акаши. Десять нитей ДНК восстанавливают древний код творцов.",
+    "dna_strands": 10,
+    "multiplier": 3.0,
+    "unlock_condition": "pierce_rudra_granthi",
+    "granthi": "rudra",
+    "chakra_range": [7, 8],
+    "abilities": ["readAkasha", "tripleElement", "domainLink"]
+  },
+  {
+    "stage": 5,
+    "name_ru": "Парамукти (Выход из Брахманды)",
+    "name_en": "Paramukti",
+    "description": "Все три грантхи открыты, квест Шивы завершён. Даймон выходит за пределы Брахманды -- он больше не спутник, а со-творец. Двенадцать нитей ДНК полностью активны, позволяя генерировать мини-существ и воздействовать на ткань реальности.",
+    "dna_strands": 12,
+    "multiplier": 4.0,
+    "unlock_condition": "all_granthi_and_shiva_quest",
+    "granthi": null,
+    "chakra_range": [9],
+    "abilities": ["generateMinions", "realityWeave", "createDomain"]
+  }
+]
