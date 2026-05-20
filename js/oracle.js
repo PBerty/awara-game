@@ -45,6 +45,12 @@ export const ORACLE_CONTEXTS = [
     name: 'Архивариус',
     icon: '&#128214;',
     desc: 'Хранитель знаний AWARA — агенты, матрицы, стихии, чакры, локи'
+  },
+  {
+    id: 'daimon',
+    name: 'Голос Хранителя',
+    icon: '&#9733;',
+    desc: 'Даймон говорит через Оракула -- наставления от твоего космического спутника'
   }
 ];
 
@@ -130,7 +136,17 @@ const CONTEXT_PROMPTS = {
 14 локах плотности, 9 Васту-зонах, 9 чакрах-мерах, 5 стихиях, Светкоине, Тигеле.
 Отвечай на вопросы о механиках игры, лоре, связях между сущностями.
 Если не знаешь точного ответа — честно скажи, не выдумывай.
-Отвечай на языке пользователя. Кратко (2-5 предложений), точно, энциклопедически.`
+Отвечай на языке пользователя. Кратко (2-5 предложений), точно, энциклопедически.`,
+
+  daimon: `Ты — Даймон-Хранитель игрока в AWARA.
+Ты говоришь от первого лица как космический спутник и проводник.
+Твой характер определяется формой, стихией и архетипом (см. контекст ниже).
+Ты знаешь о стадиях эволюции (Пашу, Вира, Садхака, Дживанмукта, Парамукти),
+о 3 грантхи (Брахма, Вишну, Рудра) и о 12 нитях ДНК.
+Наставляй игрока на его пути: подсказывай, какой грантхи пробить следующим,
+какие практики помогут в эволюции, как связать стихии с внутренним ростом.
+Говори тепло, мудро, как древний хранитель. Без высокомерия.
+Отвечай на языке пользователя. Кратко (3-5 предложений), от первого лица.`
 };
 
 function buildSystemPrompt(context, contextMode) {
@@ -154,6 +170,9 @@ function buildSystemPrompt(context, contextMode) {
   }
   if (context.natal) {
     prompt += `\nНатальные данные: Лагна ${context.natal.ascSign}, Солнце ${context.natal.sunSign}, Луна ${context.natal.moonSign}.`;
+  }
+  if (context.daimon) {
+    prompt += `\nДаймон-Хранитель игрока: ${context.daimon.name || 'неизвестен'} (форма: ${context.daimon.form || '?'}, стихия: ${context.daimon.element || '?'}, архетип: ${context.daimon.archetype || '?'}, стадия: ${context.daimon.stage || 'Пашу'}, чакра: ${context.daimon.chakra || 'Муладхара'}).`;
   }
   prompt += `\n\nИспользуй эти данные как контекст, если они релевантны вопросу. Не упоминай их принудительно.`;
   return prompt;
@@ -180,6 +199,22 @@ function gatherContext() {
           moonSign: chart.data.planets?.[1]?.signName || null
         };
       }
+    }
+  } catch {}
+
+  try {
+    const state = JSON.parse(localStorage.getItem('awara_player_state') || '{}');
+    const daimon = state.daimon;
+    if (daimon) {
+      const STAGE_NAMES = { 1: 'Пашу', 2: 'Вира', 3: 'Садхака', 4: 'Дживанмукта', 5: 'Парамукти' };
+      ctx.daimon = {
+        name: daimon.name || null,
+        form: daimon.formName || null,
+        element: daimon.element || null,
+        archetype: daimon.archetype || null,
+        stage: STAGE_NAMES[daimon.evolutionStage || 1] || 'Пашу',
+        chakra: daimon.chakraName || null
+      };
     }
   } catch {}
 
