@@ -378,7 +378,7 @@
   Файлы: `temple.html`
   Est: 15 мин
 
-- [ ] **E-016 · matrix.html v2.0 -- кнопка постройки храма**
+- [x] **E-016 · matrix.html v2.0 -- кнопка постройки храма**
   DoD: кнопка постройки за свет, церемониальный попап, связь с temple-module.
   Файлы: `matrix.html`, `js/temple-module.js`
   Est: 10 мин
