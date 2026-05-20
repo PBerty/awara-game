@@ -368,7 +368,7 @@
   Файлы: `js/temple-module.js`
   Est: 15 мин
 
-- [ ] **E-014 · earth-player.html v2.0 -- храмы на карте**
+- [x] **E-014 · earth-player.html v2.0 -- храмы на карте**
   DoD: маркеры храмов на Canvas, попап экосистемы, сбор света, mobile-pass.
   Файлы: `earth-player.html`, `js/temple-module.js`
   Est: 15 мин
