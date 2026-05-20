@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#02010a">
+<title>Храм · AWARA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --gold:#c9a84c;
+  --gold-bright:#ffd700;
+  --gold-light:#fff8d6;
+  --bg:#02010a;
+  --line:rgba(201,168,76,0.18);
+  --text:rgba(255,248,214,0.85);
+  --text-soft:rgba(255,248,214,0.55);
+  --text-mute:rgba(255,255,255,0.35);
+  --earth-col:74,103,65;
+  --water-col:42,96,128;
+  --fire-col:138,48,32;
+  --air-col:96,104,136;
+  --ether-col:112,96,168;
+}
+html,body{background:var(--bg);color:var(--text);min-height:100vh}
+body{
+  font-family:'JetBrains Mono',monospace;
+  padding:18px 14px 110px;
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(201,168,76,0.15), transparent 40%),
+    radial-gradient(ellipse at 70% 80%, rgba(112,96,168,0.12), transparent 45%),
+    linear-gradient(180deg,#070318 0%,#0d0626 45%,#05021a 100%),
+    var(--bg);
+  -webkit-font-smoothing:antialiased;
+  position:relative;overflow-x:hidden;
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:url('assets/starfield.svg');
+  background-size:cover;background-position:center;background-repeat:no-repeat;
+  opacity:0.95;
+}
+.wrap{max-width:580px;margin:0 auto;position:relative;z-index:1}
+
+/* -- Topbar -- */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;gap:8px;}
+.back-link{
+  font-size:9px;letter-spacing:.15em;color:var(--text-mute);
+  text-decoration:none;padding:6px 10px;border-radius:8px;
+  border:1px solid rgba(255,255,255,.06);transition:all .2s;min-height:44px;
+  display:flex;align-items:center;
+}
+.back-link:hover{color:var(--gold);border-color:var(--line);}
+.page-title{
+  font-family:'Cinzel Decorative',serif;font-size:16px;letter-spacing:.2em;
+  color:var(--gold);text-align:center;flex:1;
+}
+.light-badge{
+  font-size:9px;letter-spacing:.1em;color:var(--gold);
+  padding:6px 12px;border-radius:20px;min-height:44px;
+  border:1px solid var(--line);background:rgba(201,168,76,.05);
+  display:flex;align-items:center;gap:4px;
+}
+
+/* -- Temple header -- */
+.temple-header{
+  text-align:center;margin-bottom:24px;padding:16px;
+  border:1px solid var(--line);border-radius:14px;
+  background:rgba(201,168,76,.03);
+}
+.th-name{
+  font-family:'Cinzel Decorative',serif;font-size:14px;
+  color:var(--gold);letter-spacing:.15em;margin-bottom:4px;
+}
+.th-universe{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:12px;color:var(--text-soft);margin-bottom:12px;
+}
+.th-stats{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+.th-stat{
+  padding:6px 12px;border-radius:10px;
+  border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.02);
+  text-align:center;min-width:80px;
+}
+.th-stat-lbl{font-size:7px;letter-spacing:.12em;color:var(--text-mute);margin-bottom:2px;}
+.th-stat-val{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--text);}
+
+/* -- Collect bar -- */
+.collect-bar{
+  display:flex;align-items:center;gap:10px;margin-bottom:24px;
+  padding:12px 16px;border-radius:12px;
+  border:1px solid rgba(201,168,76,.2);background:rgba(201,168,76,.04);
+}
+.collect-info{flex:1;}
+.collect-lbl{font-size:8px;letter-spacing:.1em;color:var(--text-mute);}
+.collect-val{font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--gold);}
+.collect-btn{
+  padding:10px 20px;border-radius:10px;min-height:44px;cursor:pointer;
+  border:1px solid rgba(201,168,76,.4);
+  background:linear-gradient(135deg,rgba(201,168,76,.12),rgba(201,168,76,.04));
+  color:var(--gold);font-family:'Cinzel',serif;font-size:10px;letter-spacing:.12em;
+  transition:all .2s;
+}
+.collect-btn:hover{background:rgba(201,168,76,.2);border-color:rgba(201,168,76,.6);}
+
+/* -- Section -- */
+.section-title{
+  font-size:8px;letter-spacing:.2em;color:var(--gold);opacity:.6;
+  margin:24px 0 12px;padding-bottom:4px;border-bottom:1px solid var(--line);
+}
+
+/* -- Zone cards -- */
+.zone-grid{display:flex;flex-direction:column;gap:8px;}
+.zone-card{
+  padding:14px 16px;border-radius:12px;
+  border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.02);
+  cursor:pointer;transition:all .2s;
+}
+.zone-card:hover{border-color:var(--line);background:rgba(201,168,76,.04);}
+.zone-card.expanded{border-color:rgba(201,168,76,.3);background:rgba(201,168,76,.05);}
+.zc-top{display:flex;align-items:center;gap:10px;}
+.zc-element{
+  width:32px;height:32px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;border:1px solid rgba(255,255,255,.1);
+}
+.zc-info{flex:1;}
+.zc-name{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.08em;color:var(--text);}
+.zc-chakra{font-size:8px;color:var(--text-mute);letter-spacing:.08em;margin-top:1px;}
+.zc-level{
+  font-size:9px;letter-spacing:.08em;color:var(--text-soft);
+  padding:4px 10px;border-radius:8px;
+  border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.02);
+}
+.zc-details{
+  margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.05);
+  display:none;
+}
+.zone-card.expanded .zc-details{display:block;}
+.zc-row{display:flex;justify-content:space-between;align-items:baseline;padding:3px 0;}
+.zc-lbl{font-size:8px;color:var(--text-mute);letter-spacing:.08em;}
+.zc-val{font-family:'Cormorant Garamond',serif;font-size:13px;color:var(--text);}
+.zc-desc{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:12px;color:var(--text-soft);line-height:1.5;margin-top:8px;
+}
+.zc-upgrade-btn{
+  display:block;width:100%;margin-top:10px;padding:10px;min-height:44px;
+  border:1px solid rgba(201,168,76,.3);border-radius:8px;
+  background:rgba(201,168,76,.06);color:var(--gold);
+  font-family:'Cinzel',serif;font-size:10px;letter-spacing:.1em;
+  cursor:pointer;transition:all .2s;text-align:center;
+}
+.zc-upgrade-btn:hover{background:rgba(201,168,76,.15);}
+.zc-upgrade-btn.disabled{opacity:.4;cursor:default;}
+.zc-upgrade-btn.maxed{border-color:rgba(201,168,76,.5);color:var(--gold-bright);}
+
+/* -- Global bonuses -- */
+.bonus-list{display:flex;flex-direction:column;gap:6px;}
+.bonus-item{
+  padding:10px 14px;border-radius:10px;
+  border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.02);
+  display:flex;align-items:center;gap:10px;
+}
+.bonus-item.active{border-color:rgba(201,168,76,.3);background:rgba(201,168,76,.05);}
+.bi-check{font-size:14px;color:var(--text-mute);}
+.bonus-item.active .bi-check{color:var(--gold);}
+.bi-info{flex:1;}
+.bi-name{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.06em;color:var(--text);}
+.bi-desc{font-size:8px;color:var(--text-mute);margin-top:2px;}
+.bi-bonus{font-size:9px;color:var(--gold);letter-spacing:.06em;}
+
+/* -- Ecosystem section -- */
+.eco-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.eco-card{
+  padding:10px;border-radius:10px;text-align:center;
+  border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.02);
+}
+.eco-title{font-size:7px;letter-spacing:.12em;color:var(--text-mute);margin-bottom:6px;}
+.eco-items{font-family:'Cormorant Garamond',serif;font-size:11px;color:var(--text-soft);line-height:1.6;}
+
+/* -- Abilities -- */
+.ability-grid{display:flex;flex-wrap:wrap;gap:6px;}
+.ability-tag{
+  padding:5px 10px;border-radius:16px;
+  border:1px solid rgba(201,168,76,.15);background:rgba(201,168,76,.04);
+  font-size:8px;letter-spacing:.06em;color:var(--text-soft);
+}
+
+/* -- Status message -- */
+#status{
+  position:fixed;top:60px;left:50%;transform:translateX(-50%);z-index:100;
+  padding:8px 20px;border-radius:20px;
+  background:rgba(6,4,18,.95);border:1px solid var(--line);
+  font-size:9px;letter-spacing:.12em;color:var(--gold);
+  opacity:0;transition:opacity .4s;pointer-events:none;
+}
+#status.show{opacity:1;}
+
+/* -- Mobile -- */
+@media(max-width:768px){
+  .eco-grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:375px){
+  .page-title{font-size:13px;}
+  .th-stats{gap:4px;}
+  .th-stat{min-width:60px;padding:4px 8px;}
+  .eco-grid{grid-template-columns:1fr;}
+}
+@media(max-width:320px){
+  body{padding:12px 8px 90px;}
+  .page-title{font-size:11px;letter-spacing:.12em;}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <a href="earth-player.html" class="back-link">← ЗЕМЛЯ</a>
+    <div class="page-title">ХРАМ</div>
+    <div class="light-badge"><span>✦</span> <span id="light-val">0</span></div>
+  </div>
+
+  <!-- Temple header -->
+  <div class="temple-header" id="temple-header">
+    <div class="th-name" id="th-name">ХРАМ НЕ ПОСТРОЕН</div>
+    <div class="th-universe" id="th-universe"></div>
+    <div class="th-stats">
+      <div class="th-stat"><div class="th-stat-lbl">СВЕТ/ЧАС</div><div class="th-stat-val" id="th-svet">0</div></div>
+      <div class="th-stat"><div class="th-stat-lbl">МНОЖИТЕЛЬ</div><div class="th-stat-val" id="th-mult">x1.0</div></div>
+      <div class="th-stat"><div class="th-stat-lbl">УРОВНИ</div><div class="th-stat-val" id="th-levels">0/55</div></div>
+      <div class="th-stat"><div class="th-stat-lbl">СПОСОБНОСТИ</div><div class="th-stat-val" id="th-abilities">0</div></div>
+    </div>
+  </div>
+
+  <!-- Collect bar -->
+  <div class="collect-bar" id="collect-bar" style="display:none;">
+    <div class="collect-info">
+      <div class="collect-lbl">НАКОПЛЕННЫЙ СВЕТ</div>
+      <div class="collect-val" id="collect-val">0</div>
+    </div>
+    <button class="collect-btn" id="collect-btn">СОБРАТЬ</button>
+  </div>
+
+  <!-- Zones -->
+  <div class="section-title">ЗОНЫ ХРАМА (11)</div>
+  <div class="zone-grid" id="zone-grid"></div>
+
+  <!-- Global bonuses -->
+  <div class="section-title">ГЛОБАЛЬНЫЕ БОНУСЫ</div>
+  <div class="bonus-list" id="bonus-list"></div>
+
+  <!-- Ecosystem -->
+  <div class="section-title">ЭКОСИСТЕМА</div>
+  <div class="eco-grid" id="eco-grid"></div>
+
+  <!-- Abilities -->
+  <div class="section-title">РАЗБЛОКИРОВАННЫЕ СПОСОБНОСТИ</div>
+  <div class="ability-grid" id="ability-grid"></div>
+
+</div>
+
+<div id="status"></div>
+
+<script type="module">
+import { loadState } from './js/state-module.js';
+import {
+  getTemple, buildTemple, upgradeZone, collectPassiveLight,
+  getPassiveSvetPerHour, getTempleSummary, getTempleEcosystem,
+  getTempleMultiplier, getUnlockedAbilities, getActiveGlobalBonuses,
+  getAllZones, getNextUpgrade, getZoneInfo
+} from './js/temple-module.js';
+
+var currentMatrix = 'vedic';
+
+var EL_ICO = {earth:'\uD83C\uDF31',water:'\uD83C\uDF0A',fire:'\uD83D\uDD25',air:'\uD83D\uDCA8',ether:'\u2726',null:'\u2638'};
+var EL_NAMES = {earth:'Земля',water:'Вода',fire:'Огонь',air:'Воздух',ether:'Эфир',null:'--'};
+var CHAKRA_NAMES = {
+  sahasrara:'Сахасрара',ajna:'Аджна',muladhara:'Муладхара',
+  svadhisthana:'Свадхистхана',anahata:'Анахата',vishuddha:'Вишуддха',manipura:'Манипура'
+};
+var EL_COLS = {earth:'74,103,65',water:'42,96,128',fire:'138,48,32',air:'96,104,136',ether:'112,96,168'};
+
+function showStatus(msg) {
+  var el = document.getElementById('status');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(el._t); el._t = setTimeout(function(){ el.classList.remove('show'); }, 2500);
+}
+
+async function renderPage() {
+  var state = loadState();
+  document.getElementById('light-val').textContent = state.totalLight || 0;
+
+  var temple = getTemple(currentMatrix);
+
+  if (!temple) {
+    document.getElementById('th-name').textContent = 'ХРАМ НЕ ПОСТРОЕН';
+    document.getElementById('th-universe').textContent = 'Нажмите кнопку ниже, чтобы возвести храм';
+    document.getElementById('zone-grid').innerHTML =
+      '<button class="collect-btn" style="width:100%" id="build-temple-btn">ВОЗВЕСТИ ХРАМ (500 света)</button>';
+    document.getElementById('build-temple-btn').onclick = async function() {
+      var result = await buildTemple(currentMatrix);
+      if (result.success) {
+        showStatus('Храм возведён! (-' + result.spent + ' света)');
+        renderPage();
+      } else if (result.error === 'not_enough_light') {
+        showStatus('Недостаточно света (нужно ' + result.required + ')');
+      }
+    };
+    return;
+  }
+
+  var summary = await getTempleSummary(currentMatrix);
+  var eco = await getTempleEcosystem(currentMatrix);
+  var zones = await getAllZones(currentMatrix);
+  var abilities = await getUnlockedAbilities(currentMatrix);
+  var globalBonuses = await getActiveGlobalBonuses(currentMatrix);
+
+  // Header
+  if (summary) {
+    document.getElementById('th-name').textContent = summary.ecosystemName || 'ХРАМ';
+    document.getElementById('th-universe').textContent = summary.universe || '';
+    document.getElementById('th-svet').textContent = '+' + summary.passiveSvetPerHour;
+    document.getElementById('th-mult').textContent = 'x' + summary.multiplier;
+    document.getElementById('th-levels').textContent = summary.totalLevels + '/' + summary.maxTotalLevels;
+    document.getElementById('th-abilities').textContent = summary.abilitiesCount;
+  }
+
+  // Collect bar
+  var perHour = await getPassiveSvetPerHour(currentMatrix);
+  var elapsed = Date.now() - (temple.lastCollect || temple.builtAt);
+  var hours = Math.min(elapsed / 3600000, 24);
+  var pending = Math.floor(perHour * hours);
+  document.getElementById('collect-bar').style.display = 'flex';
+  document.getElementById('collect-val').textContent = pending + ' (' + hours.toFixed(1) + 'ч)';
+  document.getElementById('collect-btn').onclick = async function() {
+    var result = await collectPassiveLight(currentMatrix);
+    if (result.success && result.collected > 0) {
+      showStatus('+' + result.collected + ' света собрано!');
+      renderPage();
+    } else {
+      showStatus('Свет ещё не накопился');
+    }
+  };
+
+  // Zones
+  if (zones) {
+    document.getElementById('zone-grid').innerHTML = zones.map(function(z) {
+      var col = EL_COLS[z.element] || '201,168,76';
+      var ico = EL_ICO[z.element] || '\u2638';
+      var maxed = z.currentLevel >= z.maxLevel;
+      return '<div class="zone-card" data-zone="' + z.id + '" onclick="this.classList.toggle(\'expanded\')">' +
+        '<div class="zc-top">' +
+          '<div class="zc-element" style="background:rgba(' + col + ',.1);border-color:rgba(' + col + ',.3)">' + ico + '</div>' +
+          '<div class="zc-info"><div class="zc-name">' + z.name_ru + '</div>' +
+          '<div class="zc-chakra">' + (CHAKRA_NAMES[z.chakra] || '--') + ' / ' + (EL_NAMES[z.element] || '--') + '</div></div>' +
+          '<div class="zc-level">' + (maxed ? 'MAX' : 'УР. ' + z.currentLevel + '/' + z.maxLevel) + '</div>' +
+        '</div>' +
+        '<div class="zc-details" id="zd-' + z.id + '"></div>' +
+      '</div>';
+    }).join('');
+
+    // Load details for each zone
+    for (var i = 0; i < zones.length; i++) {
+      loadZoneDetails(zones[i]);
+    }
+  }
+
+  // Global bonuses
+  renderGlobalBonuses(globalBonuses);
+
+  // Ecosystem
+  if (eco) {
+    document.getElementById('eco-grid').innerHTML =
+      '<div class="eco-card"><div class="eco-title">ФЛОРА</div><div class="eco-items">' +
+        eco.flora.join('<br>') + '</div></div>' +
+      '<div class="eco-card"><div class="eco-title">СУЩЕСТВА</div><div class="eco-items">' +
+        eco.creatures.join('<br>') + '</div></div>' +
+      '<div class="eco-card"><div class="eco-title">МИНЕРАЛЫ</div><div class="eco-items">' +
+        eco.minerals.join('<br>') + '</div></div>';
+  }
+
+  // Abilities
+  if (abilities.length > 0) {
+    document.getElementById('ability-grid').innerHTML = abilities.map(function(a) {
+      return '<div class="ability-tag">' + a.replace(/_/g, ' ') + '</div>';
+    }).join('');
+  } else {
+    document.getElementById('ability-grid').innerHTML = '<div style="font-size:9px;color:var(--text-mute)">Улучшите зоны для разблокировки</div>';
+  }
+}
+
+async function loadZoneDetails(z) {
+  var info = await getZoneInfo(currentMatrix, z.id);
+  if (!info) return;
+  var el = document.getElementById('zd-' + z.id);
+  if (!el) return;
+
+  var html = '';
+  if (info.currentUpgrade) {
+    html += '<div class="zc-row"><span class="zc-lbl">ПАССИВ</span><span class="zc-val">+' + info.currentUpgrade.effects.passive_svet_bonus + '/ч</span></div>';
+    html += '<div class="zc-row"><span class="zc-lbl">МНОЖИТЕЛЬ</span><span class="zc-val">x' + info.currentUpgrade.effects.multiplier + '</span></div>';
+    if (info.currentUpgrade.effects.unlock) {
+      html += '<div class="zc-row"><span class="zc-lbl">СПОСОБНОСТЬ</span><span class="zc-val">' + info.currentUpgrade.effects.unlock.replace(/_/g, ' ') + '</span></div>';
+    }
+    html += '<div class="zc-desc">' + info.currentUpgrade.description + '</div>';
+  }
+
+  if (info.nextUpgrade) {
+    html += '<div style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,.05)">';
+    html += '<div class="zc-row"><span class="zc-lbl">СЛЕД. УРОВЕНЬ</span><span class="zc-val">' + info.nextUpgrade.name_ru + '</span></div>';
+    html += '<div class="zc-row"><span class="zc-lbl">СТОИМОСТЬ</span><span class="zc-val">' + info.nextUpgrade.cost + ' света</span></div>';
+    var mats = Object.entries(info.nextUpgrade.materials || {});
+    if (mats.length > 0) {
+      html += '<div class="zc-row"><span class="zc-lbl">МАТЕРИАЛЫ</span><span class="zc-val">' +
+        mats.map(function(m) { return m[1] + 'x ' + m[0].replace(/_/g, ' '); }).join(', ') + '</span></div>';
+    }
+    html += '<button class="zc-upgrade-btn" data-zone="' + z.id + '">УЛУЧШИТЬ (' + info.nextUpgrade.cost + ' света)</button>';
+    html += '</div>';
+  } else {
+    html += '<div class="zc-upgrade-btn maxed" style="cursor:default">МАКСИМАЛЬНЫЙ УРОВЕНЬ</div>';
+  }
+
+  el.innerHTML = html;
+
+  var btn = el.querySelector('.zc-upgrade-btn[data-zone]');
+  if (btn) {
+    btn.addEventListener('click', async function(e) {
+      e.stopPropagation();
+      var zoneId = this.getAttribute('data-zone');
+      var result = await upgradeZone(currentMatrix, zoneId);
+      if (result.success) {
+        showStatus(zoneId + ' улучшена до ур. ' + result.newLevel + '!');
+        renderPage();
+      } else if (result.error === 'not_enough_light') {
+        showStatus('Недостаточно света (нужно ' + result.required + ')');
+      } else if (result.error === 'not_enough_materials') {
+        showStatus('Нет материала: ' + result.missing.replace(/_/g, ' '));
+      }
+    });
+  }
+}
+
+async function renderGlobalBonuses(active) {
+  var activeConditions = active.map(function(g) { return g.condition; });
+  var allBonuses = [
+    { condition: 'all_zones_level_1', name: 'Пробуждение Храма', desc: 'Все 11 зон на ур. 1', bonus: '+5% свет' },
+    { condition: 'all_zones_level_2', name: 'Гармония Стихий', desc: 'Все 11 зон на ур. 2', bonus: '+10% свет' },
+    { condition: 'all_zones_level_3', name: 'Мандала Силы', desc: 'Все 11 зон на ур. 3', bonus: '+20% свет' },
+    { condition: 'all_zones_level_4', name: 'Столп Миров', desc: 'Все 11 зон на ур. 4', bonus: '+35% свет' },
+    { condition: 'all_zones_level_5', name: 'Космический Маяк', desc: 'Все 11 зон на ур. 5', bonus: '+50% свет' }
+  ];
+
+  document.getElementById('bonus-list').innerHTML = allBonuses.map(function(b) {
+    var isActive = activeConditions.indexOf(b.condition) >= 0;
+    return '<div class="bonus-item' + (isActive ? ' active' : '') + '">' +
+      '<div class="bi-check">' + (isActive ? '\u2726' : '\u25CB') + '</div>' +
+      '<div class="bi-info"><div class="bi-name">' + b.name + '</div><div class="bi-desc">' + b.desc + '</div></div>' +
+      '<div class="bi-bonus">' + b.bonus + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+renderPage();
+</script>
+
+</body>
+</html>
